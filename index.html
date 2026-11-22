@@ -493,6 +493,10 @@ const EXPL = {
   'm-area':"L'àrea és tot el que ocupa per dins. Rectangle: llarg × ample. Triangle: base × alçada : 2.",
   'm-angles':"Recte: una cantonada com la d'un full. Agut: més tancat. Obtús: més obert.",
   'm-triangles':"Equilàter: tres costats iguals. Isòsceles: dos costats iguals. Escalè: tots tres diferents.",
+  'm-figures':"El cercle és rodó i no té costats. El triangle té 3 costats. El quadrat té 4 costats iguals. El rectangle té 4 costats: dos de llargs i dos de curts.",
+  'm-cossos':"L'esfera és rodona com una pilota. El cub té 6 cares quadrades, com un dau. El cilindre és com una llauna. El con acaba en punta, com un cucurutxo.",
+  'm-posicio':"Sobre vol dir a dalt, tocant. Sota vol dir a baix. Entremig vol dir al mig de dues coses.",
+  'm-mesura1':"Per saber quin és més llarg, mira on comencen i on acaben. A la balança, el costat que baixa és el que pesa més.",
   'm-poligons':"Compta els costats: 3, triangle; 4, quadrilàter; 5, pentàgon; 6, hexàgon; 8, octàgon.",
   'm-cercle':"El radi va del centre a la vora. El diàmetre travessa tot el cercle i fa el doble del radi.",
   'm-atzar':"Segur: passa sempre. Possible: pot passar o no. Impossible: no pot passar mai.",
@@ -792,6 +796,67 @@ skill('m-triangles','mat','Tipus de triangles',3,6,(r)=>{ const t = ri(r,0,2), a
   return {prompt:`Un triangle té els costats de ${s[0]} cm, ${s[1]} cm i ${s[2]} cm. Com és?`, speak:`Un triangle té els costats de ${s[0]}, ${s[1]} i ${s[2]} centímetres. Com és?`, ...tria(r,L[t],L)}; });
 function polySVG(n){ const p = Array.from({length:n},(_,i)=>{ const a = -Math.PI/2 + i * 2 * Math.PI / n; return `${(100 + 80*Math.cos(a)).toFixed(1)},${(100 + 80*Math.sin(a)).toFixed(1)}`; }).join(' ');
   return `<svg viewBox="0 0 200 200" width="180" height="180" role="img" aria-label="Polígon"><polygon points="${p}" fill="var(--brand-soft)" stroke="var(--brand2)" stroke-width="4" stroke-linejoin="round"/></svg>`; }
+// MATEMÀTIQUES · figures, cossos, posició i mesura per a 1r i 2n
+const FCOL = ['#ffd0dc','#cfe3ff','#d6f2dc','#fff0b8','#e7dcff'], FST = '#5a1a2e';
+const svgBox = (w, h, inner, label) => `<svg viewBox="0 0 ${w} ${h}" width="${w}" height="${h}" style="max-width:100%;height:auto" role="img" aria-label="${label}">${inner}</svg>`;
+function figSVG(k, col, v = 0){
+  const st = `fill="${col}" stroke="${FST}" stroke-width="4" stroke-linejoin="round"`;
+  const f = {cercle:`<circle cx="100" cy="80" r="62" ${st}/>`, quadrat:`<rect x="38" y="18" width="124" height="124" ${st}/>`,
+    rectangle: v ? `<rect x="58" y="8" width="84" height="144" ${st}/>` : `<rect x="14" y="36" width="172" height="88" ${st}/>`,
+    triangle: v ? `<polygon points="40,145 40,20 170,145" ${st}/>` : `<polygon points="100,14 176,146 24,146" ${st}/>`}[k];
+  return svgBox(200, 160, f, 'Una figura');
+}
+const FIGS = ['Cercle','Quadrat','Rectangle','Triangle'];
+skill('m-figures','mat','Figures planes',1,2,(r)=>{ const k = pick(r, FIGS), col = pick(r, FCOL), vis = figSVG(k.toLowerCase(), col, ri(r,0,1));
+  if (k !== 'Cercle' && r() < .4) return {type:'escriu', numeric:true, prompt:'Quants costats té aquesta figura?', speak:'Compta els costats. Quants costats té aquesta figura?', visual:vis, answer:String(k === 'Triangle' ? 3 : 4)};
+  return {prompt:'Quina figura és?', speak:'Mira la figura. Quina figura és?', visual:vis, ...tria(r, k, shuffle(r, FIGS))}; });
+function cosSVG(k){
+  const S = FST;
+  const f = {
+    Cub:`<polygon points="50,60 120,60 120,130 50,130" fill="#cfe3ff" stroke="${S}" stroke-width="3" stroke-linejoin="round"/><polygon points="50,60 80,35 150,35 120,60" fill="#e6f0ff" stroke="${S}" stroke-width="3" stroke-linejoin="round"/><polygon points="120,60 150,35 150,105 120,130" fill="#a9c8f0" stroke="${S}" stroke-width="3" stroke-linejoin="round"/>`,
+    Esfera:`<defs><radialGradient id="gesf" cx=".35" cy=".35" r=".75"><stop offset="0" stop-color="#ffffff"/><stop offset=".45" stop-color="#ffd0dc"/><stop offset="1" stop-color="#e88aa3"/></radialGradient></defs><circle cx="100" cy="82" r="60" fill="url(#gesf)" stroke="${S}" stroke-width="3"/><path d="M40 82 A60 18 0 0 0 160 82" fill="none" stroke="${S}" stroke-width="2" stroke-dasharray="6 5" opacity=".6"/>`,
+    Cilindre:`<path d="M55 40 V128 A45 14 0 0 0 145 128 V40" fill="#d6f2dc" stroke="${S}" stroke-width="3"/><ellipse cx="100" cy="40" rx="45" ry="14" fill="#eefaf0" stroke="${S}" stroke-width="3"/>`,
+    Con:`<path d="M100 18 L148 128 A48 15 0 0 1 52 128 Z" fill="#fff0b8" stroke="${S}" stroke-width="3" stroke-linejoin="round"/><path d="M52 128 A48 15 0 0 1 148 128" fill="none" stroke="${S}" stroke-width="2" stroke-dasharray="6 5" opacity=".6"/>`}[k];
+  return svgBox(200, 160, f, 'Un cos geomètric');
+}
+const COSSOS = ['Cub','Esfera','Cilindre','Con'];
+const COS_OBJ = [['una pilota','Esfera'],['una taronja','Esfera'],['un dau','Cub'],['un glaçó','Cub'],['una llauna de refresc','Cilindre'],['un tub de galetes','Cilindre'],['un cucurutxo de gelat','Con'],['un barret de festa','Con']];
+skill('m-cossos','mat','Cossos geomètrics',1,2,(r)=>{
+  if (r() < .35) { const [o, k] = pick(r, COS_OBJ); return {prompt:`Quina forma té ${o}?`, speak:`Quina forma té ${o}?`, ...tria(r, k, shuffle(r, COSSOS))}; }
+  const k = pick(r, COSSOS); return {prompt:'Quin cos geomètric és?', speak:'Mira el dibuix. Quin cos geomètric és?', visual:cosSVG(k), ...tria(r, k, shuffle(r, COSSOS))}; });
+const emo = (x, y, e, sz = 40) => `<text x="${x}" y="${y}" font-size="${sz}" text-anchor="middle" dominant-baseline="central">${e}</text>`;
+const POS_OBJ = [['⚽','La pilota','la pilota'],['🧸','L\'ós de peluix','l\'ós de peluix'],['🍎','La poma','la poma'],['📚','Els llibres','els llibres',1],['🎁','El regal','el regal']];
+skill('m-posicio','mat','On és?',1,2,(r)=>{ const t = ri(r,0,2);
+  if (t === 0) { const [e, , nom, pl] = pick(r, POS_OBJ), w = ri(r,0,2), es = pl ? 'són' : 'és';
+    const taula = `<rect x="50" y="78" width="120" height="12" rx="3" fill="#c48a5a" stroke="${FST}" stroke-width="2"/><rect x="58" y="90" width="10" height="56" fill="#a86f45"/><rect x="152" y="90" width="10" height="56" fill="#a86f45"/><line x1="10" y1="147" x2="230" y2="147" stroke="#9a8a8f" stroke-width="2"/>`;
+    const pos = [[110,56],[110,124],[205,124]][w], ok = ['Sobre la taula','Sota la taula','Al costat de la taula'][w];
+    return {prompt:`On ${es} ${nom}?`, speak:`Mira el dibuix. On ${es} ${nom}?`, visual:svgBox(240,160,taula + emo(pos[0],pos[1],e,38),'Una taula i un objecte'), ...tria(r, ok, ['Sobre la taula','Sota la taula','Al costat de la taula'])}; }
+  if (t === 1) { const fs = shuffle(r, FIGS).slice(0,3), cols = shuffle(r, FCOL);
+    const g = fs.map((k,i) => `<g transform="translate(${10 + i*100} 10) scale(.42)">${figSVG(k.toLowerCase(), cols[i]).replace(/^<svg[^>]*>|<\/svg>$/g,'')}</g>`).join('');
+    return {prompt:`Quina figura hi ha entremig del ${fs[0].toLowerCase()} i del ${fs[2].toLowerCase()}?`, speak:`Quina figura hi ha entremig del ${fs[0].toLowerCase()} i del ${fs[2].toLowerCase()}?`, visual:svgBox(300,90,g,'Tres figures en fila'), ...tria(r, fs[1], shuffle(r, FIGS))}; }
+  const [a, b] = shuffle(r, POS_OBJ).slice(0,2), up = r() < .5;
+  const prest = `<rect x="40" y="10" width="160" height="140" fill="#f6ebe0" stroke="${FST}" stroke-width="3"/><rect x="40" y="78" width="160" height="6" fill="#c48a5a"/><rect x="40" y="144" width="160" height="6" fill="#c48a5a"/>`;
+  return {prompt:`Què hi ha al prestatge ${up ? 'de dalt' : 'de baix'}?`, speak:`Mira la prestatgeria. Què hi ha al prestatge ${up ? 'de dalt' : 'de baix'}?`, visual:svgBox(240,160, prest + emo(120,52,a[0]) + emo(120,118,b[0]),'Una prestatgeria amb dos prestatges'), ...tria(r, up ? a[1] : b[1], [a[1], b[1], ...POS_OBJ.map(x=>x[1])])}; });
+const PESANT = [['🍉','La síndria'],['🎃','La carbassa'],['📚','Els llibres']], LLEUGER = [['🍓','La maduixa'],['🍒','La cirera'],['🍃','La fulla']];
+skill('m-mesura1','mat','Comparar i mesurar',1,2,(r)=>{ const t = ri(r,0,3);
+  if (t === 0) { const L = shuffle(r,[60,95,130,165]).slice(0,3), cols = shuffle(r,['#e8434f','#4f7cff','#2fbf71','#f2c230']), llarg = r() < .5;
+    const g = L.map((l,i) => `<text x="12" y="${32 + i*42}" font-size="20" font-weight="700" fill="${FST}" dominant-baseline="central">${'ABC'[i]}</text><rect x="40" y="${22 + i*42}" width="${l}" height="20" rx="4" fill="${cols[i]}" stroke="${FST}" stroke-width="2"/><polygon points="${40+l},${22+i*42} ${40+l+22},${32+i*42} ${40+l},${42+i*42}" fill="#f4d7a8" stroke="${FST}" stroke-width="2" stroke-linejoin="round"/>`).join('');
+    const k = llarg ? L.indexOf(Math.max(...L)) : L.indexOf(Math.min(...L));
+    return {prompt:`Quin llapis és més ${llarg ? 'llarg' : 'curt'}?`, speak:`Mira els llapis. Quin és el més ${llarg ? 'llarg' : 'curt'}?`, visual:svgBox(240,140,g,'Tres llapis'), ...tria(r, 'El llapis ' + 'ABC'[k], ['El llapis A','El llapis B','El llapis C'])}; }
+  if (t === 1) { const n = ri(r,3,8), u = 24;
+    const g = `<rect x="10" y="14" width="${n*u-16}" height="18" rx="4" fill="#4f7cff" stroke="${FST}" stroke-width="2"/><polygon points="${n*u-6},14 ${10+n*u},23 ${n*u-6},32" fill="#f4d7a8" stroke="${FST}" stroke-width="2"/>` +
+      `<line x1="10" y1="8" x2="10" y2="72" stroke="${FST}" stroke-width="1" stroke-dasharray="3 3"/><line x1="${10+n*u}" y1="8" x2="${10+n*u}" y2="72" stroke="${FST}" stroke-width="1" stroke-dasharray="3 3"/>` +
+      Array.from({length:10},(_,i)=>`<rect x="${10+i*u}" y="46" width="${u}" height="${u}" fill="#ffffff" stroke="${FST}" stroke-width="1.5"/>`).join('');
+    return {type:'escriu', numeric:true, prompt:'Quants quadrets fa de llarg el llapis?', speak:'Compta els quadrets que hi ha sota el llapis. Quants quadrets fa de llarg?', visual:svgBox(270,80,g,'Un llapis sobre una fila de quadrets'), answer:String(n), unit:'quadrets'}; }
+  if (t === 2) { const p = pick(r, PESANT), l = pick(r, LLEUGER), left = r() < .5, L = left ? p : l, Rr = left ? l : p, dy = left ? 14 : -14;
+    const g = `<polygon points="120,120 105,150 135,150" fill="#9aa5b8"/><line x1="120" y1="40" x2="120" y2="120" stroke="${FST}" stroke-width="4"/><line x1="50" y1="${40+dy}" x2="190" y2="${40-dy}" stroke="${FST}" stroke-width="4"/>
+      <path d="M25 ${70+dy} h50 l-8 14 h-34 z" fill="#c9d1de" stroke="${FST}" stroke-width="2"/><line x1="50" y1="${40+dy}" x2="50" y2="${70+dy}" stroke="${FST}" stroke-width="1.5"/>
+      <path d="M165 ${70-dy} h50 l-8 14 h-34 z" fill="#c9d1de" stroke="${FST}" stroke-width="2"/><line x1="190" y1="${40-dy}" x2="190" y2="${70-dy}" stroke="${FST}" stroke-width="1.5"/>` + emo(50, 52+dy, L[0], 30) + emo(190, 52-dy, Rr[0], 30);
+    return {prompt:'Què pesa més?', speak:'Mira la balança. Què pesa més?', visual:svgBox(240,160,g,'Una balança amb dos objectes'), ...tria(r, p[1], [p[1], l[1]])}; }
+  const a = ri(r,1,4), b = (a + ri(r,1,3)) % 5 || 5, mes = r() < .5;
+  const got = (x, n) => `<path d="M${x} 20 L${x+8} 140 H${x+62} L${x+70} 20" fill="#ffffff" stroke="${FST}" stroke-width="3" stroke-linejoin="round"/><path d="M${x+8 - 0} ${140 - n*22} L${x+8} 140 H${x+62} L${x+62} ${140 - n*22} Z" fill="#7fc8f5" opacity=".85"/>`;
+  return {prompt:`Quin got té ${mes ? 'més' : 'menys'} aigua?`, speak:`Mira els dos gots. Quin té ${mes ? 'més' : 'menys'} aigua?`, visual:svgBox(240,160, got(25,a) + got(145,b) + `<text x="60" y="155" font-size="16" font-weight="700" text-anchor="middle" fill="${FST}">A</text><text x="180" y="155" font-size="16" font-weight="700" text-anchor="middle" fill="${FST}">B</text>`,'Dos gots amb aigua'),
+    ...tria(r, (mes ? a > b : a < b) ? 'El got A' : 'El got B', ['El got A','El got B'])}; });
 skill('m-poligons','mat','Polígons',2,4,(r)=>{ const N = {3:'Triangle',4:'Quadrilàter',5:'Pentàgon',6:'Hexàgon',8:'Octàgon'}, n = pick(r,[3,4,5,6,8]);
   return {prompt:'Com es diu aquest polígon?', speak:'Compta els costats. Com es diu aquest polígon?', visual:polySVG(n), ...tria(r,N[n],Object.values(N))}; });
 skill('m-cercle','mat','El cercle',6,6,(r)=>{ const rad = ri(r,2,12), asR = r() < .5;
@@ -832,8 +897,8 @@ for (const [b, ids] of Object.entries({
   'Comprensió oral':'c-oral',
   'Nombres':'m-comptar m-series m-ordena m-valorpos m-descomp m-parells m-fraccions m-fraccio-col m-compdec m-divisors m-primers',
   'Càlcul':'m-suma m-suma-portant m-resta m-resta-portant m-desenes m-dobles m-taules m-taules-rel m-divisio m-divresidu m-x10 m-decimals m-percent m-combinades m-potencies x-mat',
-  'Mesura':'m-rellotge m-digital m-monedes m-longitud m-massa m-capacitat m-temps m-calendari m-perimetre m-area',
-  'Geometria':'m-angles m-triangles m-poligons m-cercle',
+  'Mesura':'m-mesura1 m-rellotge m-digital m-monedes m-longitud m-massa m-capacitat m-temps m-calendari m-perimetre m-area',
+  'Geometria':'m-figures m-cossos m-posicio m-angles m-triangles m-poligons m-cercle',
   'Dades i atzar':'m-atzar m-grafics m-mitjana',
   'Problemes':'m-problemes'})) for (const id of ids.split(' ')) BLOC_OF[id] = b;
 const blocOf = id => BLOC_OF[id] || (SKM(id).mat === 'cat' ? 'Lectura i escriptura' : 'Càlcul');
@@ -841,11 +906,11 @@ const blocOf = id => BLOC_OF[id] || (SKM(id).mat === 'cat' ? 'Lectura i escriptu
 // PROGRAMACIÓ de l'escola: només serveix a la mestra per orientar-se
 const PROG = {
   1:{mat:{font:'Matemàtiques Raona 1r', u:[
-      ['Comencem. Parlem de fruita!','m-comptar m-ordena m-calendari m-grafics m-problemes'],['Continuem. Mirem i pensem','m-comptar m-ordena m-suma m-series'],
-      ['Avancem. Comparem i comptem','m-suma m-descomp m-valorpos m-problemes'],['U1 Fem desenes','m-descomp m-valorpos m-dobles m-suma'],
-      ['U2 Connectem','m-suma m-series m-calendari m-rellotge'],['U3 Val el mateix?','m-suma m-resta m-monedes m-descomp'],
-      ['U4 La suma i la resta s\'ajuden','m-suma m-resta m-monedes m-problemes'],['U5 Quin nombre és més gran?','m-ordena m-valorpos m-dobles m-monedes m-grafics'],
-      ['U6 Ara sé més matemàtiques!','m-rellotge m-calendari m-valorpos m-series m-problemes']]}},
+      ['Comencem. Parlem de fruita!','m-comptar m-ordena m-posicio m-calendari m-grafics m-problemes'],['Continuem. Mirem i pensem','m-comptar m-ordena m-suma m-series m-figures m-posicio'],
+      ['Avancem. Comparem i comptem','m-suma m-descomp m-valorpos m-mesura1 m-cossos m-problemes'],['U1 Fem desenes','m-descomp m-valorpos m-dobles m-suma m-mesura1 m-posicio'],
+      ['U2 Connectem','m-suma m-series m-calendari m-rellotge m-posicio'],['U3 Val el mateix?','m-suma m-resta m-monedes m-descomp m-figures'],
+      ['U4 La suma i la resta s\'ajuden','m-suma m-resta m-monedes m-cossos m-mesura1 m-problemes'],['U5 Quin nombre és més gran?','m-ordena m-valorpos m-dobles m-monedes m-mesura1 m-grafics'],
+      ['U6 Ara sé més matemàtiques!','m-rellotge m-calendari m-valorpos m-series m-figures m-problemes']]}},
   2:{cat:{font:'Llengua catalana 2n', u:[
       ['U1 Quina gran família!','c-sil c-tonica c-genere c-plural c-comprensio'],['U2 Els colors de la tardor','c-vneutra c-temps c-compostes c-dictat'],
       ['U3 Vet aquí que una vegada…','c-ou c-plural c-families c-frase c-dictat'],['U4 Ens comuniquem!','c-bv c-sinonims c-antonims c-oracions c-dictat'],
