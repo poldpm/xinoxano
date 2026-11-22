@@ -553,10 +553,12 @@ skill('m-resta','mat','Restes',1,3,(r,c)=>{ const [a,b] = opPair(r,c,'-',false);
 skill('m-resta-portant','mat','Restes portant',2,4,(r,c)=>{ const [a,b] = opPair(r,c,'-',true); return {type:'escriu', numeric:true, prompt:'Fes la resta. Compte, que en portes!', speak:`Quant fa ${a} menys ${b}?`, visual:colop(a,'−',b), answer:String(a-b)}; });
 skill('m-series','mat','Sèries de nombres',1,3,(r,c)=>{ const step = pick(r,{1:[1,2],2:[2,5,10],3:[10,25,100]}[c]); const st = ri(r,0,c===1?8:c===2?40:300); const seq = Array.from({length:5},(_,i)=>st+i*step); const q = ri(r,1,4);
   return {type:'escriu', numeric:true, prompt:'Quin nombre falta?', speak:'Quin nombre falta a la sèrie?', visual:'<div class="series num">'+seq.map((v,i)=>i===q?'<span class="q">?</span>':`<span>${v}</span>`).join('')+'</div>', answer:String(seq[q])}; });
-skill('m-rellotge','mat','El rellotge',2,4,(r,c)=>{ const h = ri(r,1,12), m = c===2 ? pick(r,[0,0,30,15,45]) : pick(r,[0,15,30,45]); const ok = horaText(h,m);
+skill('m-rellotge','mat','El rellotge',1,4,(r,c)=>{ const h = ri(r,1,12), m = c===1 ? pick(r,[0,0,30]) : c===2 ? pick(r,[0,0,30,15,45]) : pick(r,[0,15,30,45]); const ok = horaText(h,m);
   const alt = [horaText(h%12+1,m), horaText(h,(m+30)%60), horaText(h,(m+15)%60), horaText(((h+10)%12)+1,m)];
   return {prompt:'Quina hora és?', speak:'Mira el rellotge. Quina hora és?', visual:clockSVG(h,m), ...tria(r,ok,alt)}; });
-skill('m-monedes','mat','Les monedes',2,3,(r,c)=>{
+skill('m-monedes','mat','Les monedes',1,3,(r,c)=>{
+  if (c === 1) { const list = Array.from({length:ri(r,2,4)},()=>pick(r,[0.1,0.1,0.2,0.2,0.5])).sort((a,b)=>b-a); const t = Math.round(list.reduce((s,v)=>s+v,0)*100);
+    return {type:'escriu', numeric:true, prompt:'Quants cèntims hi ha en total?', speak:'Quants cèntims hi ha en total?', visual:moneySVG(list), answer:String(t), unit:'cèntims'}; }
   if (c === 2) { const list = Array.from({length:ri(r,2,4)},()=>pick(r,[1,2,2,5,10])).sort((a,b)=>b-a); const t = list.reduce((s,v)=>s+v,0);
     return {type:'escriu', numeric:true, prompt:'Quants euros hi ha en total?', speak:'Quants euros hi ha en total?', visual:moneySVG(list), answer:String(t)}; }
   const list = Array.from({length:ri(r,3,5)},()=>pick(r,[2,1,0.5,0.2,0.1,0.5])).sort((a,b)=>b-a); const t = Math.round(list.reduce((s,v)=>s+v,0)*100)/100;
@@ -713,11 +715,11 @@ skill('c-frasesfetes','cat','Frases fetes',3,6,(r)=>({type:'relaciona', prompt:'
   pairs:samplePairs(r,FFETES,4)}));
 
 // MATEMÀTIQUES · nombres
-skill('m-valorpos','mat','Valor posicional',2,6,(r,c)=>{ const top = {2:199,3:9999,4:99999}[c] || 999999, lo = c===2 ? 20 : c===3 ? 1000 : 10000;
+skill('m-valorpos','mat','Valor posicional',1,6,(r,c)=>{ const top = {1:99,2:199,3:9999,4:99999}[c] || 999999, lo = c===1 ? 11 : c===2 ? 20 : c===3 ? 1000 : 10000;
   const n = ri(r,lo,top), names = ['unitats','desenes','centenes','unitats de miler','desenes de miler','centenes de miler'], digits = String(n).split('').reverse(), p = ri(r,0,digits.length-1);
   return {type:'escriu', numeric:true, prompt:`Quina xifra hi ha a les ${names[p]}?`, speak:`En el nombre ${n}, quina xifra hi ha a les ${names[p]}?`, visual:`<div class="word num">${fmtN(n)}</div>`, answer:digits[p]}; });
-skill('m-descomp','mat','Compondre nombres',2,4,(r,c)=>{ const parts = c===2 ? [['centena',ri(r,0,1)],['desenes',ri(r,1,9)],['unitats',ri(r,0,9)]] : [['milers',ri(r,1,9)],['centenes',ri(r,0,9)],['desenes',ri(r,0,9)],['unitats',ri(r,0,9)]];
-  const n = parts.reduce((s,[,v],i)=>s + v * 10 ** (parts.length-1-i), 0), txt = parts.filter(([,v])=>v).map(([k,v])=>`${v} ${v===1 && k==='centena' ? 'centena' : k}`).join(', ');
+skill('m-descomp','mat','Compondre nombres',1,4,(r,c)=>{ const parts = c===1 ? [['desenes',ri(r,1,9)],['unitats',ri(r,0,9)]] : c===2 ? [['centena',ri(r,0,1)],['desenes',ri(r,1,9)],['unitats',ri(r,0,9)]] : [['milers',ri(r,1,9)],['centenes',ri(r,0,9)],['desenes',ri(r,0,9)],['unitats',ri(r,0,9)]];
+  const n = parts.reduce((s,[,v],i)=>s + v * 10 ** (parts.length-1-i), 0), txt = parts.filter(([,v])=>v).map(([k,v])=>`${v} ${v===1 ? {centena:'centena',desenes:'desena',unitats:'unitat',milers:'miler',centenes:'centena'}[k] : k}`).join(', ');
   return {type:'escriu', numeric:true, prompt:'Quin nombre és?', speak:`Quin nombre té ${txt}?`, visual:`<div class="readtext">${esc(txt)}</div>`, answer:String(n)}; });
 skill('m-compdec','mat','Comparar decimals',5,6,(r,c)=>{ const i = ri(r,0,9), a = i + ri(r,1,9)/10, b = i + ri(r,10,99)/100 + (c===6 ? ri(r,0,9)/1000 : 0), x = Math.round(a*1000), y = Math.round(b*1000);
   const ok = x === y ? 'Són iguals' : x > y ? fmtX(a) : fmtX(b); return {prompt:'Quin nombre és més gran?', speak:`Quin nombre és més gran: ${fmtX(a)} o ${fmtX(b)}?`, ...tria(r,ok,[fmtX(a),fmtX(b),'Són iguals'])}; });
@@ -727,7 +729,7 @@ skill('m-primers','mat','Nombres primers i compostos',5,6,(r)=>({type:'classific
 
 // MATEMÀTIQUES · càlcul
 skill('m-desenes','mat','Sumar desenes',2,2,(r)=>{ const b = ri(r,1,9)*10, a = r() < .5 ? ri(r,1,9)*10 : ri(r,11,99); return {type:'escriu', numeric:true, prompt:'Quant fa?', speak:`Quant fa ${a} més ${b}?`, visual:`<div class="word num">${a} + ${b} = ?</div>`, answer:String(a+b)}; });
-skill('m-dobles','mat','Dobles i meitats',2,3,(r,c)=>{ const n = ri(r,2,c===2?50:250); return r() < .5 ? {type:'escriu', numeric:true, prompt:`Quin és el doble de ${n}?`, speak:`Quin és el doble de ${n}?`, answer:String(2*n)}
+skill('m-dobles','mat','Dobles i meitats',1,3,(r,c)=>{ const n = ri(r,2,c===1?10:c===2?50:250); return r() < .5 ? {type:'escriu', numeric:true, prompt:`Quin és el doble de ${n}?`, speak:`Quin és el doble de ${n}?`, answer:String(2*n)}
   : {type:'escriu', numeric:true, prompt:`Quina és la meitat de ${2*n}?`, speak:`Quina és la meitat de ${2*n}?`, answer:String(n)}; });
 skill('m-x10','mat','Per 10, 100 i 1.000',3,6,(r,c)=>{ const k = pick(r, c===3 ? [10,100] : [10,100,1000]), mul = c===3 || r() < .5; let n, ans;
   if (c <= 4) { if (mul) { n = ri(r,2,c===3?99:999); ans = n*k; } else { n = ri(r,2,99)*k; ans = n/k; } } else { n = ri(r,1,9999)/100; ans = mul ? n*k : n/k; }
@@ -763,8 +765,9 @@ skill('m-temps','mat','Mesures de temps',3,6,(r,c)=>{ const Q = [['Quants minuts
 skill('m-digital','mat','Rellotge digital',3,4,(r)=>{ const h = ri(r,1,12), m = ri(r,0,11)*5, f = (x,y) => `${pad2(x)}:${pad2(y)}`;
   return {prompt:'Quina hora marca en un rellotge digital?', speak:'Mira el rellotge. Com ho escriuries en un rellotge digital?', visual:clockSVG(h,m), ...tria(r,f(h,m),[f(h % 12 + 1,m), f(h,(m+15)%60), f(m/5 || 12, h*5 % 60)])}; });
 const MESOS = ['gener','febrer','març','abril','maig','juny','juliol','agost','setembre','octubre','novembre','desembre'], DIES = ['dilluns','dimarts','dimecres','dijous','divendres','dissabte','diumenge'];
-skill('m-calendari','mat','El calendari',2,3,(r)=>{ const t = ri(r,0,3), i = ri(r,0,10), j = ri(r,1,6);
+skill('m-calendari','mat','El calendari',1,3,(r,c)=>{ const t = c===1 ? ri(r,1,2) : ri(r,0,3), i = ri(r,0,10), j = ri(r,1,6);
   const [q, a] = [[`Quin mes ve després del mes de ${MESOS[i]}?`, MESOS[i+1]], [`Quin dia de la setmana va abans de ${DIES[j]}?`, DIES[j-1]], [`Quin dia de la setmana va després de ${DIES[j-1]}?`, DIES[j]], [`Quin mes va abans del mes de ${MESOS[i+1]}?`, MESOS[i]]][t];
+  if (c === 1) return {prompt:q, speak:q, ...tria(r, a, DIES.filter(x => x !== a))}; // a 1r no s'escriu: l'ortografia encara és natural
   return {type:'escriu', prompt:q, speak:q, answer:a}; });
 function gridRect(w, h){ const s = 22, W = (w+2)*s, H = (h+2)*s; let g = '';
   for (let x = 0; x <= w+2; x++) g += `<line x1="${x*s}" y1="0" x2="${x*s}" y2="${H}" stroke="var(--line)" stroke-width="1"/>`;
@@ -805,7 +808,7 @@ function barSVG(labels, vals, title){ const max = Math.max(...vals), step = max 
   const bars = labels.map((l,i)=>{ const x = x0 + 12 + i*(bw+gap), h = vals[i] / top * H; return `<rect x="${x}" y="${170-h}" width="${bw}" height="${h}" rx="4" fill="var(--mat)"/><text x="${x+bw/2}" y="190" text-anchor="middle" font-size="13" fill="var(--ink)" font-family="Fira Sans, sans-serif">${l}</text>`; }).join('');
   const W = x0 + labels.length*(bw+gap) + 10;
   return `<div style="text-align:center"><div class="small muted" style="font-weight:700">${title}</div><svg viewBox="0 0 ${W} 200" width="${W}" height="200" style="max-width:100%;height:auto" role="img" aria-label="${title}">${g}${bars}</svg></div>`; }
-skill('m-grafics','mat','Gràfics de barres',2,6,(r,c)=>{ const [title, labels] = pick(r, [['Fruita preferida de la classe',['Poma','Pera','Plàtan','Maduixa']],['Esport preferit',['Futbol','Bàsquet','Natació','Tennis']],['Com venim a l\'escola',['A peu','Cotxe','Bici','Bus']]]);
+skill('m-grafics','mat','Gràfics de barres',1,6,(r,c)=>{ const [title, labels] = pick(r, [['Fruita preferida de la classe',['Poma','Pera','Plàtan','Maduixa']],['Esport preferit',['Futbol','Bàsquet','Natació','Tennis']],['Com venim a l\'escola',['A peu','Cotxe','Bici','Bus']]]);
   const vals = sample(r, Array.from({length: c <= 3 ? 9 : 25}, (_,i)=>i+1), 4), t = ri(r,0, c >= 4 ? 3 : 2), i = ri(r,0,3), j = (i + ri(r,1,3)) % 4, mx = vals.indexOf(Math.max(...vals));
   const base = {visual:barSVG(labels, vals, title)};
   if (t === 0) return {...base, type:'escriu', numeric:true, prompt:`Quants vots té «${labels[i]}»?`, speak:`Mira el gràfic. Quants vots té ${labels[i]}?`, answer:String(vals[i])};
@@ -837,6 +840,12 @@ const blocOf = id => BLOC_OF[id] || (SKM(id).mat === 'cat' ? 'Lectura i escriptu
 
 // PROGRAMACIÓ de l'escola: només serveix a la mestra per orientar-se
 const PROG = {
+  1:{mat:{font:'Matemàtiques Raona 1r', u:[
+      ['Comencem. Parlem de fruita!','m-comptar m-ordena m-calendari m-grafics m-problemes'],['Continuem. Mirem i pensem','m-comptar m-ordena m-suma m-series'],
+      ['Avancem. Comparem i comptem','m-suma m-descomp m-valorpos m-problemes'],['U1 Fem desenes','m-descomp m-valorpos m-dobles m-suma'],
+      ['U2 Connectem','m-suma m-series m-calendari m-rellotge'],['U3 Val el mateix?','m-suma m-resta m-monedes m-descomp'],
+      ['U4 La suma i la resta s\'ajuden','m-suma m-resta m-monedes m-problemes'],['U5 Quin nombre és més gran?','m-ordena m-valorpos m-dobles m-monedes m-grafics'],
+      ['U6 Ara sé més matemàtiques!','m-rellotge m-calendari m-valorpos m-series m-problemes']]}},
   2:{cat:{font:'Llengua catalana 2n', u:[
       ['U1 Quina gran família!','c-sil c-tonica c-genere c-plural c-comprensio'],['U2 Els colors de la tardor','c-vneutra c-temps c-compostes c-dictat'],
       ['U3 Vet aquí que una vegada…','c-ou c-plural c-families c-frase c-dictat'],['U4 Ens comuniquem!','c-bv c-sinonims c-antonims c-oracions c-dictat'],
@@ -1842,7 +1851,7 @@ function vTNew(){
     <span class="stepper"><button data-a="step" data-v="${k.id}" data-d="-1" aria-label="Menys">−</button><b class="num">${d.items[k.id]||0}</b><button data-a="step" data-v="${k.id}" data-d="1" aria-label="Més">+</button></span></div>`;
   const skBlock = mat => `<div class="stack" style="gap:6px"><h3 style="color:var(--${mat})">${mat==='cat'?'Català':'Matemàtiques'}</h3>${BLOCS[mat].map(b => { const l = sks.filter(k=>k.mat===mat && blocOf(k.id)===b); return l.length ? `<details ${l.some(k=>d.items[k.id]) ? 'open' : ''}><summary style="cursor:pointer;font-weight:700;padding:6px 0">${b} <span class="small muted">(${l.length})</span></summary>${l.map(row).join('')}</details>` : ''; }).join('')}</div>`;
   const pg = PROG[c.curs];
-  const progBlock = mat => !pg ? '' : `<div class="stack" style="gap:6px"><h3 style="color:var(--${mat})">${mat==='cat'?'Català':'Matemàtiques'} <span class="small muted">· ${esc(pg[mat].font)}</span></h3>${pg[mat].u.map(([nom, ids]) => { const l = ids.split(' ').map(SKM);
+  const progBlock = mat => !pg || !pg[mat] ? '' : `<div class="stack" style="gap:6px"><h3 style="color:var(--${mat})">${mat==='cat'?'Català':'Matemàtiques'} <span class="small muted">· ${esc(pg[mat].font)}</span></h3>${pg[mat].u.map(([nom, ids]) => { const l = ids.split(' ').map(SKM);
     return `<details ${l.some(k=>d.items[k.id]) ? 'open' : ''}><summary style="cursor:pointer;font-weight:700;padding:6px 0">${esc(nom)} <span class="small muted">· ${l.map(k=>esc(k.nom)).join(', ')}</span></summary>${l.map(row).join('')}</details>`; }).join('')}</div>`;
   const chosen = Object.entries(d.items).map(([k,n]) => `<span class="chip">${esc(SKM(k).nom)} ×${n}</span>`).join('');
   return `<div class="row"><button class="btn ghost" data-a="tv" data-v="tasques">← Tasques</button><h2>Nova tasca · ${c.nom}</h2></div>
@@ -2050,7 +2059,7 @@ function vFitxes(){
   const row = k => `<div class="skrow"><span>${esc(k.nom)}</span><span class="stepper"><button data-a="fstep" data-v="${k.id}" data-d="-1" aria-label="Un menys de ${esc(k.nom)}">−</button><b class="num">${F.items[k.id] || 0}</b><button data-a="fstep" data-v="${k.id}" data-d="1" aria-label="Un més de ${esc(k.nom)}">+</button></span></div>`;
   const det = (nom, l, extra = '') => `<details ${l.some(k => F.items[k.id]) ? 'open' : ''}><summary style="cursor:pointer;font-weight:700;padding:8px 0">${esc(nom)} <span class="small muted">${extra}</span></summary>${l.map(row).join('')}</details>`;
   const perCont = mat => `<div class="stack" style="gap:4px"><h3 style="color:var(--${mat})">${mat === 'cat' ? 'Català' : 'Matemàtiques'}</h3>${BLOCS[mat].map(b => { const l = sks.filter(k => k.mat === mat && blocOf(k.id) === b); return l.length ? det(b, l, `(${l.length})`) : ''; }).join('')}</div>`;
-  const perProg = mat => !pg ? '' : `<div class="stack" style="gap:4px"><h3 style="color:var(--${mat})">${mat === 'cat' ? 'Català' : 'Matemàtiques'}</h3>${pg[mat].u.map(([nom, ids]) => { const l = ids.split(' ').map(SKM).filter(k => k.gen); return l.length ? det(nom, l) : ''; }).join('')}</div>`;
+  const perProg = mat => !pg || !pg[mat] ? '' : `<div class="stack" style="gap:4px"><h3 style="color:var(--${mat})">${mat === 'cat' ? 'Català' : 'Matemàtiques'}</h3>${pg[mat].u.map(([nom, ids]) => { const l = ids.split(' ').map(SKM).filter(k => k.gen); return l.length ? det(nom, l) : ''; }).join('')}</div>`;
   const mode = F.mode === 'prog' && pg ? 'prog' : 'cont';
   const chosen = Object.entries(F.items).map(([k, n]) => `<span class="chip">${esc(SKM(k).nom)} ×${n}</span>`).join('');
   const sheets = total ? fExercises().map((exs, v) => sheetHTML(F.title || 'Fitxa de repàs', CURS[c] + (F.copies > 1 ? ' · model ' + 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'[v % 26] + (v >= 26 ? Math.floor(v / 26) : '') : ''), '', exs, F.sol)).join('') : '';
