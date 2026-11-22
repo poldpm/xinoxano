@@ -291,6 +291,20 @@ textarea{width:100%;min-height:170px;font-family:var(--f-num);font-size:.9rem;li
 .pmark .tog{display:flex;gap:6px}.pmark .tog button{min-width:52px;border:2px solid var(--line);background:var(--card);border-radius:12px;padding:6px 10px;font-weight:700;cursor:pointer}
 .pmark .tog button[aria-pressed="true"].si{border-color:var(--ok, #2f9e5b);background:#e3f6ea;color:#1e7a43}
 .pmark .tog button[aria-pressed="true"].no{border-color:var(--warn);background:var(--warn-bg)}
+.pgrid{display:grid;grid-template-columns:repeat(var(--c,2),minmax(0,1fr));gap:14px 22px;margin-top:6px}
+.pit{break-inside:avoid;page-break-inside:avoid}
+.pit .lt{font-weight:700;margin-right:6px}
+.pw{font-family:var(--f-read);font-size:1.45rem;letter-spacing:.03em;white-space:nowrap}
+.pgap{display:inline-block;width:2.4em;border-bottom:2px solid #222;margin:0 2px;height:1.1em;vertical-align:baseline}
+.pcirc{display:flex;flex-wrap:wrap;gap:4px 34px;margin:4px 0 0 14px;font-size:1.05rem}
+.pcirc.col{flex-direction:column;gap:3px}
+.pbankw{border:2px dashed #999;border-radius:10px;padding:6px 12px;margin:6px 0 4px;font-size:1.05rem}
+.pbankw b{margin-right:6px}
+.pit .word,.pit .bigemoji{font-size:1.5rem;margin:2px 0}
+.pit svg{max-height:120px;width:auto}
+.pline.short{max-width:150px}
+.pq{margin-bottom:2px}
+.psol .gr{margin-bottom:6px}
 .padult{border:2px dashed #999;border-radius:10px;padding:10px 14px;margin:8px 0}
 @media print{#top,.tabs,.noprint,.toast{display:none!important}.psheet{border:none;border-radius:0;padding:0;margin:0;page-break-after:always;break-after:page}.psheet:last-child{page-break-after:auto}body,#app{background:#fff!important}.slips{grid-template-columns:1fr 1fr}.slip{border-color:#888}}
 @media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
@@ -2067,23 +2081,6 @@ function famCard(s){
   </section>`;
 }
 /* ============ fitxes per imprimir ============ */
-function paperEx(ex, n, prev, adult){
-  const r = mulberry(hashStr(exKey(ex)) + n), clean = v => String(v || '').replace(/<button[\s\S]*?<\/button>/g, '');
-  let vis = '';
-  if (ex.oral) { adult.push({n, t:'Llegiu en veu alta aquest text, dues vegades:', x: ex.listen}); vis = `<p class="small">Escolta el text que et llegirà un adult.</p>`; }
-  else if (ex.visual) vis = ex.visual === prev ? `<p class="small"><i>Torna a llegir el text de l'exercici anterior.</i></p>` : clean(ex.visual);
-  let ans = '';
-  if (ex.type === 'tria') ans = `<div class="popts">${ex.options.map(o => `<span>${esc(String(o))}</span>`).join('')}</div>`;
-  else if (ex.type === 'escriu') ans = `<div class="row" style="align-items:flex-end;gap:8px"><div class="pline" style="flex:1;max-width:${ex.numeric ? 160 : 420}px"></div>${ex.unit ? `<span>${esc(ex.unit)}</span>` : ''}</div>`;
-  else if (ex.type === 'dictat') { adult.push({n, t:'Dicteu aquesta paraula:', x: ex.answer}); ans = `<div class="pline" style="max-width:420px"></div>`; }
-  else if (ex.type === 'relaciona') { const right = shuffle(r, ex.pairs.map((p, i) => ({t: p[1], i})));
-    ans = `<div class="pcols"><div>${ex.pairs.map((p, i) => `<div>${i + 1}. ${ex.bigLeft ? `<span style="font-size:1.6rem">${esc(p[0])}</span>` : esc(p[0])}</div>`).join('')}</div><div>${right.map((x, j) => `<div>${'ABCDEFGH'[j]}. ${esc(x.t)}</div>`).join('')}</div></div>
-      <p class="small" style="margin-top:6px">Escriu la lletra: ${ex.pairs.map((_, i) => `${i + 1} → ___`).join(' &nbsp; ')}</p>`; }
-  else if (ex.type === 'ordena') { let pool = shuffle(r, ex.items.slice()); if (pool.every((x, k) => x === ex.items[k])) pool = pool.reverse();
-    ans = `<div class="ppieces">${pool.map(x => `<span>${esc(x)}</span>`).join('')}</div><div class="pline"></div>${ex.items.join(' ').length > 40 ? '<div class="pline"></div>' : ''}`; }
-  else if (ex.type === 'classifica') ans = `<div class="pbank">${shuffle(r, ex.items).map(x => `<span>${hl(x.t)}</span>`).join('')}</div><table class="ptable"><tr>${ex.buckets.map(b => `<th>${esc(b)}</th>`).join('')}</tr><tr>${ex.buckets.map(() => '<td></td>').join('')}</tr></table>`;
-  return `<div class="pex"><b>${n}. ${esc(ex.prompt)}</b>${vis}${ans}</div>`;
-}
 function paperSnap(t, key){
   t.paperSnap = t.paperSnap || {};
   if (!t.paperSnap[key]) { t.paperSnap[key] = key === 'gen' ? taskExercises({...t, same:true}, null) : taskExercises(t, key); save(); }
@@ -2097,13 +2094,14 @@ function vTPaper(c){
   const exs = ver === 'gen' ? gen : ver === 'own' ? mine : null;
   if (exs && (!R.paMarks || R.paMarks.key !== t.id + sid + ver)) R.paMarks = {key: t.id + sid + ver, v: exs.map((_, i) => p && p.paper && p.log[i] ? !!p.log[i].ok : true)};
   const okN = exs ? R.paMarks.v.filter(Boolean).length : 0;
+  const PL = exs ? paperBody(exs).lab : {};
   return `<div class="stack"><div class="row"><button class="btn ghost" data-a="tv" data-v="tasques">← Tasques</button><h2 style="flex:1">Resultats en paper: ${esc(t.title)}</h2></div>
     <div class="card row" style="gap:16px;align-items:flex-end"><label class="f" for="paS">Alumne<select id="paS" data-a="pas">${ids.map(id => { const q = progOf(t.id, id); return `<option value="${id}" ${id === sid ? 'selected' : ''}>${esc(stu(id).nom)}${stu(id).paper ? ' (paper)' : ''}${q ? (q.paper ? ' · registrada en paper' : ' · feta a la pantalla') : ''}</option>`; }).join('')}</select></label>
       ${mine && gen ? `<label class="f" for="paV">Quina fitxa ha fet?<select id="paV" data-a="pav"><option value="own" ${ver === 'own' ? 'selected' : ''}>La seva, amb el nom</option><option value="gen" ${ver === 'gen' ? 'selected' : ''}>La còpia general</option></select></label>` : ''}</div>
     ${!exs ? `<div class="card stack"><p>Encara no s'ha imprès cap fitxa d'aquesta tasca per a ${esc(s.nom)}.</p><div class="row"><button class="btn" data-a="printtask" data-v="${t.id}">Imprimeix-la</button></div></div>`
     : p && !p.paper ? `<div class="card"><p>${esc(s.nom)} ja ha fet aquesta tasca a la pantalla (${p.score}/${p.total}). No cal registrar-la en paper.</p></div>`
     : `<section class="card stack" style="gap:0"><p class="small muted" style="margin-bottom:6px">Corregiu la fitxa amb el full de solucions i marqueu els exercicis que ha fet malament. Per defecte, tots estan bé.</p>
-      ${exs.map((ex, i) => `<div class="pmark"><b class="num">${i + 1}</b><span>${esc(shortQ(ex))}<br><span class="small muted">Resposta: ${esc(answerText(ex))}</span></span>
+      ${exs.map((ex, i) => `<div class="pmark"><b class="num">${PL[i]}</b><span>${esc(shortQ(ex))}<br><span class="small muted">Resposta: ${esc(answerText(ex))}</span></span>
         <span class="tog" role="group" aria-label="Exercici ${i + 1}"><button class="si" data-a="pamark" data-v="${i}" data-k="1" aria-pressed="${R.paMarks.v[i]}">Bé</button><button class="no" data-a="pamark" data-v="${i}" data-k="0" aria-pressed="${!R.paMarks.v[i]}">Malament</button></span></div>`).join('')}
       <div class="row" style="margin-top:14px"><b style="flex:1">Encerts: ${okN} de ${exs.length}</b>${p && p.paper ? `<button class="btn ghost" data-a="paundo">Esborra el registre</button>` : ''}<button class="btn" data-a="pasave">${p && p.paper ? 'Desa els canvis' : 'Desa: feta en paper'}</button></div></section>`}
     <p class="note">Els resultats en paper compten com els de la pantalla: surten al tauler, al mapa d'errors, a la fitxa de l'alumne i als informes. ${s.paper ? '' : `Si ${esc(s.nom.split(' ')[0])} treballa sempre en paper, marqueu-ho a la seva fitxa i no sortirà als avisos de «no entra».`}</p></div>`;
@@ -2115,7 +2113,11 @@ const fSave = () => { try { localStorage.setItem(FKEY, JSON.stringify(F)); } cat
 function fExercises(){
   const out = [], seen = new Set();
   for (let v = 0; v < F.copies; v++) { const r = mulberry(F.seed * 7919 + v * 104729), exs = [];
-    for (const [id, n] of Object.entries(F.items)) for (let k = 0; k < n; k++) { const ex = genFresh(id, F.curs, r, seen); seen.add(exKey(ex)); exs.push(ex); }
+    for (const [id, n] of Object.entries(F.items)) { let first = null;
+      for (let k = 0; k < n; k++) { let ex = genFresh(id, F.curs, r, seen);
+        // lectura: en paper, totes les preguntes del mateix text
+        if (first && (id === 'c-comprensio' || id === 'c-oral')) for (let t = 0; t < 400 && (ex.visual !== first.visual || ex.listen !== first.listen || seen.has(exKey(ex))); t++) ex = genEx(id, F.curs, r);
+        if (!first) first = ex; seen.add(exKey(ex)); exs.push(ex); } }
     out.push(exs); }
   return out;
 }
@@ -2144,14 +2146,86 @@ function vFitxes(){
     ${total ? `<section class="stack"><h2 class="noprint">Vista prèvia</h2>${sheets}</section>` : `<p class="note noprint">Encara no has triat cap contingut.</p>`}
     <footer class="noprint small muted" style="margin-top:12px;max-width:70ch">Eina de Vedruna Escorial Vic per al professorat. No demana cap dada ni compte: el que tries només es guarda en aquest navegador. Els exercicis s'han preparat amb ajuda d'IA i s'han revisat; si en trobeu algun d'erroni, digueu-ho a l'equip de comunicació de l'escola.</footer></div>`;
 }
+/* ============ fitxes en paper: exercicis agrupats per fer a mà ============ */
+const LT = 'abcdefghijklmnopqrstuvwxyz';
+const isText = ex => /class="readtext"/.test(ex.visual || '') && (ex.visual || '').length > 300;
+const pKey = ex => ex.oral ? 'oral|' + ex.listen : isText(ex) && ex.skill !== 'm-problemes' ? 'txt|' + ex.visual : ex.skill + '|' + ex.type;
+function paperGroups(exs){ const gs = []; exs.forEach((ex, i) => { const k = pKey(ex), g = gs[gs.length - 1]; if (g && g.k === k && g.i.length < 12) g.i.push(i); else gs.push({k, i:[i]}); }); return gs; }
+const cleanVis = v => String(v || '').replace(/<button[\s\S]*?<\/button>/g, '');
+const gapParts = v => { const m = String(v || '').replace(/<span class="gap">[^<]*<\/span>/, '\u0001').replace(/<[^>]+>/g, '').split('\u0001'); return m.length === 2 ? m : null; };
+const ordList = a => a.length < 2 ? a.join('') : a.slice(0, -1).join(', ') + ' o ' + a[a.length - 1];
+function paperBody(exs){
+  const adult = [], sols = [], gs = paperGroups(exs), lab = {};
+  const html = gs.map((g, gi) => {
+    const n = gi + 1, items = g.i.map(i => exs[i]), ex0 = items[0], many = items.length > 1, L = k => many ? `<span class="lt">${LT[k]})</span>` : '';
+    g.i.forEach((i, k) => lab[i] = n + (many ? LT[k] : ''));
+    sols.push(`<div class="gr"><b>${n}.</b> ${items.map((ex, k) => (many ? LT[k] + ') ' : '') + esc(answerText(ex) + (ex.unit ? ' ' + ex.unit : ''))).join(' &nbsp;·&nbsp; ')}</div>`);
+    const samePrompt = items.every(x => x.prompt === ex0.prompt);
+    let head = '', body = '';
+    // lectura (escrita o oral): el text una sola vegada i les preguntes a sota
+    if (g.k.startsWith('txt|') || g.k.startsWith('oral|')) {
+      if (ex0.oral) adult.push({n, t:'Llegiu en veu alta aquest text, dues vegades:', x: ex0.listen});
+      head = ex0.oral ? 'Escolta el text que et llegirà un adult i respon.' : 'Llegeix el text i respon.';
+      body = (ex0.oral ? '' : cleanVis(ex0.visual)) + items.map((ex, k) => `<div class="pit" style="margin-top:10px"><div class="pq">${L(k)}${esc(ex.prompt)}</div>${ex.type === 'tria' ? `<div class="pcirc ${ex.options.some(o => String(o).length > 16) ? 'col' : ''}">${ex.options.map(o => `<span>${esc(String(o))}</span>`).join('')}</div>` : '<div class="pline"></div>'}</div>`).join('');
+      head += items.every(x => x.type === 'tria') ? ' Encercla la resposta correcta.' : items.some(x => x.type === 'tria') ? ' Encercla la resposta correcta o escriu-la.' : '';
+    }
+    // paraules amb una lletra que falta
+    else if (ex0.type === 'tria' && items.every(x => gapParts(x.visual))) {
+      const opts = [...new Set(items.flatMap(x => x.options.map(String)))];
+      const pens = items.every(x => /«[^»]+»/.test(x.prompt));
+      head = `Completa les paraules amb ${ordList(opts)}.`;
+      body = `<div class="pgrid" style="--c:${pens ? 2 : 3}">${items.map((ex, k) => { const [a, b] = gapParts(ex.visual), h = pens ? (ex.prompt.match(/«([^»]+)»/) || [])[1] : '';
+        return `<div class="pit">${L(k)}<span class="pw">${esc(a)}<span class="pgap"></span>${esc(b)}</span>${h ? ` <span class="small muted">(pensa en «${esc(h)}»)</span>` : ''}</div>`; }).join('')}</div>`;
+    }
+    // triar: si totes comparteixen les opcions i són curtes, caixa de paraules i espai per escriure; si no, encerclar
+    else if (ex0.type === 'tria') {
+      const sameOpts = items.every(x => [...x.options].sort().join('|') === [...ex0.options].sort().join('|')) && ex0.options.every(o => String(o).length <= 24);
+      const vis = ex => ex.visual ? `<div>${cleanVis(ex.visual)}</div>` : '';
+      if (sameOpts && many) {
+        head = samePrompt ? `${esc(ex0.prompt)} Escriu la resposta.` : 'Respon. Escriu la resposta.';
+        body = `<div class="pbankw"><b>Tria entre:</b>${esc(ordList([...ex0.options].map(String)))}</div><div class="pgrid" style="--c:${ex0.visual ? 2 : 1}">${items.map((ex, k) => `<div class="pit">${samePrompt ? '' : `<div class="pq">${L(k)}${esc(ex.prompt)}</div>`}${samePrompt ? L(k) : ''}${vis(ex)}<div class="pline"></div></div>`).join('')}</div>`;
+      } else {
+        head = samePrompt ? `${esc(ex0.prompt)} Encercla la resposta correcta.` : 'Encercla la resposta correcta.';
+        body = items.map((ex, k) => `<div class="pit" style="margin-top:8px">${samePrompt ? '' : `<div class="pq">${L(k)}${esc(ex.prompt)}</div>`}${samePrompt && many ? L(k) : ''}${vis(ex)}<div class="pcirc ${ex.options.some(o => String(o).length > 16) ? 'col' : ''}">${ex.options.map(o => `<span>${esc(String(o))}</span>`).join('')}</div></div>`).join('');
+      }
+    }
+    else if (ex0.type === 'escriu') {
+      const prob = items.some(x => /readtext/.test(x.visual || '') && (x.visual || '').replace(/<[^>]+>/g, '').length > 60), small = !prob && items.every(x => !x.visual || x.visual.length < 2500);
+      head = samePrompt ? esc(ex0.prompt === 'Quant fa?' ? 'Calcula.' : ex0.prompt) : 'Respon.';
+      const line = ex => `<div class="row" style="align-items:flex-end;gap:8px;flex-wrap:nowrap"><div class="pline ${ex.numeric ? 'short' : ''}" style="flex:1"></div>${ex.unit ? `<span>${esc(ex.unit)}</span>` : ''}</div>`;
+      body = `<div class="pgrid" style="--c:${prob ? 1 : small && ex0.visual ? 3 : 2}">${items.map((ex, k) => `<div class="pit">${samePrompt ? L(k) : `<div class="pq">${L(k)}${esc(ex.prompt)}</div>`}${ex.visual ? `<div>${cleanVis(ex.visual)}</div>` : ''}${line(ex)}</div>`).join('')}</div>`;
+    }
+    else if (ex0.type === 'dictat') {
+      adult.push({n, t:'Dicteu aquestes paraules, una a una:', x: items.map((ex, k) => (many ? LT[k] + ') ' : '') + ex.answer).join('     ')});
+      head = many ? 'Escriu les paraules que et dictarà un adult.' : 'Escriu la paraula que et dictarà un adult.';
+      body = `<div class="pgrid" style="--c:2">${items.map((ex, k) => `<div class="pit row" style="align-items:flex-end;gap:6px;flex-wrap:nowrap">${L(k)}<div class="pline" style="flex:1"></div></div>`).join('')}</div>`;
+    }
+    else if (ex0.type === 'ordena') {
+      head = 'Ordena les paraules i escriu la frase.';
+      body = items.map((ex, k) => { const r = mulberry(hashStr(exKey(ex)) + k); let pool = shuffle(r, ex.items.slice()); if (pool.every((x, j) => x === ex.items[j])) pool = pool.reverse();
+        return `<div class="pit" style="margin-top:8px">${L(k)}<div class="ppieces" style="display:inline-flex">${pool.map(x => `<span>${esc(x)}</span>`).join('')}</div><div class="pline"></div></div>`; }).join('');
+    }
+    else if (ex0.type === 'relaciona') {
+      head = esc(ex0.prompt) + ' Escriu la lletra al costat de cada número.';
+      body = items.map((ex, k) => { const r = mulberry(hashStr(exKey(ex)) + k), right = shuffle(r, ex.pairs.map((p, i) => ({t: p[1], i})));
+        return `<div class="pit" style="margin-top:8px">${L(k)}<div class="pcols"><div>${ex.pairs.map((p, i) => `<div style="margin:4px 0">${i + 1}. ${ex.bigLeft ? `<span style="font-size:1.5rem">${esc(p[0])}</span>` : esc(p[0])} &nbsp;<span class="pgap"></span></div>`).join('')}</div><div>${right.map((x, j) => `<div style="margin:4px 0">${'ABCDEFGH'[j]}. ${esc(x.t)}</div>`).join('')}</div></div></div>`; }).join('');
+    }
+    else if (ex0.type === 'classifica') {
+      head = esc(ex0.prompt) + ' Escriu cada paraula a la seva columna.';
+      body = items.map((ex, k) => { const r = mulberry(hashStr(exKey(ex)) + k);
+        return `<div class="pit" style="margin-top:8px">${L(k)}<div class="pbankw">${shuffle(r, ex.items).map(x => hl(x.t)).join(' &nbsp;·&nbsp; ')}</div><table class="ptable"><tr>${ex.buckets.map(b => `<th>${esc(b)}</th>`).join('')}</tr><tr>${ex.buckets.map(() => '<td></td>').join('')}</tr></table></div>`; }).join('');
+    }
+    return `<section class="pex"><b>${n}. ${head}</b>${body}</section>`;
+  }).join('');
+  return {html, adult, sols, lab};
+}
 function sheetHTML(title, sub0, nom, exs, sol){
-  const adult = []; let prev = null;
-  const body = exs.map((ex, i) => { const h = paperEx(ex, i + 1, prev, adult); prev = ex.visual; return h; }).join('');
+  const {html, adult, sols} = paperBody(exs);
   const head = sub => `<div class="phead"><img src="assets/logo-h.png" alt="Vedruna Escorial Vic"><div style="flex:1"><h2>${esc(title)}</h2><span class="small muted">${esc(sub0)}${sub ? ' · ' + sub : ''}</span></div><b style="color:var(--brand2)">Xino-Xano</b></div>`;
-  const alumne = `<article class="psheet">${head('')}<div class="pname"><span>Nom: ${nom ? `<b>${esc(nom)}</b>` : ''}</span><span style="flex:.5">Data:</span></div>${body}</article>`;
+  const alumne = `<article class="psheet">${head('')}<div class="pname"><span>Nom: ${nom ? `<b>${esc(nom)}</b>` : ''}</span><span style="flex:.5">Data:</span></div>${html}</article>`;
   const pera = !sol && !adult.length ? '' : `<article class="psheet psol">${head("Full per a l'adult")}${nom ? `<p><b>${esc(nom)}</b></p>` : ''}
-    ${adult.length ? `<h3>Abans de començar</h3>${adult.map(a => `<div class="padult"><b>Exercici ${a.n}.</b> ${a.t}<div style="margin-top:4px;font-size:1.1rem">${esc(a.x).replace(/\n/g, '<br>')}</div></div>`).join('')}` : ''}
-    ${sol ? `<h3 style="margin-top:12px">Solucions</h3><ol>${exs.map(ex => `<li>${esc(answerText(ex))}</li>`).join('')}</ol>` : ''}</article>`;
+    ${adult.length ? `<h3>Abans de començar</h3>${adult.map(a => `<div class="padult"><b>Exercici ${a.n}.</b> ${a.t}<div style="margin-top:4px;font-size:1.1rem;white-space:pre-wrap">${esc(a.x)}</div></div>`).join('')}` : ''}
+    ${sol ? `<h3 style="margin-top:12px">Solucions</h3>${sols.join('')}` : ''}</article>`;
   return alumne + pera;
 }
 function vTPrint(c){
