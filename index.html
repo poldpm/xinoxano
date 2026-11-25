@@ -288,7 +288,9 @@ textarea{width:100%;min-height:170px;font-family:var(--f-num);font-size:.9rem;li
 .pcg-intro{margin:4px 0 14px}
 .pcg-credit{font-size:.8rem;color:#666;margin-top:10px}
 .pex>b{break-after:avoid;page-break-after:avoid}
-.pex .readtext,.ptable,.pbankw{break-inside:avoid;page-break-inside:avoid}
+.ptable,.pbankw{break-inside:avoid;page-break-inside:avoid}
+.pex .readtext{orphans:3;widows:3}
+.pkeep:has(> b:only-child){break-after:avoid;page-break-after:avoid}
 .pex > b,.pkeep > b{display:block;font-size:1.08rem;margin-bottom:6px}
 .pex .readtext{font-size:1rem;margin:6px 0;background:#fafafa}
 .pex .word,.pex .bigemoji{font-size:1.8rem}
@@ -332,6 +334,8 @@ textarea{width:100%;min-height:170px;font-family:var(--f-num);font-size:.9rem;li
 .pit svg{max-height:120px;width:auto}
 .pit svg.chart{max-height:250px;width:auto;max-width:100%}
 .pit svg.shape{max-height:210px;width:auto;max-width:100%}
+.pit svg.shape.grid{max-height:none}
+.pit .row:has(> svg){justify-content:flex-start!important;flex-wrap:nowrap}
 .pit svg.chart{max-height:330px}
 .pline.short{max-width:230px}
 .pit .series span{background:#fff;border:1.5px solid #bbb;font-size:1.3rem;min-width:44px;padding:6px}
@@ -348,8 +352,8 @@ textarea{width:100%;min-height:170px;font-family:var(--f-num);font-size:.9rem;li
 .pq{margin-bottom:2px}
 .psol .gr{margin-bottom:6px}
 .padult{border:2px dashed #999;border-radius:10px;padding:10px 14px;margin:8px 0}
-@page{size:A4;margin:12mm}
-@media print{.pex.pkeep{break-inside:avoid!important;page-break-inside:avoid!important}main,body,html{padding-bottom:0!important;margin-bottom:0!important}.psheet:last-of-type{page-break-after:auto!important;break-after:auto!important}header.top,#top,.tabs,.noprint,.toast,body::before{display:none!important}.pex{break-inside:auto!important;page-break-inside:auto!important}.pex>b{break-after:avoid;page-break-after:avoid}.psheet{border:none;border-radius:0;padding:0;margin:0;page-break-after:always;break-after:page}.psheet:last-child{page-break-after:auto}body,#app{background:#fff!important}.slips{grid-template-columns:1fr 1fr}.slip{border-color:#888}}
+@page{size:A4;margin:0}
+@media print{.fitxes,.fitxes > section:not(.noprint){display:block!important}.pex.pkeep{break-inside:avoid!important;page-break-inside:avoid!important}main,body,html{padding-bottom:0!important;margin-bottom:0!important}.psheet:last-of-type{page-break-after:auto!important;break-after:auto!important}header.top,#top,.tabs,.noprint,.toast,body::before{display:none!important}.pex{break-inside:auto!important;page-break-inside:auto!important}.pex>b{break-after:avoid;page-break-after:avoid}.psheet{border:none;border-radius:0;padding:12mm 13mm;margin:0;page-break-after:always;break-after:page;box-decoration-break:clone;-webkit-box-decoration-break:clone}.psheet:last-child{page-break-after:auto}body,#app{background:#fff!important}.slips{grid-template-columns:1fr 1fr}.slip{border-color:#888}}
 @media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
 @keyframes pop{0%{transform:scale(.9)}60%{transform:scale(1.06)}100%{transform:scale(1)}}
 .pop{animation:pop .35s ease-out}
@@ -501,7 +505,7 @@ function clockSVG(h, m){
   const ma = m * 6 * Math.PI / 180, ha = ((h % 12) * 30 + m * 0.5) * Math.PI / 180;
   return `<svg class="clock" viewBox="0 0 200 200" role="img" aria-label="Rellotge"><circle cx="100" cy="100" r="92" fill="var(--card)" stroke="var(--ink)" stroke-width="6"/>${nums}
   <line x1="100" y1="100" x2="${100 + 38 * Math.sin(ha)}" y2="${100 - 38 * Math.cos(ha)}" stroke="var(--ink)" stroke-width="9" stroke-linecap="round"/>
-  <line x1="100" y1="100" x2="${100 + 56 * Math.sin(ma)}" y2="${100 - 56 * Math.cos(ma)}" stroke="var(--brand)" stroke-width="5" stroke-linecap="round"/><circle cx="100" cy="100" r="7" fill="var(--ink)"/></svg>`;
+  <line x1="100" y1="100" x2="${100 + 52 * Math.sin(ma)}" y2="${100 - 52 * Math.cos(ma)}" stroke="var(--brand)" stroke-width="5" stroke-linecap="round"/><circle cx="100" cy="100" r="7" fill="var(--ink)"/></svg>`;
 }
 function moneySVG(list){
   return '<div class="row" style="justify-content:center">' + list.map(v => {
@@ -842,7 +846,7 @@ skill('m-temps','mat','Mesures de temps',3,6,(r,c)=>{ const Q = [['Quants minuts
   if (c >= 4) Q.push([`Quantes hores són ${m} dies?`, m*24], [`Quants minuts són ${h} hores i mitja?`, h*60+30]); if (c >= 4) Q.push([`Quants segons són ${m} minuts?`, m*60]); if (c >= 5) { const mm = pick(r,[15,20,30,45]); Q.push([`Quants minuts són ${h} h i ${mm} min?`, h*60+mm]); }
   const [q, a] = pick(r, Q); return {type:'escriu', numeric:true, prompt:q, speak:q, answer:String(a)}; });
 skill('m-digital','mat','Rellotge digital',3,4,(r)=>{ const h = ri(r,1,12), m = ri(r,0,11)*5, f = (x,y) => `${pad2(x)}:${pad2(y)}`;
-  return {prompt:'Quina hora marca el rellotge? Tria com s\'escriu en un rellotge digital.', speak:'Mira el rellotge. Com ho escriuries en un rellotge digital?', visual:clockSVG(h,m), ...tria(r,f(h,m),[f(h % 12 + 1,m), f(h,(m+15)%60), f(m/5 || 12, h*5 % 60)])}; });
+  return {prompt:'Quina hora marca el rellotge? Tria com s\'escriu en un rellotge digital.', speak:'Mira el rellotge. Com ho escriuries en un rellotge digital?', visual:clockSVG(h,m), ...tria(r,f(h,m),[...new Set([f(h % 12 + 1,m), f(h,(m+15)%60), f(m/5 || 12, h*5 % 60), f(h,(m+30)%60), f((h + 10) % 12 + 1,m), f(h,(m+45)%60)])].filter(x => x !== f(h,m)).slice(0,3))}; });
 const MESOS = ['gener','febrer','març','abril','maig','juny','juliol','agost','setembre','octubre','novembre','desembre'], DIES = ['dilluns','dimarts','dimecres','dijous','divendres','dissabte','diumenge'];
 skill('m-calendari','mat','El calendari',1,3,(r,c)=>{ const t = c===1 ? ri(r,1,2) : ri(r,0,3), i = ri(r,0,10), j = ri(r,1,6);
   const [q, a] = [[`Quin mes ve després del mes de ${MESOS[i]}?`, MESOS[i+1]], [`Quin dia de la setmana va abans de ${DIES[j]}?`, DIES[j-1]], [`Quin dia de la setmana va després de ${DIES[j-1]}?`, DIES[j]], [`Quin mes va abans del mes de ${MESOS[i+1]}?`, MESOS[i]]][t];
@@ -852,7 +856,7 @@ function gridRect(w, h){ const s = 30, W = (w+2)*s, H = (h+2)*s; let g = `<rect 
   // la quadrícula es dibuixa per sobre del color: els quadrets de dins la figura es poden comptar
   for (let x = 0; x <= w+2; x++) g += `<line x1="${x*s}" y1="0" x2="${x*s}" y2="${H}" stroke="#a89ca2" stroke-width="1.2"/>`;
   for (let y = 0; y <= h+2; y++) g += `<line x1="0" y1="${y*s}" x2="${W}" y2="${y*s}" stroke="#a89ca2" stroke-width="1.2"/>`;
-  return `<svg class="shape" viewBox="0 0 ${W} ${H}" width="${W}" height="${H}" style="max-width:100%;height:auto" role="img" aria-label="Figura en una quadrícula">${g}<rect x="${s}" y="${s}" width="${w*s}" height="${h*s}" fill="none" stroke="var(--brand2)" stroke-width="3.5"/><rect x="0.5" y="0.5" width="${W-1}" height="${H-1}" fill="none" stroke="#a89ca2" stroke-width="1.2"/></svg>`; }
+  return `<svg class="shape grid" viewBox="0 0 ${W} ${H}" width="${W}" height="${H}" style="width:${Math.round(W * .78)}px;max-width:100%;height:auto" role="img" aria-label="Figura en una quadrícula">${g}<rect x="${s}" y="${s}" width="${w*s}" height="${h*s}" fill="none" stroke="var(--brand2)" stroke-width="3.5"/><rect x="0.5" y="0.5" width="${W-1}" height="${H-1}" fill="none" stroke="#a89ca2" stroke-width="1.2"/></svg>`; }
 /* figures amb mides: el dibuix és proporcional a les mides */
 function labeledShape(kind, w, h){ const T = (x,y,t,a = 'middle') => `<text x="${x}" y="${y}" text-anchor="${a}" font-size="19" font-weight="700" fill="#1b1b1b" font-family="Fira Sans, sans-serif">${t}</text>`;
   const k = Math.min(220 / w, 140 / h), pw = w * k, ph = h * k;
@@ -2283,9 +2287,9 @@ const F = (() => { try { const v = JSON.parse(localStorage.getItem(FKEY)); if (v
 const fSave = () => { try { localStorage.setItem(FKEY, JSON.stringify(F)); } catch(e) {} };
 function fExercises(){
   const out = [], seen = new Set();
-  for (let v = 0; v < F.copies; v++) { const r = mulberry(F.seed * 7919 + v * 104729), exs = [], own = new Set();
+  for (let v = 0; v < F.copies; v++) { const r = mulberry(F.seed * 7919 + v * 104729), exs = [], own = new Set(), figs = new Set();
     for (const [id, n] of Object.entries(F.items)) { let first = null;
-      const words = new Set(), start = exs.length;
+      const words = new Set(), start = exs.length; GP.like = null; GP.figs = figs;
       for (let k = 0; k < Math.min(n, fCap(id, F.curs)); k++) { if (k % 12 === 0) words.clear(); let ex = genPaper(id, F.curs, r, own, seen, words);
         // lectura: en paper, totes les preguntes del mateix text
         if (first && (id === 'c-comprensio' || id === 'c-oral')) {
@@ -2294,9 +2298,9 @@ function fExercises(){
           // si el text ja no té més preguntes, se'n comença un altre
           if (!same(ex)) { ex = genPaper(id, F.curs, r, own, seen); first = ex; }
         }
-        if (!first) first = ex; seen.add(paperKey(ex)); own.add(paperKey(ex)); exWords(ex).forEach(w => words.add(w)); exs.push(ex); }
+        if (!first) first = ex; if (!GP.like || GP.like.type !== ex.type) GP.like = ex; if (shapeK(ex)) figs.add(shapeK(ex)); seen.add(paperKey(ex)); own.add(paperKey(ex)); exWords(ex).forEach(w => words.add(w)); exs.push(ex); }
       // els exercicis del mateix tipus, junts (un sol enunciat)
-      const blk = exs.splice(start), ord = [...new Set(blk.map(pKey))]; exs.push(...ord.flatMap(k => blk.filter(e => pKey(e) === k))); }
+      const blk = exs.splice(start), ord = [...new Set(blk.map(pKey))]; exs.push(...ord.flatMap(k => blk.filter(e => pKey(e) === k))); GP.like = null; GP.figs = null; }
     // ortografia: la paraula que s'ha d'escriure no pot sortir ben escrita en un altre exercici de la mateixa fitxa
     const spellW = e => { if (e.type === 'dictat') return String(e.answer); const g = e.type === 'tria' && gapParts(e.visual); return g ? g[0] + e.options[e.answer] + g[1] : ''; };
     const txtOf = e => [e.prompt, String(e.visual || '').replace(/<[^>]+>/g, ' '), ...(e.options || []).map(String), ...(e.items || []).map(x => typeof x === 'object' ? x.t : x), ...(e.pairs || []).flat()].join(' ').toLowerCase();
@@ -2323,7 +2327,7 @@ function cangSheet(title, sub0, items, sol){
   const src = p => `Cangur ${p.y}${p.d ? ' (' + p.d + ')' : ''}, problema ${p.n}`;
   const alumne = `<article class="psheet">${head('')}<div class="pname"><span>Nom:</span><span style="flex:.5">Data:</span></div>
     <p class="pcg-intro"><b>Problemes de les proves Cangur.</b> Llegeix cada problema amb calma i encercla la lletra de la resposta correcta. Només n'hi ha una de bona.</p>
-    ${items.map((p, i) => `<section class="pcg"><b class="pcg-n">${i + 1}.</b><img src="assets/cangur/${p.f}" width="${p.w}" height="${p.h}" alt="Problema ${i + 1} (${src(p)})" style="aspect-ratio:${p.w}/${p.h};width:min(100%, ${(p.w / 150 * (p.k || 1)).toFixed(2)}in)"></section>`).join('')}
+    ${items.map((p, i) => `<section class="pcg"><b class="pcg-n">${i + 1}.</b><img src="assets/cangur/${p.f}" width="${p.w}" height="${p.h}" alt="Problema ${i + 1} (${src(p)})" style="aspect-ratio:${p.w}/${p.h};width:min(100%, ${p.wi}in)"></section>`).join('')}
     <p class="pcg-credit">Problemes de les proves Cangur de la Societat Catalana de Matemàtiques (IEC), cangur.org.</p></article>`;
   const pera = !sol ? '' : `<article class="psheet psol">${head("Full per a l'adult")}<h3>Solucions</h3>
     ${items.map((p, i) => `<div class="gr"><b>${i + 1}.</b> ${p.r.split('/').join(' o ')} <span class="small muted">· ${src(p)}, ${CURS[F.curs]}${p.r.includes('/') ? ' (l\'organització dona per bones les dues respostes)' : ''}</span></div>`).join('')}
@@ -2361,13 +2365,15 @@ function vFitxes(){
 /* ============ fitxes en paper: exercicis agrupats per fer a mà ============ */
 const LT = 'abcdefghijklmnopqrstuvwxyz';
 const isText = ex => /class="readtext"/.test(ex.visual || '') && (ex.skill === 'c-comprensio' || (ex.visual || '').length > 300);
-const pKey = ex => ex.oral ? 'oral|' + ex.listen : isText(ex) && ex.skill !== 'm-problemes' ? 'txt|' + ex.visual : ex.skill + '|' + ex.type;
+const pKey = ex => ex.oral ? 'oral|' + ex.listen : isText(ex) && ex.skill !== 'm-problemes' ? 'txt|' + ex.visual : ex.skill + '|' + (ex.type === 'tria' || ex.type === 'escriu' ? (MIXSK.has(ex.skill) ? 'te' : ex.type) : ex.type);
+const MIXC = {}; const MIXSK = {has: id => { if (!(id in MIXC)) { const t = new Set(), sk = SKM(id); for (let c = sk.min; c <= sk.max; c++) { const r = mulberry(77 + c); for (let k = 0; k < 40; k++) t.add(genEx(id, c, r).type); } MIXC[id] = t.has('tria') && t.has('escriu'); } return MIXC[id]; }};
 function paperGroups(exs){ const gs = []; exs.forEach((ex, i) => { const k = pKey(ex), g = gs[gs.length - 1]; if (g && g.k === k && g.i.length < 12) g.i.push(i); else gs.push({k, i:[i]}); }); return gs; }
 const cleanVis = v => String(v || '').replace(/<button[\s\S]*?<\/button>/g, '');
 const gapParts = v => { const m = String(v || '').replace(/<span class="gap">[^<]*<\/span>/, '\u0001').replace(/<[^>]+>/g, '').split('\u0001'); return m.length === 2 ? m : null; };
 const ordList = a => a.length < 2 ? a.join('') : a.slice(0, -1).join(', ') + ' o ' + a[a.length - 1];
 const dot = t => { t = String(t || '').trim(); return /[.?!:]$/.test(t) ? t : t + '.'; };
 const isNum = v => /^[\d.,\s€]+$/.test(String(v).replace(/\*/g, ''));
+const LOWSK = new Set(['c-oracions','m-triangles','m-angles','m-poligons','m-cossos','m-figures','c-pronoms','c-categories','c-generes']);
 const relRight = (ex, k) => { const r = mulberry(hashStr(exKey(ex)) + k); let o; for (let t = 0; t < 30; t++) { o = shuffle(r, ex.pairs.map((p, i) => ({t: p[1], i}))); if (o.filter((x, j) => x.i === j).length <= 1) break; } return o; };
 const longCl = ex => ex.items.some(x => x.t.replace(/\*/g, '').length > 22);
 // en paper, que la lletra bona no sigui sempre la mateixa dins d'un grup
@@ -2379,7 +2385,14 @@ function needWork(ex){ if (/class="colop/.test(ex.visual || '')) return false; i
           if (/^10+$/.test(m[3]) || /^10+$/.test(m[1])) return false; if (/[×x]/.test(m[2])) return a >= 100 || b >= 100 || (a >= 10 && b >= 10) || /,/.test(m[1] + m[3]); if (/[÷:]/.test(m[2])) return a >= 100 || /,/.test(m[1] + m[3]); return a >= 1000 || b >= 1000 || /,/.test(m[1] + m[3]); }
         const d = t.match(/doble de (\d+)|meitat de (\d+)|triple de (\d+)/); if (d) return +(d[1] || d[2] || d[3]) >= 100;
         return ex.skill === 'm-problemes' && F.curs >= 3; }
+// en paper, els nombres de 4 xifres o més amb el punt dels milers (com a la resta de la fitxa), excepte els anys
+const thou = t => String(t).replace(/(\d+)/g, (d, _x, off, str) => { if (d.length < 4) return d; const pre = str.slice(Math.max(0, off - 6), off);
+  if (/[.,:\/]$/.test(pre) || /\d[.,]$/.test(pre) || /any\s*$/i.test(pre) || /^[.,]\d{3}/.test(str.slice(off + d.length))) return d; return d.replace(/\B(?=(\d{3})+(?!\d))/g, '.'); });
+const thouHTML = h => /<svg|class="colop/.test(h) ? h : String(h).replace(/>([^<]+)</g, (m, t) => '>' + thou(t) + '<');
+function fmtPaperEx(ex){ const sk = SKM(ex.skill); if (!sk || sk.mat !== 'mat' || ex.skill === 'm-calendari') return ex;
+  const o = {...ex, prompt: thou(ex.prompt)}; if (ex.visual) o.visual = thouHTML('<i>' + ex.visual + '</i>').slice(3, -4); if (ex.options) o.options = ex.options.map(x => thou(x)); return o; }
 function paperBody(exs){
+  exs = exs.map(fmtPaperEx);
   const adult = [], sols = [], gs = paperGroups(exs), lab = {};
   const html = gs.map((g, gi) => {
     const n = gi + 1, items = g.i.map(i => exs[i]), ex0 = items[0], many = items.length > 1, L = k => many ? `<span class="lt">${LT[k]})</span>` : '';
@@ -2398,6 +2411,15 @@ function paperBody(exs){
       body = (ex0.oral ? '' : cleanVis(ex0.visual)) + items.map((ex, k) => `<div class="pit" style="margin-top:10px"><div class="pq">${L(k)}${esc(ex.prompt)}</div>${ex.type === 'tria' ? `<div class="pcirc ${ex.options.some(o => String(o).length > 16) ? 'col' : ''}">${pOpts(ex, k, rot).map((o, j) => `<span><span class="ol">${'ABCDEF'[j]}.</span>${esc(o)}</span>`).join('')}</div>` : '<div class="pline"></div>'}</div>`).join('');
       head += items.every(x => x.type === 'tria') ? ' Encercla la lletra de la resposta correcta.' : items.some(x => x.type === 'tria') ? ' Encercla la lletra de la resposta correcta o escriu la resposta.' : '';
     }
+    // preguntes del mateix tipus d'exercici que barregen encerclar i escriure: un sol enunciat
+    else if (items.some(x => x.type === 'tria') && items.some(x => x.type === 'escriu')) {
+      head = 'Respon cada pregunta. Quan hi hagi opcions, encercla la lletra de la resposta correcta.';
+      const pv = ex => cleanVis(ex.visual).replace(/=\s*\?/, '= <span class="pgap wide"></span>'), inl = ex => /=\s*\?/.test(ex.visual || '');
+      const one = items.some(x => /class="(chart|readtext)/.test(x.visual || '') || needWork(x) || (String(x.visual || '').match(/<svg/g) || []).length >= 4);
+      body = `<div class="pgrid" style="--c:${one ? 1 : 2}">${items.map((ex, k) => `<div class="pit"><div class="pq">${L(k)}${esc(ex.prompt)}</div>${ex.visual ? `<div>${pv(ex)}</div>` : ''}${needWork(ex) ? '<div class="pwork"><span>Fes aquí el càlcul</span></div>' : ''}${ex.type === 'tria'
+        ? `<div class="pcirc ${ex.options.some(o => String(o).length > 16) ? 'col' : ''}">${ex.options.map((o, j) => `<span><span class="ol">${'ABCDEF'[j]}.</span>${esc(String(o))}</span>`).join('')}</div>`
+        : inl(ex) ? '' : `<div class="row" style="align-items:flex-end;gap:8px;flex-wrap:nowrap"><div class="pline ${ex.numeric ? 'short' : ''}" style="flex:1"></div>${ex.unit ? `<span>${esc(ex.unit)}</span>` : ''}</div>`}</div>`).join('')}</div>`;
+    }
     // paraules amb una lletra que falta
     else if (ex0.type === 'tria' && items.every(x => gapParts(x.visual))) {
       const opts = [...new Set(items.flatMap(x => x.options.map(String)))];
@@ -2412,7 +2434,7 @@ function paperBody(exs){
       const vis = ex => ex.visual ? `<div>${cleanVis(ex.visual)}</div>` : '';
       if (sameOpts && many) {
         head = samePrompt ? `${esc(dot(ex0.prompt))} Escriu la resposta.` : 'Respon cada pregunta amb una de les paraules de la caixa.';
-        body = `<div class="pbankw"><b>Tria entre:</b>${esc(ordList([...ex0.options].map(String)))}</div><div class="pgrid" style="--c:${ex0.visual && !/class="chart"/.test(ex0.visual) ? 2 : 1}">${items.map((ex, k) => `<div class="pit">${samePrompt ? '' : `<div class="pq">${L(k)}${esc(ex.prompt)}</div>`}${samePrompt ? L(k) : ''}${vis(ex)}<div class="pline"></div></div>`).join('')}</div>`;
+        body = `<div class="pbankw"><b>Tria entre:</b>${esc(ordList([...ex0.options].map(o => LOWSK.has(ex0.skill) ? String(o).charAt(0).toLowerCase() + String(o).slice(1) : String(o))))}</div><div class="pgrid" style="--c:${ex0.visual && !/class="chart"/.test(ex0.visual) ? 2 : 1}">${items.map((ex, k) => `<div class="pit">${samePrompt ? '' : `<div class="pq">${L(k)}${esc(ex.prompt)}</div>`}${samePrompt ? L(k) : ''}${vis(ex)}<div class="pline"></div></div>`).join('')}</div>`;
       } else {
         head = samePrompt ? `${esc(dot(ex0.prompt))} Encercla la lletra de la resposta correcta.` : 'Encercla la lletra de la resposta correcta.';
         body = items.map((ex, k) => `<div class="pit" style="margin-top:8px">${samePrompt ? '' : `<div class="pq">${L(k)}${esc(ex.prompt)}</div>`}${samePrompt && many ? L(k) : ''}${vis(ex)}${needWork(ex) ? '<div class="pwork"><span>Fes aquí el càlcul</span></div>' : ''}<div class="pcirc ${ex.options.some(o => String(o).length > 16) ? 'col' : ''}">${pOpts(ex, k, rot).map((o, j) => `<span><span class="ol">${'ABCDEF'[j]}.</span>${esc(o)}</span>`).join('')}</div></div>`).join('');
@@ -2430,7 +2452,7 @@ function paperBody(exs){
       // espai per fer el càlcul quan l'operació no es pot fer de cap
       const work = needWork;
       const ser = items.some(x => /class="series/.test(x.visual || '')), big = ser && items.some(x => /\d{3}/.test(String(x.visual || '').replace(/<[^>]+>/g, ' ')));
-      const cols = prob || items.some(x => /class="chart"/.test(x.visual || '')) || items.some(work) || ser ? 1 : items.some(x => /class="shape"/.test(x.visual || '')) ? 2 : small && ex0.visual ? (vl => vl <= 11 ? 3 : vl <= 14 ? 2 : 1)(Math.max(...items.map(x => String(x.visual || '').replace(/<[^>]+>/g, '').trim().length))) : 2;
+      const cols = prob || items.some(x => /class="chart"/.test(x.visual || '')) || items.some(work) || ser || items.some(x => (String(x.visual || '').match(/<svg/g) || []).length >= 4) ? 1 : items.some(x => /class="shape/.test(x.visual || '') || (String(x.visual || '').match(/<svg/g) || []).length >= 2) ? 2 : small && ex0.visual ? (vl => vl <= 11 ? 3 : vl <= 14 ? 2 : 1)(Math.max(...items.map(x => String(x.visual || '').replace(/<[^>]+>/g, '').trim().length))) : 2;
       body = `<div class="pgrid" style="--c:${cols}">${items.map((ex, k) => `<div class="pit">${showQ ? `<div class="pq">${L(k)}${esc(ex.prompt)}</div>` : L(k)}${ex.visual ? `<div>${pv(ex)}</div>` : ''}${work(ex) ? '<div class="pwork"><span>Fes aquí el càlcul</span></div>' : ''}${line(ex)}</div>`).join('')}</div>`;
     }
     else if (ex0.type === 'dictat') {
@@ -2442,7 +2464,7 @@ function paperBody(exs){
       const pr = ex0.prompt, nums = ex0.items.every(isNum);
       head = nums ? 'Ordena els nombres de més petit a més gran i escriu-los en ordre.' : /síl·lab/.test(pr) ? 'Ordena les síl·labes i escriu la paraula.' : /alfabètic/.test(pr) ? 'Ordena les paraules per ordre alfabètic i escriu-les en ordre.' : 'Ordena les paraules i escriu la frase.';
       body = items.map((ex, k) => { const r = mulberry(hashStr(exKey(ex)) + k); let pool = shuffle(r, ex.items.slice()); if (pool.every((x, j) => x === ex.items[j])) pool = pool.reverse();
-        return `<div class="pit" style="margin-top:8px">${L(k)}${ex.visual ? `<div>${cleanVis(ex.visual)}</div>` : ''}<div class="ppieces" style="display:inline-flex">${pool.map(x => `<span>${esc(x)}</span>`).join('')}</div><div class="pline ${nums ? '' : ''}"></div></div>`; }).join('');
+        return `<div class="pit" style="margin-top:8px">${L(k)}${ex.visual ? `<div>${cleanVis(ex.visual)}</div>` : ''}<div class="ppieces">${pool.map(x => `<span>${esc(x)}</span>`).join('')}</div><div class="pline ${nums ? '' : ''}"></div></div>`; }).join('');
     }
     else if (ex0.type === 'relaciona') {
       head = esc(dot(ex0.prompt)) + ' Al costat de cada número, escriu la lletra que hi correspon.';
@@ -2467,8 +2489,9 @@ function keepHeads(html){
     if (/^\d+\. Escolta/.test(b.textContent) && g.children.length < 8) { g.classList.add('pkeep'); return; }
     const keep = document.createElement('div'); keep.className = 'pkeep'; g.insertBefore(keep, b); keep.appendChild(b);
     let k = keep.nextElementSibling;
-    while (k && (k.matches('.pbankw') || (!k.matches('.pit, .pgrid') && !k.querySelector('.pit')))) { const nx = k.nextElementSibling; keep.appendChild(k); k = nx; }
-    if (!k) return;
+    const rt = e => e.matches('.readtext') || e.querySelector('.readtext');
+    while (k && !rt(k) && (k.matches('.pbankw') || (!k.matches('.pit, .pgrid') && !k.querySelector('.pit')))) { const nx = k.nextElementSibling; keep.appendChild(k); k = nx; }
+    if (!k || (rt(k) && !k.matches('.pgrid'))) return;
     if (k.matches('.pgrid')) { const cols = +((k.getAttribute('style') || '').match(/--c:\s*(\d)/) || [0, 2])[1], first = [...k.children].slice(0, cols);
       if (first.length < k.children.length) { const g2 = k.cloneNode(false); first.forEach(x => g2.appendChild(x)); g2.style.marginBottom = '14px'; keep.appendChild(g2); } else keep.appendChild(k); }
     else keep.appendChild(k);
@@ -2888,9 +2911,13 @@ function genFresh(id, curs, r, avoid){ let ex; for (let k = 0; k < 15; k++) { ex
 const paperKey = e => { if (e.skill === 'c-comprensio' || e.skill === 'c-oral') return String(hashStr(JSON.stringify(['comp', e.prompt, e.options && e.options.map(String).sort()]))); const gap = /class="gap"/.test(e.visual || ''); return String(hashStr(JSON.stringify([gap ? 'gap' : e.skill, gap ? '' : e.prompt, String(e.visual || '').replace(/\s+/g, ' '), gap ? '' : e.options && e.options.map(String).sort(), e.items && e.items.map(x => typeof x === 'object' ? x.t : x).sort(), e.pairs && e.pairs.map(String).sort(), e.type === 'dictat' ? e.answer : '', e.listen || '']))); };
 const FCAPS = {};
 function fCap(id, c){ const k = id + c; if (!(k in FCAPS)) { const set = new Set(), r = mulberry(4242 + c); for (let i = 0; i < 600 && set.size < 20; i++) set.add(paperKey(genEx(id, c, r))); FCAPS[k] = set.size; } return FCAPS[k]; }
-function genPaper(id, curs, r, avoid, prefer, words){ let ex; for (let k = 0; k < 320; k++) { ex = genEx(id, curs, r); const pk = paperKey(ex); if (!avoid.has(pk) && (k > 120 || !prefer || !prefer.has(pk)) && (k > 200 || paperOk(ex)) && (k > 260 || !words || !exWords(ex).some(w => words.has(w)))) return ex; } return ex; }
+function genPaper(id, curs, r, avoid, prefer, words){ let ex; for (let k = 0; k < 320; k++) { ex = genEx(id, curs, r); const pk = paperKey(ex); if (!avoid.has(pk) && (k > 120 || !prefer || !prefer.has(pk)) && (k > 200 || paperOk(ex)) && (k > 260 || !words || !exWords(ex).some(w => words.has(w))) && (k > 200 || paperLike(ex))) return ex; } return ex; }
 // en paper, cap columna de classificar buida
-const paperOk = ex => ex.type !== 'classifica' || (ex.buckets.every((b, bi) => ex.items.some(x => x.b === bi)) && new Set(ex.items.map(x => x.t)).size === ex.items.length);
+const GP = {like: null, figs: null};
+const shapeK = ex => /class="shape/.test(ex.visual || '') ? String(ex.visual) : '';
+const paperLike = ex => (!GP.like || GP.like.type !== ex.type || !GP.like.options || !ex.options || GP.like.options.length === ex.options.length) && (!GP.figs || !shapeK(ex) || !GP.figs.has(shapeK(ex)));
+const stemOk = ex => ex.skill !== 'c-temps' || new Set(ex.items.map(x => x.t.split(' ').pop().slice(0, 4))).size === ex.items.length;
+const paperOk = ex => ex.type !== 'classifica' || stemOk(ex) && (ex.buckets.every((b, bi) => ex.items.some(x => x.b === bi)) && new Set(ex.items.map(x => x.t)).size === ex.items.length);
 // paraules d'un exercici, per no repetir-les entre els apartats d'un mateix grup
 const exWords = ex => /class="chart"/.test(ex.visual || '') ? ['chart:' + ((String(ex.visual).match(/aria-label="([^"]+)"/) || [])[1] || '')] : ex.type === 'classifica' ? ex.items.map(x => x.t) : ex.type === 'relaciona' ? ex.pairs.flat().map(String) : ex.type === 'tria' && ex.options ? ['=' + ex.options[ex.answer]] : ex.type === 'ordena' ? [ex.items.join(' ')] : [];
 function taskExercises(t, sid){

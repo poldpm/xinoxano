@@ -10598,10 +10598,6 @@ window.BANC = {
  ],
  "ssons": [
   [
-   "casa",
-   0
-  ],
-  [
    "rosa",
    0
   ],
@@ -10656,10 +10652,6 @@ window.BANC = {
   [
    "brasa",
    0
-  ],
-  [
-   "sol",
-   1
   ],
   [
    "sopa",
