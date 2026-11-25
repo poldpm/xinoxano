@@ -6450,7 +6450,7 @@ window.BANC = {
       "la directora de l'escola"
      ],
      [
-      "Per què el senyor Andreu devia portar magdalenes a la Sara?",
+      "Per què creus que el senyor Andreu va portar magdalenes a la Sara?",
       "per donar-li les gràcies",
       "perquè era l'aniversari de la Sara",
       "perquè les havia de vendre",
