@@ -649,7 +649,7 @@ skill('m-monedes','mat','Les monedes',1,3,(r,c)=>{
   const f = v => fmtD(v).includes(',') ? fmtD(v).padEnd(fmtD(v).indexOf(',')+3,'0')+' €' : fmtD(v)+' €';
   return {prompt:'Quants diners hi ha?', speak:'Quants diners hi ha?', visual:moneySVG(list), ...tria(r,f(t),[f(t+0.1),f(t+1),f(Math.max(0.1,t-0.5)),f(t+0.2)])}; });
 skill('m-parells','mat','Parells i senars',2,3,(r,c)=>{ const M = c===2?100:1000, nums = new Set(); while (nums.size < 6) nums.add(ri(r,1,M));
-  return {type:'classifica', prompt:'Classifica els nombres', speak:'Posa cada nombre al seu lloc: parell o senar.', buckets:['Parell','Senar'], items:[...nums].map(n=>({t:String(n), b:n%2}))}; });
+  return {type:'classifica', prompt:'Classifica els nombres', speak:'Posa cada nombre al seu lloc: parell o senar.', buckets:['Parells','Senars'], items:[...nums].map(n=>({t:String(n), b:n%2}))}; });
 skill('m-ordena','mat','Ordenar nombres',1,6,(r,c)=>{ const set = new Set(); let gen;
   if (c===1) gen=()=>ri(r,0,20); else if (c===2) gen=()=>ri(r,10,99); else if (c===3) gen=()=>ri(r,100,999); else if (c===4) gen=()=>ri(r,1000,9999);
   else if (c===5) gen=()=>ri(r,0,200)/10; else gen=()=>ri(r,0,5000)/1000;
@@ -944,7 +944,7 @@ skill('m-mesura1','mat','Comparar i mesurar',1,2,(r)=>{ const t = ri(r,0,3);
     return {prompt:'Què pesa més?', speak:'Mira la balança. Què pesa més?', visual:svgBox(240,160,g,'Una balança amb dos objectes'), ...tria(r, p[1], [p[1], l[1]])}; }
   const a = ri(r,1,4), b = (a + ri(r,1,3)) % 5 || 5, mes = r() < .5;
   const got = (x, n) => `<path d="M${x} 20 L${x+8} 140 H${x+62} L${x+70} 20" fill="#ffffff" stroke="${FST}" stroke-width="3" stroke-linejoin="round"/><path d="M${x+8 - 0} ${140 - n*22} L${x+8} 140 H${x+62} L${x+62} ${140 - n*22} Z" fill="#7fc8f5" opacity=".85"/>`;
-  return {prompt:`Quin got té ${mes ? 'més' : 'menys'} aigua?`, speak:`Mira els dos gots. Quin té ${mes ? 'més' : 'menys'} aigua?`, visual:svgBox(240,160, got(25,a) + got(145,b) + `<text x="60" y="155" font-size="16" font-weight="700" text-anchor="middle" fill="${FST}">1</text><text x="180" y="155" font-size="16" font-weight="700" text-anchor="middle" fill="${FST}">2</text>`,'Dos gots amb aigua'),
+  return {prompt:`Quin got té ${mes ? 'més' : 'menys'} aigua?`, speak:`Mira els dos gots. Quin té ${mes ? 'més' : 'menys'} aigua?`, visual:svgBox(240,160, got(25,a) + got(145,b) + `<text x="60" y="166" font-size="24" font-weight="700" text-anchor="middle" fill="${FST}">1</text><text x="180" y="166" font-size="24" font-weight="700" text-anchor="middle" fill="${FST}">2</text>`,'Dos gots amb aigua'),
     ...tria(r, (mes ? a > b : a < b) ? 'El got 1' : 'El got 2', ['El got 1','El got 2'])}; });
 skill('m-poligons','mat','Polígons',2,4,(r)=>{ const N = {3:'Triangle',4:'Quadrilàter',5:'Pentàgon',6:'Hexàgon',8:'Octàgon'}, n = pick(r,[3,4,5,6,8]);
   return {prompt:'Com es diu aquest polígon?', speak:'Compta els costats. Com es diu aquest polígon?', visual:polySVG(n), ...tria(r,N[n],Object.values(N))}; });
@@ -2311,7 +2311,7 @@ function fExercises(){
       const blk = exs.splice(start), ord = [...new Set(blk.map(pKey))]; exs.push(...ord.flatMap(k => blk.filter(e => pKey(e) === k))); GP.like = null; GP.figs = null; }
     // ortografia: la paraula que s'ha d'escriure no pot sortir ben escrita en un altre exercici de la mateixa fitxa
     const nrm = t => String(t).toLowerCase().normalize('NFD').replace(/[\u0300-\u036f·]/g, '');
-    const spellW = e => { if (e.type === 'dictat') return String(e.answer); if (e.type === 'tria' && blocOf(e.skill) === 'Ortografia' && e.options && e.options.length > 1 && /^[a-zà-ÿ·'-]+$/i.test(String(e.options[e.answer])) && new Set(e.options.map(o => nrm(o).replace(/[^a-z]/g, '').slice(0, 3))).size === 1) return String(e.options[e.answer]); const g = e.type === 'tria' && gapParts(e.visual); return g ? g[0] + e.options[e.answer] + g[1] : ''; };
+    const spellW = e => { if (e.type === 'dictat') return String(e.answer); if (e.type === 'ordena' && /síl·lab/.test(e.prompt || '')) return e.items.join(''); if (e.type === 'tria' && blocOf(e.skill) === 'Ortografia' && e.options && e.options.length > 1 && /^[a-zà-ÿ·'-]+$/i.test(String(e.options[e.answer])) && new Set(e.options.map(o => nrm(o).replace(/[^a-z]/g, '').slice(0, 3))).size === 1) return String(e.options[e.answer]); const g = e.type === 'tria' && gapParts(e.visual); return g ? g[0] + e.options[e.answer] + g[1] : ''; };
     const txtOf = e => [e.prompt, String(e.visual || '').replace(/<[^>]+>/g, ' '), ...(e.options || []).map(String), ...(e.items || []).map(x => typeof x === 'object' ? x.t : x), ...(e.pairs || []).flat()].join(' ').toLowerCase();
     const leaks = i => { const w = spellW(exs[i]).toLowerCase().trim(); if (w.length < 3) return false; const st = w.length >= 5 ? w.slice(0, -1) : w, re = new RegExp('(^|[^a-zà-ÿ·])' + st.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + (w.length >= 5 ? '[a-zà-ÿ·]{0,3}' : '') + '($|[^a-zà-ÿ·])'); return exs.some((o, j) => j !== i && (re.test(txtOf(o)) || (j < i && spellW(o).toLowerCase().trim() === w))); };
     for (let i = 0; i < exs.length; i++) for (let t = 0; t < 40 && spellW(exs[i]) && leaks(i); t++) { const nx = genPaper(exs[i].skill, F.curs, r, own, seen, new Set(exs.filter((o, j) => j !== i && o.skill === exs[i].skill).flatMap(exWords))); if (spellW(nx) && !own.has(paperKey(nx))) { own.add(paperKey(nx)); exs[i] = nx; } }
@@ -2335,9 +2335,9 @@ function cangSheet(title, sub0, items, sol){
   const head = sub => `<div class="phead"><img src="assets/logo-h.png" alt="Vedruna Escorial Vic"><div style="flex:1"><h2>${esc(title)}</h2><span class="small muted">${esc(sub0)}${sub ? ' · ' + sub : ''}</span></div><b style="color:var(--brand2)">Xino-Xano</b></div>`;
   const src = p => `Cangur ${p.y}${p.d ? ' (' + p.d + ')' : ''}, problema ${p.n}`;
   const alumne = `<article class="psheet">${head('')}<div class="pname"><span>Nom:</span><span style="flex:.5">Data:</span></div>
-    <p class="pcg-intro"><b>Problemes de les proves Cangur.</b> Llegeix cada problema amb calma i encercla la lletra de la resposta correcta. Només n'hi ha una de bona.</p>
+    <p class="pcg-intro"><b>Problemes de les proves Cangur.</b> Llegeix cada problema amb calma i encercla la lletra de la resposta correcta. Només n'hi ha una de bona.<br><span class="pcg-credit">Problemes de les proves Cangur de la Societat Catalana de Matemàtiques (IEC), cangur.org.</span></p>
     ${items.map((p, i) => `<section class="pcg"><b class="pcg-n">${i + 1}.</b><img src="assets/cangur/${p.f}" width="${p.w}" height="${p.h}" alt="Problema ${i + 1} (${src(p)})" style="aspect-ratio:${p.w}/${p.h};width:min(100%, ${p.wi}in)"></section>`).join('')}
-    <p class="pcg-credit">Problemes de les proves Cangur de la Societat Catalana de Matemàtiques (IEC), cangur.org.</p></article>`;
+</article>`;
   const pera = !sol ? '' : `<article class="psheet psol">${head("Full per a l'adult")}<h3>Solucions</h3>
     ${items.map((p, i) => `<div class="gr"><b>${i + 1}.</b> ${p.r.split('/').join(' o ')} <span class="small muted">· ${src(p)}, ${CURS[F.curs]}${p.r.includes('/') ? ' (l\'organització dona per bones les dues respostes)' : ''}</span></div>`).join('')}
     <p class="small muted" style="margin-top:12px">Font: proves oficials del Cangur de la Societat Catalana de Matemàtiques (IEC). Solucions oficials publicades a cangur.org i scm.iec.cat.</p></article>`;
@@ -2384,7 +2384,8 @@ const ordList = a => a.length < 2 ? a.join('') : a.slice(0, -1).join(', ') + ' o
 const dot = t => { t = String(t || '').trim(); return /[.?!:]$/.test(t) ? t : t + '.'; };
 const isNum = v => /^[\d.,\s€]+$/.test(String(v).replace(/\*/g, ''));
 const LOWSK = new Set(['c-oracions','m-triangles','m-angles','m-poligons','m-cossos','m-figures','c-pronoms','c-categories','c-generes']);
-const relRight = (ex, k) => { const r = mulberry(hashStr(exKey(ex)) + k); let o; for (let t = 0; t < 30; t++) { o = shuffle(r, ex.pairs.map((p, i) => ({t: p[1], i}))); if (o.filter((x, j) => x.i === j).length <= 1) break; } return o; };
+let RELU = new Set(), RELC = new Map();
+const relRight = (ex, k) => { const key = exKey(ex) + '|' + k; if (RELC.has(key)) return RELC.get(key); const r = mulberry(hashStr(exKey(ex)) + k); let o; for (let t = 0; t < 60; t++) { o = shuffle(r, ex.pairs.map((p, i) => ({t: p[1], i}))); const pat = o.map(x => x.i).join(''); if (o.filter((x, j) => x.i === j).length <= 1 && (t > 40 || !RELU.has(pat))) break; } RELU.add(o.map(x => x.i).join('')); RELC.set(key, o); return o; };
 const longCl = ex => ex.items.some(x => x.t.replace(/\*/g, '').length > 22) || (PAPERC <= 2 && ex.items.some(x => { const t = x.t.replace(/\*/g, ''); return /\s/.test(t) || t.length > 9; }));
 // en paper, que la lletra bona no sigui sempre la mateixa dins d'un grup
 const pOpts = (ex, k, rot) => { const o = ex.options.map(String); if (!rot) return o; const d = k % o.length; return o.slice(d).concat(o.slice(0, d)); };
@@ -2403,6 +2404,7 @@ function fmtPaperEx(ex){ const sk = SKM(ex.skill); if (!sk || sk.mat !== 'mat' |
   const o = {...ex, prompt: thou(ex.prompt)}; if (ex.type === 'ordena' && ex.items.every(isNum)) o.items = ex.items.map(x => thou(x)); if (ex.visual) o.visual = thouHTML('<i>' + ex.visual + '</i>').slice(3, -4); if (ex.options) o.options = ex.options.map(x => thou(x)); return o; }
 let PAPERC = 3;
 function paperBody(exs){
+  RELU = new Set(); RELC = new Map();
   exs = exs.map(fmtPaperEx); const petits = PAPERC <= 2;
   const adult = [], sols = [], gs = paperGroups(exs), lab = {};
   const html = gs.map((g, gi) => {
@@ -2477,7 +2479,7 @@ function paperBody(exs){
     else if (ex0.type === 'ordena') {
       const pr = ex0.prompt, nums = ex0.items.every(isNum);
       const numera = petits && !nums && !/síl·lab/.test(pr);
-      head = nums ? 'Ordena els nombres de més petit a més gran i escriu-los en ordre.' : /síl·lab/.test(pr) ? 'Ordena les síl·labes i escriu la paraula.' : numera ? (/alfabètic/.test(pr) ? 'Numera les paraules per ordre alfabètic: escriu 1, 2, 3… a la casella de sota.' : 'Numera les paraules en l\'ordre de la frase: escriu 1, 2, 3… a la casella de sota.') : /alfabètic/.test(pr) ? 'Ordena les paraules per ordre alfabètic i escriu-les en ordre.' : 'Ordena les paraules i escriu la frase.';
+      head = nums ? 'Ordena els nombres de més petit a més gran i escriu-los.' : /síl·lab/.test(pr) ? 'Ordena les síl·labes i escriu la paraula.' : numera ? (/alfabètic/.test(pr) ? 'Numera les paraules per ordre alfabètic: escriu 1, 2, 3… a la casella de sota.' : 'Numera les paraules en l\'ordre de la frase: escriu 1, 2, 3… a la casella de sota.') : /alfabètic/.test(pr) ? 'Ordena les paraules per ordre alfabètic i escriu-les en ordre.' : 'Ordena les paraules i escriu la frase.';
       body = items.map((ex, k) => { const r = mulberry(hashStr(exKey(ex)) + k); let pool = shuffle(r, ex.items.slice()); if (pool.every((x, j) => x === ex.items[j])) pool = pool.reverse();
         return `<div class="pit" style="margin-top:8px">${L(k)}${ex.visual ? `<div>${cleanVis(ex.visual)}</div>` : ''}${numera ? `<div class="ppieces pnum">${pool.map(x => `<span class="pn"><span>${esc(x)}</span><i></i></span>`).join('')}</div>` : `<div class="ppieces">${pool.map(x => `<span>${esc(x)}</span>`).join('')}</div><div class="pline"></div>`}</div>`; }).join('');
     }
@@ -2940,7 +2942,7 @@ const stemOk = ex => ex.skill !== 'c-temps' || new Set(ex.items.map(x => x.t.spl
 const hlOk = ex => { const h = ex.items.map(x => (String(x.t).match(/\*([^*]+)\*/) || [])[1]).filter(Boolean).map(w => w.toLowerCase()); return new Set(h).size === h.length; };
 const paperOk = ex => ex.type !== 'classifica' || stemOk(ex) && hlOk(ex) && (ex.buckets.every((b, bi) => ex.items.some(x => x.b === bi)) && new Set(ex.items.map(x => x.t)).size === ex.items.length);
 // paraules d'un exercici, per no repetir-les entre els apartats d'un mateix grup
-const toks = a => a.flatMap(t => { t = String(t).replace(/\*/g, '').toLowerCase(); return t.split(' ').length > 3 ? [t] : t.split(/[^a-zà-ÿ·0-9']+/); }).filter(w => w.length >= 3 || /^\d+$/.test(w));
+const toks = a => a.flatMap(t => { t = String(t).replace(/\*/g, '').toLowerCase(); return t.split(' ').length > 3 ? [t] : t.split(/[^a-zà-ÿ·0-9']+/); }).filter(w => w.length >= 2 || /^\d+$/.test(w));
 const exWords = ex => [ex.prompt && !/^(Quant fa\?|Calcula)/.test(ex.prompt) ? 'q:' + ex.prompt : '', ...(ex.type === 'classifica' ? toks(ex.items.map(x => x.t)) : ex.type === 'relaciona' ? toks(ex.pairs.flat()) : (ex.type === 'tria' && ex.options) ? ['=' + ex.options[ex.answer]] : ex.type === 'escriu' ? ['=' + ex.answer, ...(String(ex.prompt).match(/\d[\d.,]*/g) || []).map(n => 'n:' + n.replace(/[.,]/g, '').replace(/0+$/, '')).filter(n => n.length > 3)] : ex.type === 'ordena' ? [ex.items.join(' ')] : [])].filter(Boolean);
 function taskExercises(t, sid){
   const c = cls(t.classId), st = stu(sid), r = mulberry(t.seed + (t.same ? 0 : hashStr(sid))), out = [], seen = new Set(t.same ? [] : (S.seen && S.seen[sid]) || []);
