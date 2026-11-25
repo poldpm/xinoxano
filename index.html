@@ -2308,8 +2308,8 @@ function fExercises(){
             for (let t = 0; t < 30 && qn(ex) < need; t++) { ex = genPaper(id, F.curs, r, own, seen); first = ex; } }
         }
         // garantia: cap apartat de classificar o relacionar no pot repetir una paraula, frase o operació del mateix exercici
-        { const tk = ex.type === 'classifica' ? (ex.skill === 'm-divisors' ? [] : ex.items.map(x => 'n' + x.t)) : ex.type === 'relaciona' ? toks(ex.pairs.flat()) : [];
-          if (tk.some(w => words.has(w))) continue; }
+        { const tk = ex.type === 'classifica' ? (ex.skill === 'm-divisors' ? [] : ex.items.every(x => isNum(x.t)) ? ex.items.map(x => 'n' + x.t) : toks(ex.items.map(x => x.t))) : ex.type === 'relaciona' ? toks(ex.pairs.flat()) : [];
+          if (tk.some(w => words.has(w))) continue; tk.forEach(w => words.add(w)); }
         if (!first) first = ex; if (!GP.like || GP.like.type !== ex.type) GP.like = ex; if (shapeK(ex)) figs.add(shapeK(ex)); if (ex.type === 'relaciona' || ex.type === 'classifica') toks(ex.type === 'relaciona' ? ex.pairs.flat() : ex.items.map(x => x.t)).forEach(w => figs.add('w:' + w)); seen.add(paperKey(ex)); own.add(paperKey(ex)); exWords(ex).forEach(w => words.add(w)); exs.push(ex); k++; }
       // els exercicis del mateix tipus, junts (un sol enunciat)
       const blk = exs.splice(start), ord = [...new Set(blk.map(pKey))]; exs.push(...ord.flatMap(k => blk.filter(e => pKey(e) === k))); GP.like = null; GP.figs = null; }
