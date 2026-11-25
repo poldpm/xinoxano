@@ -2306,6 +2306,9 @@ function fExercises(){
           if (!same(ex)) { ex = genPaper(id, F.curs, r, own, seen); first = ex; const need = Math.min(3, n - k), qn = e => { const p = new Set(), rr = mulberry(hashStr(String(e.visual) + e.listen)); for (let t = 0; t < 150 && p.size < need; t++) { const x = genEx(id, F.curs, rr); if (x.visual === e.visual && x.listen === e.listen && !own.has(paperKey(x))) p.add(x.prompt); } return p.size; };
             for (let t = 0; t < 30 && qn(ex) < need; t++) { ex = genPaper(id, F.curs, r, own, seen); first = ex; } }
         }
+        // garantia: cap apartat de classificar o relacionar no pot repetir una paraula, frase o operació del mateix exercici
+        { const tk = ex.type === 'classifica' ? (ex.items.every(x => isNum(x.t)) ? [] : toks(ex.items.map(x => x.t))) : ex.type === 'relaciona' ? toks(ex.pairs.flat()) : [];
+          if (tk.some(w => words.has(w))) continue; }
         if (!first) first = ex; if (!GP.like || GP.like.type !== ex.type) GP.like = ex; if (shapeK(ex)) figs.add(shapeK(ex)); if (ex.type === 'relaciona' || ex.type === 'classifica') toks(ex.type === 'relaciona' ? ex.pairs.flat() : ex.items.map(x => x.t)).forEach(w => figs.add('w:' + w)); seen.add(paperKey(ex)); own.add(paperKey(ex)); exWords(ex).forEach(w => words.add(w)); exs.push(ex); }
       // els exercicis del mateix tipus, junts (un sol enunciat)
       const blk = exs.splice(start), ord = [...new Set(blk.map(pKey))]; exs.push(...ord.flatMap(k => blk.filter(e => pKey(e) === k))); GP.like = null; GP.figs = null; }
@@ -2957,7 +2960,7 @@ const stemOk = ex => ex.skill !== 'c-temps' || new Set(ex.items.map(x => x.t.spl
 const hlOk = ex => { const h = ex.items.map(x => (String(x.t).match(/\*([^*]+)\*/) || [])[1]).filter(Boolean).map(w => w.toLowerCase()); return new Set(h).size === h.length; };
 const paperOk = ex => ex.type !== 'classifica' || stemOk(ex) && hlOk(ex) && (ex.buckets.every((b, bi) => ex.items.some(x => x.b === bi)) && new Set(ex.items.map(x => x.t)).size === ex.items.length);
 // paraules d'un exercici, per no repetir-les entre els apartats d'un mateix grup
-const toks = a => a.flatMap(t => { t = String(t).replace(/\*/g, '').toLowerCase().trim(); return [t, ...(/\s/.test(t) && t.split(' ').length <= 3 ? t.split(/[^a-zà-ÿ·']+/).filter(w => w.length >= 5) : [])]; }).filter(w => w && !/^[\d\s×x:+−=→-]+$/.test(w));
+const toks = a => a.flatMap(t => { t = String(t).replace(/\*/g, '').toLowerCase().trim(); return [t, ...(/\s/.test(t) && t.split(' ').length <= 3 ? t.split(/[^a-zà-ÿ·']+/).filter(w => w.length >= 5) : [])]; }).filter(w => w && !/^\d+$/.test(w));
 const exWords = ex => [ex.prompt && !/^(Quant fa\?|Calcula)/.test(ex.prompt) ? 'q:' + ex.prompt : '', ...(ex.type === 'classifica' ? toks(ex.items.map(x => x.t)) : ex.type === 'relaciona' ? toks(ex.pairs.flat()) : (ex.type === 'tria' && ex.options) ? ['=' + ex.options[ex.answer]] : ex.type === 'escriu' ? ['=' + ex.answer, ...(String(ex.prompt).match(/\d[\d.,]*/g) || []).map(n => 'n:' + n.replace(/[.,]/g, '').replace(/0+$/, '')).filter(n => n.length > 3)] : ex.type === 'ordena' ? [ex.items.join(' ')] : [])].filter(Boolean);
 function taskExercises(t, sid){
   const c = cls(t.classId), st = stu(sid), r = mulberry(t.seed + (t.same ? 0 : hashStr(sid))), out = [], seen = new Set(t.same ? [] : (S.seen && S.seen[sid]) || []);
