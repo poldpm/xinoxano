@@ -310,6 +310,7 @@ textarea{width:100%;min-height:170px;font-family:var(--f-num);font-size:.9rem;li
 .pgrid{display:grid;grid-template-columns:repeat(var(--c,2),minmax(0,1fr));gap:14px 22px;margin-top:6px}
 .pit{break-inside:avoid;page-break-inside:avoid}
 .pkeep{break-inside:avoid;page-break-inside:avoid}
+.fsum{display:flex;align-items:center;gap:12px;flex-wrap:nowrap}.fsum p{flex:1;margin:0;min-width:0}.fcount{white-space:nowrap;font-size:.95rem}.fcount b{display:inline-block;min-width:2ch;text-align:right}.fsum .link{white-space:nowrap}.fsum .link:disabled{opacity:.4;cursor:default}
 .pgrid > .pit:not(.row){display:flex;flex-direction:column}
 .pgrid > .pit:not(.row) > .pline:last-child,.pgrid > .pit:not(.row) > .row:last-child{margin-top:auto}
 .pit .series{flex-wrap:wrap!important;justify-content:flex-start!important}
@@ -2352,12 +2353,14 @@ function cangSheet(title, sub0, items, sol){
     <p class="small muted" style="margin-top:12px">Font: proves oficials del Cangur de la Societat Catalana de Matemàtiques (IEC). Solucions oficials publicades a cangur.org i scm.iec.cat.</p></article>`;
   return alumne + pera;
 }
+const DOPEN = {};
+document.addEventListener('toggle', e => { const d = e.target; if (d && d.matches && d.matches('details[data-k]')) DOPEN[d.dataset.k] = d.open; }, true);
 function vFitxes(){
   const c = F.curs, sks = SK.filter(k => k.gen && !k.hidden && c >= k.min && c <= k.max), pg = PROG[c], cpool = cangPool(c);
   const mode = F.mode === 'cang' && cpool.length ? 'cang' : F.mode === 'prog' && pg ? 'prog' : 'cont';
   const total = mode === 'cang' ? Math.min(F.cn || 10, cangMax(c)) : Object.entries(F.items).reduce((a, [k, n]) => a + Math.min(n, fCap(k, c)), 0);
   const row = k => { const cap = fCap(k.id, c), n = Math.min(F.items[k.id] || 0, cap); return `<div class="skrow"><span>${esc(k.nom)}${cap < 20 ? ` <span class="small muted">(màxim ${cap}: no n'hi ha més de diferents)</span>` : ''}</span><span class="stepper"><button data-a="fstep" data-v="${k.id}" data-d="-1" aria-label="Un menys de ${esc(k.nom)}" ${n ? '' : 'disabled'}>−</button><b class="num">${n}</b><button data-a="fstep" data-v="${k.id}" data-d="1" aria-label="Un més de ${esc(k.nom)}" ${n >= cap ? 'disabled' : ''}>+</button></span></div>`; };
-  const det = (nom, l, extra = '') => `<details ${l.some(k => F.items[k.id]) ? 'open' : ''}><summary style="cursor:pointer;font-weight:700;padding:8px 0">${esc(nom)} <span class="small muted">${extra}</span></summary>${l.map(row).join('')}</details>`;
+  const det = (nom, l, extra = '') => `<details data-k="${esc(c + '|' + mode + '|' + nom)}" ${(DOPEN[c + '|' + mode + '|' + nom] ?? l.some(k => F.items[k.id])) ? 'open' : ''}><summary style="cursor:pointer;font-weight:700;padding:8px 0">${esc(nom)} <span class="small muted">${extra}</span></summary>${l.map(row).join('')}</details>`;
   const perCont = mat => `<div class="stack" style="gap:4px"><h3 style="color:var(--${mat})">${mat === 'cat' ? 'Català' : 'Matemàtiques'}</h3>${BLOCS[mat].map(b => { const l = sks.filter(k => k.mat === mat && blocOf(k.id) === b); return l.length ? det(b, l, `(${l.length})`) : ''; }).join('')}</div>`;
   const perProg = mat => !pg || !pg[mat] ? '' : `<div class="stack" style="gap:4px"><h3 style="color:var(--${mat})">${mat === 'cat' ? 'Català' : 'Matemàtiques'}</h3>${pg[mat].u.map(([nom, ids]) => { const l = ids.split(' ').map(SKM).filter(k => k.gen); return l.length ? det(nom, l) : ''; }).join('')}</div>`;
   const chosen = Object.entries(F.items).map(([k, n]) => `<span class="chip">${esc(SKM(k).nom)} ×${Math.min(n, fCap(k, c))}</span>`).join('');
@@ -2369,10 +2372,10 @@ function vFitxes(){
     <section class="card stack noprint"><div class="row"><h2 style="flex:1">2. Continguts</h2>${pg || cpool.length ? `<div class="seg" role="group" aria-label="Com vols triar"><button data-a="fmode" data-v="cont" aria-pressed="${mode === 'cont'}">Per continguts</button>${pg ? `<button data-a="fmode" data-v="prog" aria-pressed="${mode === 'prog'}">Segons la programació</button>` : ''}${cpool.length ? `<button data-a="fmode" data-v="cang" aria-pressed="${mode === 'cang'}">Proves Cangur</button>` : ''}</div>` : ''}</div>
       ${mode === 'cang' ? `<p class="small muted" style="max-width:68ch">Problemes de les proves Cangur oficials de ${CURS[c]} (${Math.min(...cpool.map(p => p.y))}–${Math.max(...cpool.map(p => p.y))}). Només hi ha els 8 primers problemes de cada prova, que són els més assequibles. Surten ordenats de més fàcil a més difícil. Hi ha ${cangMax(c)} problemes diferents.</p>
       <div class="skrow"><span>Nombre de problemes</span><span class="stepper"><button data-a="fcn" data-d="-1" aria-label="Un problema menys">−</button><b class="num">${total}</b><button data-a="fcn" data-d="1" aria-label="Un problema més">+</button></span></div>` : `
-      <p class="small muted">Amb + i − tries quants exercicis de cada tipus hi vols.${total ? ` Ara n'hi ha <b>${total}</b>.` : ''}</p>
-      ${chosen ? `<div class="row" style="gap:6px">${chosen}<button class="link" data-a="fclear">Treu-ho tot</button></div>` : ''}
+      <div class="fsum"><p class="small muted">Amb + i − tries quants exercicis de cada tipus hi vols.</p><span class="fcount" aria-live="polite">Triats: <b class="num">${total}</b></span><button class="link" data-a="fclear" ${total ? '' : 'disabled'}>Treu-ho tot</button></div>
       <div class="grid g2" style="align-items:start">${mode === 'prog' ? perProg('cat') + perProg('mat') : perCont('cat') + perCont('mat')}</div>`}</section>
     <section class="card stack noprint"><h2>3. Opcions</h2>
+      ${mode !== 'cang' ? `<div class="stack" style="gap:6px"><b>Has triat</b>${chosen ? `<div class="row" style="gap:6px">${chosen}</div>` : '<span class="small muted">Encara res.</span>'}</div>` : ''}
       <label class="f" for="fTitle">Títol de la fitxa<input type="text" id="fTitle" maxlength="60" value="${esc(F.title)}" placeholder="${mode === 'cang' ? 'Problemes Cangur' : 'Fitxa de repàs'}" data-a="ftitle"></label>
       <div class="skrow"><span>Models diferents<br><span class="small muted">Cada model té exercicis diferents. Útil perquè no es copiïn.</span></span><span class="stepper"><button data-a="fcopies" data-d="-1" aria-label="Un model menys">−</button><b class="num">${F.copies}</b><button data-a="fcopies" data-d="1" aria-label="Un model més">+</button></span></div>
       <div class="checks"><label><input type="checkbox" data-a="fsol" ${F.sol ? 'checked' : ''}> Afegeix el full per a l'adult amb les solucions</label></div>
