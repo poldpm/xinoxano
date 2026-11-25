@@ -274,7 +274,9 @@ textarea{width:100%;min-height:170px;font-family:var(--f-num);font-size:.9rem;li
 .phead img{height:34px}
 .pname{display:flex;gap:18px;margin:0 0 16px;font-size:1rem}
 .pname span{flex:1;border-bottom:1.5px solid #555;padding-bottom:2px}
-.pex{break-inside:avoid;page-break-inside:avoid;margin:0 0 18px}
+.pex{margin:0 0 18px}
+.pex>b{break-after:avoid;page-break-after:avoid}
+.pex .readtext,.ptable,.pbankw{break-inside:avoid;page-break-inside:avoid}
 .pex > b{display:block;font-size:1.08rem;margin-bottom:6px}
 .pex .readtext{font-size:1rem;margin:6px 0;background:#fafafa}
 .pex .word,.pex .bigemoji{font-size:1.8rem}
@@ -296,8 +298,9 @@ textarea{width:100%;min-height:170px;font-family:var(--f-num);font-size:.9rem;li
 .pit .lt{font-weight:700;margin-right:6px}
 .pw{font-family:var(--f-read);font-size:1.45rem;letter-spacing:.03em;white-space:nowrap}
 .pgap{display:inline-block;width:2.4em;border-bottom:2px solid #222;margin:0 2px;height:1.1em;vertical-align:baseline}
-.pcirc{display:flex;flex-wrap:wrap;gap:4px 34px;margin:4px 0 0 14px;font-size:1.05rem}
-.pcirc.col{flex-direction:column;gap:3px}
+.pcirc{display:flex;flex-wrap:wrap;gap:6px 34px;margin:6px 0 0 14px;font-size:1.05rem}
+.pcirc.col{flex-direction:column;gap:6px}
+.pcirc .ol{display:inline-block;min-width:1.5em;font-weight:700;color:var(--brand2)}
 .pbankw{border:2px dashed #999;border-radius:10px;padding:6px 12px;margin:6px 0 4px;font-size:1.05rem}
 .pbankw b{margin-right:6px}
 .pit .word,.pit .bigemoji{font-size:1.5rem;margin:2px 0}
@@ -310,7 +313,7 @@ textarea{width:100%;min-height:170px;font-family:var(--f-num);font-size:.9rem;li
 .pq{margin-bottom:2px}
 .psol .gr{margin-bottom:6px}
 .padult{border:2px dashed #999;border-radius:10px;padding:10px 14px;margin:8px 0}
-@media print{#top,.tabs,.noprint,.toast{display:none!important}.psheet{border:none;border-radius:0;padding:0;margin:0;page-break-after:always;break-after:page}.psheet:last-child{page-break-after:auto}body,#app{background:#fff!important}.slips{grid-template-columns:1fr 1fr}.slip{border-color:#888}}
+@media print{header.top,#top,.tabs,.noprint,.toast,body::before{display:none!important}.pex{break-inside:auto!important;page-break-inside:auto!important}.pex>b{break-after:avoid;page-break-after:avoid}.psheet{border:none;border-radius:0;padding:0;margin:0;page-break-after:always;break-after:page}.psheet:last-child{page-break-after:auto}body,#app{background:#fff!important}.slips{grid-template-columns:1fr 1fr}.slip{border-color:#888}}
 @media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
 @keyframes pop{0%{transform:scale(.9)}60%{transform:scale(1.06)}100%{transform:scale(1)}}
 .pop{animation:pop .35s ease-out}
@@ -2172,8 +2175,8 @@ function paperBody(exs){
     if (g.k.startsWith('txt|') || g.k.startsWith('oral|')) {
       if (ex0.oral) adult.push({n, t:'Llegiu en veu alta aquest text, dues vegades:', x: ex0.listen});
       head = ex0.oral ? 'Escolta el text que et llegirà un adult i respon.' : 'Llegeix el text i respon.';
-      body = (ex0.oral ? '' : cleanVis(ex0.visual)) + items.map((ex, k) => `<div class="pit" style="margin-top:10px"><div class="pq">${L(k)}${esc(ex.prompt)}</div>${ex.type === 'tria' ? `<div class="pcirc ${ex.options.some(o => String(o).length > 16) ? 'col' : ''}">${ex.options.map(o => `<span>${esc(String(o))}</span>`).join('')}</div>` : '<div class="pline"></div>'}</div>`).join('');
-      head += items.every(x => x.type === 'tria') ? ' Encercla la resposta correcta.' : items.some(x => x.type === 'tria') ? ' Encercla la resposta correcta o escriu-la.' : '';
+      body = (ex0.oral ? '' : cleanVis(ex0.visual)) + items.map((ex, k) => `<div class="pit" style="margin-top:10px"><div class="pq">${L(k)}${esc(ex.prompt)}</div>${ex.type === 'tria' ? `<div class="pcirc ${ex.options.some(o => String(o).length > 16) ? 'col' : ''}">${ex.options.map((o, j) => `<span><span class="ol">${'ABCDEF'[j]}.</span>${esc(String(o))}</span>`).join('')}</div>` : '<div class="pline"></div>'}</div>`).join('');
+      head += items.every(x => x.type === 'tria') ? ' Encercla la lletra de la resposta correcta.' : items.some(x => x.type === 'tria') ? ' Encercla la lletra de la resposta correcta o escriu la resposta.' : '';
     }
     // paraules amb una lletra que falta
     else if (ex0.type === 'tria' && items.every(x => gapParts(x.visual))) {
@@ -2191,8 +2194,8 @@ function paperBody(exs){
         head = samePrompt ? `${esc(dot(ex0.prompt))} Escriu la resposta.` : 'Respon. Escriu la resposta.';
         body = `<div class="pbankw"><b>Tria entre:</b>${esc(ordList([...ex0.options].map(String)))}</div><div class="pgrid" style="--c:${ex0.visual ? 2 : 1}">${items.map((ex, k) => `<div class="pit">${samePrompt ? '' : `<div class="pq">${L(k)}${esc(ex.prompt)}</div>`}${samePrompt ? L(k) : ''}${vis(ex)}<div class="pline"></div></div>`).join('')}</div>`;
       } else {
-        head = samePrompt ? `${esc(dot(ex0.prompt))} Encercla la resposta correcta.` : 'Encercla la resposta correcta.';
-        body = items.map((ex, k) => `<div class="pit" style="margin-top:8px">${samePrompt ? '' : `<div class="pq">${L(k)}${esc(ex.prompt)}</div>`}${samePrompt && many ? L(k) : ''}${vis(ex)}<div class="pcirc ${ex.options.some(o => String(o).length > 16) ? 'col' : ''}">${ex.options.map(o => `<span>${esc(String(o))}</span>`).join('')}</div></div>`).join('');
+        head = samePrompt ? `${esc(dot(ex0.prompt))} Encercla la lletra de la resposta correcta.` : 'Encercla la lletra de la resposta correcta.';
+        body = items.map((ex, k) => `<div class="pit" style="margin-top:8px">${samePrompt ? '' : `<div class="pq">${L(k)}${esc(ex.prompt)}</div>`}${samePrompt && many ? L(k) : ''}${vis(ex)}<div class="pcirc ${ex.options.some(o => String(o).length > 16) ? 'col' : ''}">${ex.options.map((o, j) => `<span><span class="ol">${'ABCDEF'[j]}.</span>${esc(String(o))}</span>`).join('')}</div></div>`).join('');
       }
     }
     else if (ex0.type === 'escriu') {
