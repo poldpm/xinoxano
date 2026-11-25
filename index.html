@@ -303,6 +303,10 @@ textarea{width:100%;min-height:170px;font-family:var(--f-num);font-size:.9rem;li
 .pit .word,.pit .bigemoji{font-size:1.5rem;margin:2px 0}
 .pit svg{max-height:120px;width:auto}
 .pline.short{max-width:150px}
+.pit .series span{background:#fff;border:1.5px solid #bbb;font-size:1.3rem;min-width:48px;padding:6px}
+.pit .series span.q{background:#fff;border:2px solid #222;color:transparent}
+.pgap.wide{width:3.2em}
+.pit .colop{background:#fff;border:1.5px solid #bbb;padding-bottom:46px;font-size:1.5rem}
 .pq{margin-bottom:2px}
 .psol .gr{margin-bottom:6px}
 .padult{border:2px dashed #999;border-radius:10px;padding:10px 14px;margin:8px 0}
@@ -2148,12 +2152,14 @@ function vFitxes(){
 }
 /* ============ fitxes en paper: exercicis agrupats per fer a mà ============ */
 const LT = 'abcdefghijklmnopqrstuvwxyz';
-const isText = ex => /class="readtext"/.test(ex.visual || '') && (ex.visual || '').length > 300;
+const isText = ex => /class="readtext"/.test(ex.visual || '') && (ex.skill === 'c-comprensio' || (ex.visual || '').length > 300);
 const pKey = ex => ex.oral ? 'oral|' + ex.listen : isText(ex) && ex.skill !== 'm-problemes' ? 'txt|' + ex.visual : ex.skill + '|' + ex.type;
 function paperGroups(exs){ const gs = []; exs.forEach((ex, i) => { const k = pKey(ex), g = gs[gs.length - 1]; if (g && g.k === k && g.i.length < 12) g.i.push(i); else gs.push({k, i:[i]}); }); return gs; }
 const cleanVis = v => String(v || '').replace(/<button[\s\S]*?<\/button>/g, '');
 const gapParts = v => { const m = String(v || '').replace(/<span class="gap">[^<]*<\/span>/, '\u0001').replace(/<[^>]+>/g, '').split('\u0001'); return m.length === 2 ? m : null; };
 const ordList = a => a.length < 2 ? a.join('') : a.slice(0, -1).join(', ') + ' o ' + a[a.length - 1];
+const dot = t => { t = String(t || '').trim(); return /[.?!:]$/.test(t) ? t : t + '.'; };
+const isNum = v => /^[\d.,\s€]+$/.test(String(v).replace(/\*/g, ''));
 function paperBody(exs){
   const adult = [], sols = [], gs = paperGroups(exs), lab = {};
   const html = gs.map((g, gi) => {
@@ -2173,7 +2179,7 @@ function paperBody(exs){
     else if (ex0.type === 'tria' && items.every(x => gapParts(x.visual))) {
       const opts = [...new Set(items.flatMap(x => x.options.map(String)))];
       const pens = items.every(x => /«[^»]+»/.test(x.prompt));
-      head = `Completa les paraules amb ${ordList(opts)}.`;
+      head = `Completa les paraules amb ${ordList(opts.map(o => '«' + o + '»'))}.`;
       body = `<div class="pgrid" style="--c:${pens ? 2 : 3}">${items.map((ex, k) => { const [a, b] = gapParts(ex.visual), h = pens ? (ex.prompt.match(/«([^»]+)»/) || [])[1] : '';
         return `<div class="pit">${L(k)}<span class="pw">${esc(a)}<span class="pgap"></span>${esc(b)}</span>${h ? ` <span class="small muted">(pensa en «${esc(h)}»)</span>` : ''}</div>`; }).join('')}</div>`;
     }
@@ -2182,18 +2188,23 @@ function paperBody(exs){
       const sameOpts = items.every(x => [...x.options].sort().join('|') === [...ex0.options].sort().join('|')) && ex0.options.every(o => String(o).length <= 24);
       const vis = ex => ex.visual ? `<div>${cleanVis(ex.visual)}</div>` : '';
       if (sameOpts && many) {
-        head = samePrompt ? `${esc(ex0.prompt)} Escriu la resposta.` : 'Respon. Escriu la resposta.';
+        head = samePrompt ? `${esc(dot(ex0.prompt))} Escriu la resposta.` : 'Respon. Escriu la resposta.';
         body = `<div class="pbankw"><b>Tria entre:</b>${esc(ordList([...ex0.options].map(String)))}</div><div class="pgrid" style="--c:${ex0.visual ? 2 : 1}">${items.map((ex, k) => `<div class="pit">${samePrompt ? '' : `<div class="pq">${L(k)}${esc(ex.prompt)}</div>`}${samePrompt ? L(k) : ''}${vis(ex)}<div class="pline"></div></div>`).join('')}</div>`;
       } else {
-        head = samePrompt ? `${esc(ex0.prompt)} Encercla la resposta correcta.` : 'Encercla la resposta correcta.';
+        head = samePrompt ? `${esc(dot(ex0.prompt))} Encercla la resposta correcta.` : 'Encercla la resposta correcta.';
         body = items.map((ex, k) => `<div class="pit" style="margin-top:8px">${samePrompt ? '' : `<div class="pq">${L(k)}${esc(ex.prompt)}</div>`}${samePrompt && many ? L(k) : ''}${vis(ex)}<div class="pcirc ${ex.options.some(o => String(o).length > 16) ? 'col' : ''}">${ex.options.map(o => `<span>${esc(String(o))}</span>`).join('')}</div></div>`).join('');
       }
     }
     else if (ex0.type === 'escriu') {
       const prob = items.some(x => /readtext/.test(x.visual || '') && (x.visual || '').replace(/<[^>]+>/g, '').length > 60), small = !prob && items.every(x => !x.visual || x.visual.length < 2500);
-      head = samePrompt ? esc(ex0.prompt === 'Quant fa?' ? 'Calcula.' : ex0.prompt) : 'Respon.';
-      const line = ex => `<div class="row" style="align-items:flex-end;gap:8px;flex-wrap:nowrap"><div class="pline ${ex.numeric ? 'short' : ''}" style="flex:1"></div>${ex.unit ? `<span>${esc(ex.unit)}</span>` : ''}</div>`;
-      body = `<div class="pgrid" style="--c:${prob ? 1 : small && ex0.visual ? 3 : 2}">${items.map((ex, k) => `<div class="pit">${samePrompt ? L(k) : `<div class="pq">${L(k)}${esc(ex.prompt)}</div>`}${ex.visual ? `<div>${cleanVis(ex.visual)}</div>` : ''}${line(ex)}</div>`).join('')}</div>`;
+      head = samePrompt ? esc(ex0.prompt === 'Quant fa?' ? 'Calcula.' : dot(ex0.prompt)) : 'Respon.';
+      // al paper, el «= ?» i la casella «?» de les sèries es converteixen en l'espai on s'escriu
+      const inl = ex => /=\s*\?/.test(ex.visual || '') || /class="q"/.test(ex.visual || '') || /class="colop/.test(ex.visual || '');
+      const pv = ex => cleanVis(ex.visual).replace(/=\s*\?/, '= <span class="pgap wide"></span>');
+      if (items.every(inl) && items.every(x => /=\s*\?/.test(x.visual || ''))) head = 'Calcula.';
+      const line = ex => inl(ex) ? '' : `<div class="row" style="align-items:flex-end;gap:8px;flex-wrap:nowrap"><div class="pline ${ex.numeric ? 'short' : ''}" style="flex:1"></div>${ex.unit ? `<span>${esc(ex.unit)}</span>` : ''}</div>`;
+      const showQ = !samePrompt && !items.every(x => /=\s*\?/.test(x.visual || ''));
+      body = `<div class="pgrid" style="--c:${prob ? 1 : small && ex0.visual ? 3 : 2}">${items.map((ex, k) => `<div class="pit">${showQ ? `<div class="pq">${L(k)}${esc(ex.prompt)}</div>` : L(k)}${ex.visual ? `<div>${pv(ex)}</div>` : ''}${line(ex)}</div>`).join('')}</div>`;
     }
     else if (ex0.type === 'dictat') {
       adult.push({n, t:'Dicteu aquestes paraules, una a una:', x: items.map((ex, k) => (many ? LT[k] + ') ' : '') + ex.answer).join('     ')});
@@ -2201,17 +2212,18 @@ function paperBody(exs){
       body = `<div class="pgrid" style="--c:2">${items.map((ex, k) => `<div class="pit row" style="align-items:flex-end;gap:6px;flex-wrap:nowrap">${L(k)}<div class="pline" style="flex:1"></div></div>`).join('')}</div>`;
     }
     else if (ex0.type === 'ordena') {
-      head = 'Ordena les paraules i escriu la frase.';
+      const pr = ex0.prompt, nums = ex0.items.every(isNum);
+      head = nums ? 'Ordena els nombres de més petit a més gran i escriu-los en ordre.' : /síl·lab/.test(pr) ? 'Ordena les síl·labes i escriu la paraula.' : /alfabètic/.test(pr) ? 'Ordena les paraules per ordre alfabètic i escriu-les en ordre.' : 'Ordena les paraules i escriu la frase.';
       body = items.map((ex, k) => { const r = mulberry(hashStr(exKey(ex)) + k); let pool = shuffle(r, ex.items.slice()); if (pool.every((x, j) => x === ex.items[j])) pool = pool.reverse();
-        return `<div class="pit" style="margin-top:8px">${L(k)}<div class="ppieces" style="display:inline-flex">${pool.map(x => `<span>${esc(x)}</span>`).join('')}</div><div class="pline"></div></div>`; }).join('');
+        return `<div class="pit" style="margin-top:8px">${L(k)}${ex.visual ? `<div>${cleanVis(ex.visual)}</div>` : ''}<div class="ppieces" style="display:inline-flex">${pool.map(x => `<span>${esc(x)}</span>`).join('')}</div><div class="pline ${nums ? '' : ''}"></div></div>`; }).join('');
     }
     else if (ex0.type === 'relaciona') {
-      head = esc(ex0.prompt) + ' Escriu la lletra al costat de cada número.';
+      head = esc(dot(ex0.prompt)) + ' Al costat de cada número, escriu la lletra que hi correspon.';
       body = items.map((ex, k) => { const r = mulberry(hashStr(exKey(ex)) + k), right = shuffle(r, ex.pairs.map((p, i) => ({t: p[1], i})));
         return `<div class="pit" style="margin-top:8px">${L(k)}<div class="pcols"><div>${ex.pairs.map((p, i) => `<div style="margin:4px 0">${i + 1}. ${ex.bigLeft ? `<span style="font-size:1.5rem">${esc(p[0])}</span>` : esc(p[0])} &nbsp;<span class="pgap"></span></div>`).join('')}</div><div>${right.map((x, j) => `<div style="margin:4px 0">${'ABCDEFGH'[j]}. ${esc(x.t)}</div>`).join('')}</div></div></div>`; }).join('');
     }
     else if (ex0.type === 'classifica') {
-      head = esc(ex0.prompt) + ' Escriu cada paraula a la seva columna.';
+      head = esc(dot(ex0.prompt)) + ` Escriu cada ${ex0.items.every(x => isNum(x.t)) ? 'nombre' : {'c-temps':'verb','c-determinants':'grup de paraules','m-atzar':'frase'}[ex0.skill] || 'paraula'} a la seva columna.`;
       body = items.map((ex, k) => { const r = mulberry(hashStr(exKey(ex)) + k);
         return `<div class="pit" style="margin-top:8px">${L(k)}<div class="pbankw">${shuffle(r, ex.items).map(x => hl(x.t)).join(' &nbsp;·&nbsp; ')}</div><table class="ptable"><tr>${ex.buckets.map(b => `<th>${esc(b)}</th>`).join('')}</tr><tr>${ex.buckets.map(() => '<td></td>').join('')}</tr></table></div>`; }).join('');
     }
