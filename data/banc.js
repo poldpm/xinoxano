@@ -7027,7 +7027,6 @@ window.BANC = {
    "bar[qu]es",
    "bus[qu]em",
    "[qu]iet",
-   "mante[qu]illa",
    "po[qu]es",
    "es[qu]eixar",
    "tru[qu]em",
@@ -7294,7 +7293,6 @@ window.BANC = {
    "bra[ç]os",
    "for[ç]ut",
    "llen[ç]ar",
-   "do[z]ena",
    "on[z]e",
    "quin[z]e",
    "col[z]e"
@@ -7398,7 +7396,6 @@ window.BANC = {
    "in[j]ecció",
    "pro[j]ector",
    "ob[j]ectiu",
-   "[j]erarquia",
    "ma[j]estuós",
    "[j]eure",
    "pro[j]ectil",

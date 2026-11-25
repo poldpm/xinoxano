@@ -289,7 +289,7 @@ textarea{width:100%;min-height:170px;font-family:var(--f-num);font-size:.9rem;li
 .pcg-credit{font-size:.8rem;color:#666;margin-top:10px}
 .pex>b{break-after:avoid;page-break-after:avoid}
 .pex .readtext,.ptable,.pbankw{break-inside:avoid;page-break-inside:avoid}
-.pex > b{display:block;font-size:1.08rem;margin-bottom:6px}
+.pex > b,.pkeep > b{display:block;font-size:1.08rem;margin-bottom:6px}
 .pex .readtext{font-size:1rem;margin:6px 0;background:#fafafa}
 .pex .word,.pex .bigemoji{font-size:1.8rem}
 .pline{border-bottom:1.5px solid #444;height:30px;margin-top:4px}
@@ -299,7 +299,7 @@ textarea{width:100%;min-height:170px;font-family:var(--f-num);font-size:.9rem;li
 .ppieces{display:flex;flex-wrap:wrap;gap:8px;margin:4px 0 6px}
 .ppieces span,.pbank span{border:1.5px solid #555;border-radius:8px;padding:3px 10px}
 .pbank{display:flex;flex-wrap:wrap;gap:8px;margin:4px 0 8px}
-.ptable{width:100%;border-collapse:collapse}.ptable th,.ptable td{border:1.5px solid #555;padding:6px;text-align:center}.ptable td{height:80px}
+.ptable{width:100%;min-width:0;border-collapse:collapse;table-layout:fixed}.ptable th,.ptable td,.ptable tr:last-child td{border:1.5px solid #555;padding:6px;text-align:center}.ptable td{height:80px}.ptable th{font-size:1rem;letter-spacing:0;text-transform:none;color:#1b1b1b}
 .psol ol{margin:0 0 0 20px;line-height:1.6}
 .pmark{display:grid;grid-template-columns:auto 1fr auto;gap:10px;align-items:center;padding:8px 0;border-bottom:1px solid var(--line)}
 .pmark .tog{display:flex;gap:6px}.pmark .tog button{min-width:52px;border:2px solid var(--line);background:var(--card);border-radius:12px;padding:6px 10px;font-weight:700;cursor:pointer}
@@ -308,6 +308,15 @@ textarea{width:100%;min-height:170px;font-family:var(--f-num);font-size:.9rem;li
 .pgrid{display:grid;grid-template-columns:repeat(var(--c,2),minmax(0,1fr));gap:14px 22px;margin-top:6px}
 .pit{break-inside:avoid;page-break-inside:avoid}
 .pkeep{break-inside:avoid;page-break-inside:avoid}
+.pgrid > .pit:not(.row){display:flex;flex-direction:column}
+.pgrid > .pit:not(.row) > .pline:last-child,.pgrid > .pit:not(.row) > .row:last-child{margin-top:auto}
+.pit .series{flex-wrap:wrap!important;justify-content:flex-start!important}
+.pwork{border:1.5px dashed #aaa;border-radius:8px;height:96px;margin:8px 0 4px;position:relative}
+.pwork span{position:absolute;top:4px;left:8px;font-size:.75rem;color:#888}
+.plist{margin:6px 0 8px 22px;padding:0;line-height:1.55}
+.plist li{padding-left:4px}
+.pchips{display:flex;flex-wrap:wrap;gap:6px 18px}
+.pchips > span{white-space:nowrap}
 .pit .lt{font-weight:700;margin-right:6px}
 .pw{font-family:var(--f-read);font-size:1.45rem;letter-spacing:.03em;white-space:nowrap}
 .pgap{display:inline-block;width:2.4em;border-bottom:2px solid #222;margin:0 2px;height:1.1em;vertical-align:baseline}
@@ -315,12 +324,14 @@ textarea{width:100%;min-height:170px;font-family:var(--f-num);font-size:.9rem;li
 .pcirc.col{flex-direction:column;gap:6px}
 .pcirc .ol{display:inline-block;min-width:1.5em;font-weight:700;color:var(--brand2)}
 .pbankw{border:2px dashed #999;border-radius:10px;padding:6px 12px;margin:6px 0 4px;font-size:1.05rem}
-.pbankw b{margin-right:6px}
+.pbankw > b{margin-right:6px}
 .pit .word,.pit .bigemoji{font-size:1.5rem;margin:2px 0}
 .pit svg{max-height:120px;width:auto}
 .pit svg.chart{max-height:250px;width:auto;max-width:100%}
+.pit svg.shape{max-height:210px;width:auto;max-width:100%}
+.pit svg.chart{max-height:330px}
 .pline.short{max-width:150px}
-.pit .series span{background:#fff;border:1.5px solid #bbb;font-size:1.3rem;min-width:48px;padding:6px}
+.pit .series span{background:#fff;border:1.5px solid #bbb;font-size:1.3rem;min-width:44px;padding:6px}
 .pit .series span.q{background:#fff;border:2px solid #222;color:transparent}
 .pgap.wide{width:3.2em}
 .pit .colop{background:#fff;padding:0;font-size:1.45rem;border-radius:0}
@@ -409,7 +420,7 @@ const RULES = {
   'c-ggu':{tag:'g / gu',opts:['g','gu'],w:['[g]at','[g]os','[g]oma','[g]ust','[gu]itarra','[gu]ineu','fi[gu]era','[gu]erra','ami[g]a','ami[gu]es','formi[g]a','formi[gu]es']},
   'c-rrr':{tag:'r / rr',opts:['r','rr'],w:['ca[rr]o','ca[r]a','pe[r]a','te[rr]a','ge[rr]o','to[rr]e','mo[r]a','fe[rr]o','ba[rr]et','co[r]ona','pa[r]et','ca[rr]er','pe[rr]uca','ce[r]a']},
   'c-bv':{tag:'b / v',opts:['b','v'],w:['[v]aca','[b]ota','[b]ossa','[v]aixell','a[v]ió','lli[b]re','ca[v]all','[b]alena','[v]ent','tre[b]all','go[v]ern','[b]eure','ar[b]re','no[v]embre','[v]ida','[b]ufanda']},
-  'c-sss':{tag:'s / ss / ç / z',opts:['s','ss','ç','z'],w:['ca[s]a','ro[s]a','gro[ss]a','pa[ss]eig','mi[ss]atge','ma[ç]ana','pla[ç]a','for[ç]a','[z]oo','do[z]ena','tre[s]or','ca[ç]ador','po[ss]ible','on[z]e']},
+  'c-sss':{tag:'s / ss / ç / z',opts:['s','ss','ç','z'],w:['ca[s]a','ro[s]a','gro[ss]a','pa[ss]eig','mi[ss]atge','ma[ç]ana','pla[ç]a','for[ç]a','[z]oo','tre[s]or','ca[ç]ador','po[ss]ible','on[z]e']},
   'c-ll':{tag:'l / ll / l·l',opts:['l','ll','l·l'],w:['pe[l·l]ícula','co[l·l]egi','i[l·l]usió','cava[ll]','caste[ll]','ga[ll]ina','cu[ll]era','cè[l·l]ula','tranqui[l·l]a','a[l]a','sa[l]a','i[ll]a','exce[l·l]ent','ba[l]ena']}
 };
 const ACCENTS = [['cafè','cafe','café'],['sofà','sofa','sòfa'],['camió','camio','camiò'],['plàtan','platan','platàn'],['música','musica','musíca'],
@@ -486,8 +497,8 @@ function clockSVG(h, m){
   for (let i = 1; i <= 12; i++) { const a = i * Math.PI / 6; nums += `<text x="${(100 + 72 * Math.sin(a)).toFixed(1)}" y="${(100 - 72 * Math.cos(a) + 7).toFixed(1)}" text-anchor="middle" font-size="19" font-weight="700" fill="var(--ink)" font-family="Andika, sans-serif">${i}</text>`; }
   const ma = m * 6 * Math.PI / 180, ha = ((h % 12) * 30 + m * 0.5) * Math.PI / 180;
   return `<svg class="clock" viewBox="0 0 200 200" role="img" aria-label="Rellotge"><circle cx="100" cy="100" r="92" fill="var(--card)" stroke="var(--ink)" stroke-width="6"/>${nums}
-  <line x1="100" y1="100" x2="${100 + 46 * Math.sin(ha)}" y2="${100 - 46 * Math.cos(ha)}" stroke="var(--ink)" stroke-width="9" stroke-linecap="round"/>
-  <line x1="100" y1="100" x2="${100 + 70 * Math.sin(ma)}" y2="${100 - 70 * Math.cos(ma)}" stroke="var(--brand)" stroke-width="5" stroke-linecap="round"/><circle cx="100" cy="100" r="7" fill="var(--ink)"/></svg>`;
+  <line x1="100" y1="100" x2="${100 + 38 * Math.sin(ha)}" y2="${100 - 38 * Math.cos(ha)}" stroke="var(--ink)" stroke-width="9" stroke-linecap="round"/>
+  <line x1="100" y1="100" x2="${100 + 56 * Math.sin(ma)}" y2="${100 - 56 * Math.cos(ma)}" stroke="var(--brand)" stroke-width="5" stroke-linecap="round"/><circle cx="100" cy="100" r="7" fill="var(--ink)"/></svg>`;
 }
 function moneySVG(list){
   return '<div class="row" style="justify-content:center">' + list.map(v => {
@@ -622,7 +633,7 @@ skill('m-monedes','mat','Les monedes',1,3,(r,c)=>{
   if (c === 1) { const list = Array.from({length:ri(r,2,4)},()=>pick(r,[0.1,0.1,0.2,0.2,0.5])).sort((a,b)=>b-a); const t = Math.round(list.reduce((s,v)=>s+v,0)*100);
     return {type:'escriu', numeric:true, prompt:'Quants cèntims hi ha en total?', speak:'Quants cèntims hi ha en total?', visual:moneySVG(list), answer:String(t), unit:'cèntims'}; }
   if (c === 2) { const list = Array.from({length:ri(r,2,4)},()=>pick(r,[1,2,2,5,10])).sort((a,b)=>b-a); const t = list.reduce((s,v)=>s+v,0);
-    return {type:'escriu', numeric:true, prompt:'Quants euros hi ha en total?', speak:'Quants euros hi ha en total?', visual:moneySVG(list), answer:String(t)}; }
+    return {type:'escriu', numeric:true, prompt:'Quants euros hi ha en total?', speak:'Quants euros hi ha en total?', visual:moneySVG(list), answer:String(t), unit:'€'}; }
   const list = Array.from({length:ri(r,3,5)},()=>pick(r,[2,1,0.5,0.2,0.1,0.5])).sort((a,b)=>b-a); const t = Math.round(list.reduce((s,v)=>s+v,0)*100)/100;
   const f = v => fmtD(v).includes(',') ? fmtD(v).padEnd(fmtD(v).indexOf(',')+3,'0')+' €' : fmtD(v)+' €';
   return {prompt:'Quants diners hi ha?', speak:'Quants diners hi ha?', visual:moneySVG(list), ...tria(r,f(t),[f(t+0.1),f(t+1),f(Math.max(0.1,t-0.5)),f(t+0.2)])}; });
@@ -728,7 +739,7 @@ skill('c-tonica','cat','La síl·laba tònica',2,3,(r)=>{ const w = pick(r,TONIC
 skill('c-agudes','cat','Agudes, planes i esdrúixoles',3,6,(r)=>({type:'classifica', prompt:'Classifica les paraules', speak:'Classifica les paraules: agudes, planes o esdrúixoles.', buckets:['Aguda','Plana','Esdrúixola'], items:sample(r,TONICA,6).map(w=>({t:w.slice(0,-1).join(''), b:w[w.length-1]}))}));
 const HACHE = [['hora','ora'],['home','ome'],['herba','erba'],['hivern','ivern'],['ou','hou'],['ull','hull'],['orella','horella'],['hospital','ospital'],['ahir','air'],['hamburguesa','amburguesa'],['ombra','hombra'],['horta','orta'],['os','hos'],['història','istòria']];
 skill('c-h','cat','La H',2,5,(r)=>{ const w = pick(r,HACHE); return {prompt:'Quina està ben escrita?', speak:'Quina paraula està ben escrita?', tag:'h', ...tria(r,w[0],w.slice(1))}; });
-skill('c-ssons','cat','S sonora o sorda',3,4,(r)=>({type:'classifica', prompt:'Com sona la essa?', speak:'Escolta com sona la essa. Sona com a casa, o com a sol?', buckets:['Com a «casa»','Com a «sol»'],
+skill('c-ssons','cat','S sonora o sorda',3,4,(r)=>({type:'classifica', prompt:'Com sona cada paraula: com la «s» de «casa» (so suau) o com la «s» de «sol» (so fort)?', speak:'Escolta com sona la essa. Sona com a casa, o com a sol?', buckets:['Com a «casa»','Com a «sol»'],
   items:sample(r,SSONS,6).map(([t,b])=>({t,b}))}));
 const FINALS = [['ver_','verda','d','t'],['llar_','llarga','g','c'],['sor_','sorda','d','t'],['gro_','groga','c','g'],['llo_','lloba','p','b'],['ami_','amiga','c','g'],['fre_','freda','d','t'],['bru_','bruta','t','d'],['ce_','cega','c','g'],['re_','rebre','p','b']];
 skill('c-finals','cat','Consonants finals (p/b, t/d, c/g)',5,6,(r)=>{ const w = pick(r,FINALS);
@@ -764,7 +775,7 @@ const PRON = [["La Marta canta molt bé.","Ella","Ell","Elles"],["En Pau i jo ju
   ["Tu i la Laia sou amigues.","Vosaltres","Nosaltres","Elles"],["El gos borda.","Ell","Ella","Ells"],["Les nenes salten a corda.","Elles","Ells","Ella"]];
 skill('c-pronoms','cat','Pronoms personals',3,6,(r)=>{ const p = pick(r,PRON); return {prompt:'Quin pronom pot substituir el subjecte?', speak:p[0], visual:`<div class="readtext">${esc(p[0])}</div>`, ...tria(r,p[1],p.slice(2))}; });
 const CONC = [['una casa','vella','vell','vells'],['uns gats','negres','negre','negra'],['les flors','grogues','groga','grocs'],['un nen','alt','alta','alts'],['unes pomes','vermelles','vermella','vermells'],['el cel','blau','blava','blaus'],['la sopa','calenta','calent','calentes']];
-skill('c-concordanca','cat','Concordança nom i adjectiu',2,3,(r)=>{ const w = pick(r,CONC); return {prompt:`Com acaba? «${w[0]} …»`, speak:`Quina paraula va bé amb ${w[0]}?`, tag:'concordança', ...tria(r,w[1],w.slice(2))}; });
+skill('c-concordanca','cat','Concordança nom i adjectiu',2,3,(r)=>{ const w = pick(r,CONC); return {prompt:`Quina paraula completa «${w[0]} …»?`, speak:`Quina paraula va bé amb ${w[0]}?`, tag:'concordança', ...tria(r,w[1],w.slice(2))}; });
 
 // CATALÀ · lèxic
 const FAM = [['mar',['mariner','marina','marítim'],'martell'],['pa',['panet','panera','paneret'],'pala'],['llet',['lleter','lletera','lletós'],'lletra'],['flor',['florista','floreta','florir'],'forat'],
@@ -799,7 +810,7 @@ skill('m-dobles','mat','Dobles i meitats',1,3,(r,c)=>{ const n = ri(r,2,c===1?10
 skill('m-x10','mat','Per 10, 100 i 1.000',3,6,(r,c)=>{ const k = pick(r, c===3 ? [10,100] : [10,100,1000]), mul = c===3 || r() < .5; let n, ans;
   if (c <= 4) { if (mul) { n = ri(r,2,c===3?99:999); ans = n*k; } else { n = ri(r,2,99)*k; ans = n/k; } } else { n = ri(r,1,9999)/100; ans = mul ? n*k : n/k; }
   return {type:'escriu', numeric:true, prompt:'Quant fa?', speak:`Quant fa ${fmtX(n)} ${mul?'per':'dividit entre'} ${k}?`, visual:`<div class="word num">${fmtX(n)} ${mul?'×':':'} ${fmtN(k)} = ?</div>`, answer:fmtX(ans)}; });
-skill('m-divresidu','mat','Divisions amb residu',3,6,(r,c)=>{ const b = ri(r,2,c===3?5:9), q = ri(r,2,c===3?9:c===4?20:60), re = ri(r,1,b-1), n = b*q+re, f = (x,y)=>`${x} a cadascú i en sobren ${y}`;
+skill('m-divresidu','mat','Divisions amb residu',3,6,(r,c)=>{ const b = ri(r,2,c===3?5:9), q = ri(r,2,c===3?9:c===4?20:60), re = ri(r,1,b-1), n = b*q+re, f = (x,y)=>`${x} a cadascú i ${y === 1 ? 'en sobra' : 'en sobren'} ${y}`;
   return {prompt:`Repartim ${n} cromos entre ${b} amics. Quants en toquen a cadascú i quants en sobren?`, speak:`Repartim ${n} cromos entre ${b} amics. Quants en toquen a cadascú i quants en sobren?`, ...tria(r,f(q,re),[f(q+1,re),f(q-1,re+b),f(re,q)])}; });
 skill('m-fraccio-col','mat',"Fracció d'una quantitat",3,5,(r,c)=>{ const d = pick(r,[2,3,4,5,10]), k = ri(r,2,c===3?5:10), n = c===3 ? 1 : ri(r,1,d-1);
   return {type:'escriu', numeric:true, prompt:`Quant és ${n}/${d} de ${d*k}?`, speak:`Quant és ${n} ${{2:'mig',3:'terç',4:'quart',5:'cinquè',10:'desè'}[d]}${n>1?'s':''} de ${d*k}?`, visual:`<div class="word num">${n}/${d} de ${d*k} = ?</div>`, answer:String(n*k)}; });
@@ -828,19 +839,25 @@ skill('m-temps','mat','Mesures de temps',3,6,(r,c)=>{ const Q = [['Quants minuts
   if (c >= 4) Q.push([`Quantes hores són ${m} dies?`, m*24], [`Quants minuts són ${h} hores i mitja?`, h*60+30]); if (c >= 4) Q.push([`Quants segons són ${m} minuts?`, m*60]); if (c >= 5) { const mm = pick(r,[15,20,30,45]); Q.push([`Quants minuts són ${h} h i ${mm} min?`, h*60+mm]); }
   const [q, a] = pick(r, Q); return {type:'escriu', numeric:true, prompt:q, speak:q, answer:String(a)}; });
 skill('m-digital','mat','Rellotge digital',3,4,(r)=>{ const h = ri(r,1,12), m = ri(r,0,11)*5, f = (x,y) => `${pad2(x)}:${pad2(y)}`;
-  return {prompt:'Quina hora marca en un rellotge digital?', speak:'Mira el rellotge. Com ho escriuries en un rellotge digital?', visual:clockSVG(h,m), ...tria(r,f(h,m),[f(h % 12 + 1,m), f(h,(m+15)%60), f(m/5 || 12, h*5 % 60)])}; });
+  return {prompt:'Quina hora marca el rellotge? Tria com s\'escriu en un rellotge digital.', speak:'Mira el rellotge. Com ho escriuries en un rellotge digital?', visual:clockSVG(h,m), ...tria(r,f(h,m),[f(h % 12 + 1,m), f(h,(m+15)%60), f(m/5 || 12, h*5 % 60)])}; });
 const MESOS = ['gener','febrer','març','abril','maig','juny','juliol','agost','setembre','octubre','novembre','desembre'], DIES = ['dilluns','dimarts','dimecres','dijous','divendres','dissabte','diumenge'];
 skill('m-calendari','mat','El calendari',1,3,(r,c)=>{ const t = c===1 ? ri(r,1,2) : ri(r,0,3), i = ri(r,0,10), j = ri(r,1,6);
   const [q, a] = [[`Quin mes ve després del mes de ${MESOS[i]}?`, MESOS[i+1]], [`Quin dia de la setmana va abans de ${DIES[j]}?`, DIES[j-1]], [`Quin dia de la setmana va després de ${DIES[j-1]}?`, DIES[j]], [`Quin mes va abans del mes de ${MESOS[i+1]}?`, MESOS[i]]][t];
   if (c === 1) return {prompt:q, speak:q, ...tria(r, a, DIES.filter(x => x !== a))}; // a 1r no s'escriu: l'ortografia encara és natural
   return {type:'escriu', prompt:q, speak:q, answer:a}; });
-function gridRect(w, h){ const s = 22, W = (w+2)*s, H = (h+2)*s; let g = '';
-  for (let x = 0; x <= w+2; x++) g += `<line x1="${x*s}" y1="0" x2="${x*s}" y2="${H}" stroke="var(--line)" stroke-width="1"/>`;
-  for (let y = 0; y <= h+2; y++) g += `<line x1="0" y1="${y*s}" x2="${W}" y2="${y*s}" stroke="var(--line)" stroke-width="1"/>`;
-  return `<svg viewBox="0 0 ${W} ${H}" width="${W}" height="${H}" style="max-width:100%;height:auto" role="img" aria-label="Figura en una quadrícula">${g}<rect x="${s}" y="${s}" width="${w*s}" height="${h*s}" fill="var(--brand-soft)" stroke="var(--brand2)" stroke-width="3"/></svg>`; }
-function labeledShape(kind, w, h){ const T = (x,y,t) => `<text x="${x}" y="${y}" text-anchor="middle" font-size="16" font-weight="700" fill="var(--ink)" font-family="Fira Sans, sans-serif">${t}</text>`;
-  if (kind === 'rect') return `<svg viewBox="0 0 280 190" width="280" height="190" style="max-width:100%;height:auto" role="img" aria-label="Rectangle"><rect x="40" y="20" width="200" height="130" fill="var(--brand-soft)" stroke="var(--brand2)" stroke-width="3"/>${T(140,176,w+' cm')}${T(262,90,h+' cm')}</svg>`;
-  return `<svg viewBox="0 0 280 190" width="280" height="190" style="max-width:100%;height:auto" role="img" aria-label="Triangle"><path d="M40 150 L240 150 L110 20 Z" fill="var(--brand-soft)" stroke="var(--brand2)" stroke-width="3"/><path d="M110 20 V150" stroke="var(--ink)" stroke-width="2" stroke-dasharray="6 5"/>${T(140,176,'base '+w+' cm')}<text x="118" y="95" font-size="16" font-weight="700" fill="var(--ink)" font-family="Fira Sans, sans-serif">alçada ${h} cm</text></svg>`; }
+function gridRect(w, h){ const s = 30, W = (w+2)*s, H = (h+2)*s; let g = `<rect x="${s}" y="${s}" width="${w*s}" height="${h*s}" fill="#f6d3dc"/>`;
+  // la quadrícula es dibuixa per sobre del color: els quadrets de dins la figura es poden comptar
+  for (let x = 0; x <= w+2; x++) g += `<line x1="${x*s}" y1="0" x2="${x*s}" y2="${H}" stroke="#a89ca2" stroke-width="1.2"/>`;
+  for (let y = 0; y <= h+2; y++) g += `<line x1="0" y1="${y*s}" x2="${W}" y2="${y*s}" stroke="#a89ca2" stroke-width="1.2"/>`;
+  return `<svg class="shape" viewBox="0 0 ${W} ${H}" width="${W}" height="${H}" style="max-width:100%;height:auto" role="img" aria-label="Figura en una quadrícula">${g}<rect x="${s}" y="${s}" width="${w*s}" height="${h*s}" fill="none" stroke="var(--brand2)" stroke-width="3.5"/><rect x="0.5" y="0.5" width="${W-1}" height="${H-1}" fill="none" stroke="#a89ca2" stroke-width="1.2"/></svg>`; }
+/* figures amb mides: el dibuix és proporcional a les mides */
+function labeledShape(kind, w, h){ const T = (x,y,t,a = 'middle') => `<text x="${x}" y="${y}" text-anchor="${a}" font-size="19" font-weight="700" fill="#1b1b1b" font-family="Fira Sans, sans-serif">${t}</text>`;
+  const k = Math.min(220 / w, 140 / h), pw = w * k, ph = h * k;
+  if (kind === 'rect') { const x0 = 30, y0 = 16, W = x0 + pw + 80, H = y0 + ph + 36;
+    return `<svg class="shape" viewBox="0 0 ${W} ${H}" width="${W}" height="${H}" style="max-width:100%;height:auto" role="img" aria-label="Rectangle de ${w} per ${h} cm"><rect x="${x0}" y="${y0}" width="${pw}" height="${ph}" fill="#f6d3dc" stroke="var(--brand2)" stroke-width="3"/>${T(x0 + pw/2, y0 + ph + 26, w + ' cm')}${T(x0 + pw + 10, y0 + ph/2 + 7, h + ' cm', 'start')}</svg>`; }
+  const x0 = 120, y0 = 16, yb = y0 + ph, xa = x0 + pw * .35, W = x0 + pw + 20, H = yb + 36;
+  return `<svg class="shape" viewBox="0 0 ${W} ${H}" width="${W}" height="${H}" style="max-width:100%;height:auto" role="img" aria-label="Triangle de base ${w} cm i alçada ${h} cm"><path d="M${x0} ${yb} L${x0 + pw} ${yb} L${xa} ${y0} Z" fill="#f6d3dc" stroke="var(--brand2)" stroke-width="3"/><path d="M${xa} ${y0} V${yb}" stroke="#1b1b1b" stroke-width="2" stroke-dasharray="6 5"/>
+    <path d="M${x0 - 16} ${y0} V${yb} M${x0 - 22} ${y0} H${x0 - 10} M${x0 - 22} ${yb} H${x0 - 10}" stroke="#1b1b1b" stroke-width="1.5"/>${T(x0 - 26, (y0 + yb)/2 - 4, 'alçada', 'end')}${T(x0 - 26, (y0 + yb)/2 + 18, h + ' cm', 'end')}${T(x0 + pw/2, yb + 26, 'base ' + w + ' cm')}</svg>`; }
 skill('m-perimetre','mat','Perímetre',3,6,(r,c)=>{ if (c <= 4) { const w = ri(r,2,7), h = ri(r,2,5); return {type:'escriu', numeric:true, prompt:'Cada quadret fa 1 cm de costat. Quants centímetres fa el perímetre?', speak:'Cada quadret fa un centímetre de costat. Quants centímetres fa el perímetre de la figura?', visual:gridRect(w,h), answer:String(2*(w+h))}; }
   const w = ri(r,4,15), h = ri(r,2,w-1); return {type:'escriu', numeric:true, prompt:'Quants centímetres fa el perímetre del rectangle?', speak:'Quants centímetres fa el perímetre del rectangle?', visual:labeledShape('rect',w,h), answer:String(2*(w+h))}; });
 skill('m-area','mat','Àrea',3,6,(r,c)=>{ if (c <= 4) { const w = ri(r,2,7), h = ri(r,2,5); return {type:'escriu', numeric:true, prompt:'Quants quadrets ocupa la figura?', speak:'Quants quadrets ocupa la figura? Aquesta és la seva àrea.', visual:gridRect(w,h), answer:String(w*h)}; }
@@ -898,12 +915,12 @@ skill('m-posicio','mat','On és?',1,2,(r)=>{ const t = ri(r,0,2);
   const [a, b] = shuffle(r, POS_OBJ).slice(0,2), up = r() < .5;
   const prest = `<rect x="40" y="10" width="160" height="140" fill="#f6ebe0" stroke="${FST}" stroke-width="3"/><rect x="40" y="78" width="160" height="6" fill="#c48a5a"/><rect x="40" y="144" width="160" height="6" fill="#c48a5a"/>`;
   return {prompt:`Què hi ha al prestatge ${up ? 'de dalt' : 'de baix'}?`, speak:`Mira la prestatgeria. Què hi ha al prestatge ${up ? 'de dalt' : 'de baix'}?`, visual:svgBox(240,160, prest + emo(120,52,a[0]) + emo(120,118,b[0]),'Una prestatgeria amb dos prestatges'), ...tria(r, up ? a[1] : b[1], [a[1], b[1], ...POS_OBJ.map(x=>x[1])])}; });
-const PESANT = [['🍉','La síndria'],['🎃','La carbassa'],['📚','Els llibres']], LLEUGER = [['🍓','La maduixa'],['🍒','La cirera'],['🍃','La fulla']];
+const PESANT = [['🍉','La síndria'],['🎃','La carbassa'],['📚','Els llibres']], LLEUGER = [['🍓','La maduixa'],['🍒','La cirera'],['🍂','La fulla']];
 skill('m-mesura1','mat','Comparar i mesurar',1,2,(r)=>{ const t = ri(r,0,3);
   if (t === 0) { const L = shuffle(r,[60,95,130,165]).slice(0,3), cols = shuffle(r,['#e8434f','#4f7cff','#2fbf71','#f2c230']), llarg = r() < .5;
-    const g = L.map((l,i) => `<text x="12" y="${32 + i*42}" font-size="20" font-weight="700" fill="${FST}" dominant-baseline="central">${'ABC'[i]}</text><rect x="40" y="${22 + i*42}" width="${l}" height="20" rx="4" fill="${cols[i]}" stroke="${FST}" stroke-width="2"/><polygon points="${40+l},${22+i*42} ${40+l+22},${32+i*42} ${40+l},${42+i*42}" fill="#f4d7a8" stroke="${FST}" stroke-width="2" stroke-linejoin="round"/>`).join('');
+    const g = L.map((l,i) => `<text x="12" y="${32 + i*42}" font-size="20" font-weight="700" fill="${FST}" dominant-baseline="central">${i + 1}</text><rect x="40" y="${22 + i*42}" width="${l}" height="20" rx="4" fill="${cols[i]}" stroke="${FST}" stroke-width="2"/><polygon points="${40+l},${22+i*42} ${40+l+22},${32+i*42} ${40+l},${42+i*42}" fill="#f4d7a8" stroke="${FST}" stroke-width="2" stroke-linejoin="round"/>`).join('');
     const k = llarg ? L.indexOf(Math.max(...L)) : L.indexOf(Math.min(...L));
-    return {prompt:`Quin llapis és més ${llarg ? 'llarg' : 'curt'}?`, speak:`Mira els llapis. Quin és el més ${llarg ? 'llarg' : 'curt'}?`, visual:svgBox(240,140,g,'Tres llapis'), ...tria(r, 'El llapis ' + 'ABC'[k], ['El llapis A','El llapis B','El llapis C'])}; }
+    return {prompt:`Quin llapis és més ${llarg ? 'llarg' : 'curt'}?`, speak:`Mira els llapis. Quin és el més ${llarg ? 'llarg' : 'curt'}?`, visual:svgBox(240,140,g,'Tres llapis'), ...tria(r, 'El llapis ' + (k + 1), ['El llapis 1','El llapis 2','El llapis 3'])}; }
   if (t === 1) { const n = ri(r,3,8), u = 24;
     const g = `<rect x="10" y="14" width="${n*u-16}" height="18" rx="4" fill="#4f7cff" stroke="${FST}" stroke-width="2"/><polygon points="${n*u-6},14 ${10+n*u},23 ${n*u-6},32" fill="#f4d7a8" stroke="${FST}" stroke-width="2"/>` +
       `<line x1="10" y1="8" x2="10" y2="72" stroke="${FST}" stroke-width="1" stroke-dasharray="3 3"/><line x1="${10+n*u}" y1="8" x2="${10+n*u}" y2="72" stroke="${FST}" stroke-width="1" stroke-dasharray="3 3"/>` +
@@ -911,13 +928,13 @@ skill('m-mesura1','mat','Comparar i mesurar',1,2,(r)=>{ const t = ri(r,0,3);
     return {type:'escriu', numeric:true, prompt:'Quants quadrets fa de llarg el llapis?', speak:'Compta els quadrets que hi ha sota el llapis. Quants quadrets fa de llarg?', visual:svgBox(270,80,g,'Un llapis sobre una fila de quadrets'), answer:String(n), unit:'quadrets'}; }
   if (t === 2) { const p = pick(r, PESANT), l = pick(r, LLEUGER), left = r() < .5, L = left ? p : l, Rr = left ? l : p, dy = left ? 14 : -14;
     const g = `<polygon points="120,120 105,150 135,150" fill="#9aa5b8"/><line x1="120" y1="40" x2="120" y2="120" stroke="${FST}" stroke-width="4"/><line x1="50" y1="${40+dy}" x2="190" y2="${40-dy}" stroke="${FST}" stroke-width="4"/>
-      <path d="M25 ${70+dy} h50 l-8 14 h-34 z" fill="#c9d1de" stroke="${FST}" stroke-width="2"/><line x1="50" y1="${40+dy}" x2="50" y2="${70+dy}" stroke="${FST}" stroke-width="1.5"/>
-      <path d="M165 ${70-dy} h50 l-8 14 h-34 z" fill="#c9d1de" stroke="${FST}" stroke-width="2"/><line x1="190" y1="${40-dy}" x2="190" y2="${70-dy}" stroke="${FST}" stroke-width="1.5"/>` + emo(50, 52+dy, L[0], 30) + emo(190, 52-dy, Rr[0], 30);
+      <path d="M25 ${90+dy} h50 l-8 14 h-34 z" fill="#c9d1de" stroke="${FST}" stroke-width="2"/><line x1="50" y1="${40+dy}" x2="50" y2="${90+dy}" stroke="${FST}" stroke-width="1.5"/>
+      <path d="M165 ${90-dy} h50 l-8 14 h-34 z" fill="#c9d1de" stroke="${FST}" stroke-width="2"/><line x1="190" y1="${40-dy}" x2="190" y2="${90-dy}" stroke="${FST}" stroke-width="1.5"/>` + emo(50, 74+dy, L[0], 30) + emo(190, 74-dy, Rr[0], 30);
     return {prompt:'Què pesa més?', speak:'Mira la balança. Què pesa més?', visual:svgBox(240,160,g,'Una balança amb dos objectes'), ...tria(r, p[1], [p[1], l[1]])}; }
   const a = ri(r,1,4), b = (a + ri(r,1,3)) % 5 || 5, mes = r() < .5;
   const got = (x, n) => `<path d="M${x} 20 L${x+8} 140 H${x+62} L${x+70} 20" fill="#ffffff" stroke="${FST}" stroke-width="3" stroke-linejoin="round"/><path d="M${x+8 - 0} ${140 - n*22} L${x+8} 140 H${x+62} L${x+62} ${140 - n*22} Z" fill="#7fc8f5" opacity=".85"/>`;
-  return {prompt:`Quin got té ${mes ? 'més' : 'menys'} aigua?`, speak:`Mira els dos gots. Quin té ${mes ? 'més' : 'menys'} aigua?`, visual:svgBox(240,160, got(25,a) + got(145,b) + `<text x="60" y="155" font-size="16" font-weight="700" text-anchor="middle" fill="${FST}">A</text><text x="180" y="155" font-size="16" font-weight="700" text-anchor="middle" fill="${FST}">B</text>`,'Dos gots amb aigua'),
-    ...tria(r, (mes ? a > b : a < b) ? 'El got A' : 'El got B', ['El got A','El got B'])}; });
+  return {prompt:`Quin got té ${mes ? 'més' : 'menys'} aigua?`, speak:`Mira els dos gots. Quin té ${mes ? 'més' : 'menys'} aigua?`, visual:svgBox(240,160, got(25,a) + got(145,b) + `<text x="60" y="155" font-size="16" font-weight="700" text-anchor="middle" fill="${FST}">1</text><text x="180" y="155" font-size="16" font-weight="700" text-anchor="middle" fill="${FST}">2</text>`,'Dos gots amb aigua'),
+    ...tria(r, (mes ? a > b : a < b) ? 'El got 1' : 'El got 2', ['El got 1','El got 2'])}; });
 skill('m-poligons','mat','Polígons',2,4,(r)=>{ const N = {3:'Triangle',4:'Quadrilàter',5:'Pentàgon',6:'Hexàgon',8:'Octàgon'}, n = pick(r,[3,4,5,6,8]);
   return {prompt:'Com es diu aquest polígon?', speak:'Compta els costats. Com es diu aquest polígon?', visual:polySVG(n), ...tria(r,N[n],Object.values(N))}; });
 skill('m-cercle','mat','El cercle',6,6,(r)=>{ const rad = ri(r,2,12), asR = r() < .5;
@@ -928,24 +945,28 @@ skill('m-cercle','mat','El cercle',6,6,(r)=>{ const rad = ri(r,2,12), asR = r() 
 skill('m-atzar','mat','Segur, possible o impossible',2,6,(r)=>({type:'classifica', prompt:'Segur, possible o impossible?', speak:'Classifica cada cosa: és segur, possible o impossible?', buckets:['Segur','Possible','Impossible'],
   items:sample(r,[['Treure un nombre de l\'1 al 6 amb un dau',0],['Treure una bola vermella d\'una bossa on totes són vermelles',0],['Que després de dilluns vingui dimarts',0],
     ['Treure un 6 amb un dau',1],['Que demà plogui',1],['Treure cara en tirar una moneda',1],['Treure una bola blava d\'una bossa amb boles blaves i grogues',1],
-    ['Treure un 7 amb un dau normal',2],['Treure una bola verda d\'una bossa amb boles vermelles',2],['Que una setmana tingui 8 dies',2]],6).map(([t,b])=>({t,b}))}));
-function barSVG(labels, vals, title, st){ const max = Math.max(...vals), step = st || (max <= 10 ? 2 : max <= 30 ? 5 : 10), top = Math.ceil(max / step) * step, H = 150, x0 = 40, bw = 44, gap = 22;
-  let g = ''; for (let v = 0; v <= top; v += step) { const y = 170 - v / top * H; g += `<line x1="${x0}" y1="${y}" x2="${x0 + labels.length*(bw+gap)}" y2="${y}" stroke="var(--line)"/><text x="${x0-8}" y="${y+5}" text-anchor="end" font-size="12" fill="var(--soft)" font-family="Fira Sans, sans-serif">${v}</text>`; }
-  const bars = labels.map((l,i)=>{ const x = x0 + 12 + i*(bw+gap), h = vals[i] / top * H; return `<rect x="${x}" y="${170-h}" width="${bw}" height="${h}" rx="4" fill="var(--mat)"/><text x="${x+bw/2}" y="190" text-anchor="middle" font-size="13" fill="var(--ink)" font-family="Fira Sans, sans-serif">${l}</text>`; }).join('');
-  const W = x0 + labels.length*(bw+gap) + 10;
-  return `<div style="text-align:center"><div class="small muted" style="font-weight:700">${title}</div><svg class="chart" viewBox="0 0 ${W} 200" width="${W}" height="200" style="max-width:100%;height:auto" role="img" aria-label="${title}">${g}${bars}</svg></div>`; }
+    ['Treure un 7 amb un dau normal',2],['Treure una bola verda d\'una bossa amb boles vermelles',2],['Que una setmana tingui 8 dies',2],
+    ['Que un any tingui 12 mesos',0],['Que un triangle tingui 3 costats',0],['Que després de l\'hivern vingui la primavera',0],['Que avui sopem pasta',1],['Treure un nombre parell amb un dau',1],
+    ['Que el pròxim cotxe que passi sigui blanc',1],['Que demà faci sol',1],['Que un gat parli com una persona',2],['Treure un 0 amb un dau normal',2],['Que el febrer tingui 35 dies',2],['Que una vaca voli',2]],5).map(([t,b])=>({t,b}))}));
+function barSVG(labels, vals, title, st){ const max = Math.max(...vals), step = st || (max <= 10 ? 2 : max <= 30 ? 5 : 10), top = Math.ceil(max / step) * step, H = Math.max(160, top / step * 22), y0 = H + 16, x0 = 44, bw = 56, gap = 24;
+  let g = ''; for (let v = 0; v <= top; v += step) { const y = y0 - v / top * H; g += `<line x1="${x0}" y1="${y}" x2="${x0 + labels.length*(bw+gap)}" y2="${y}" stroke="#bdb4b8"/><text x="${x0-8}" y="${y+5}" text-anchor="end" font-size="15" fill="#2a2230" font-family="Fira Sans, sans-serif">${v}</text>`; }
+  const bars = labels.map((l,i)=>{ const x = x0 + 12 + i*(bw+gap), h = vals[i] / top * H; return `<rect x="${x}" y="${y0-h}" width="${bw}" height="${h}" rx="4" fill="var(--mat)"/><text x="${x+bw/2}" y="${y0+24}" text-anchor="middle" font-size="15" font-weight="700" fill="var(--ink)" font-family="Fira Sans, sans-serif">${l}</text>`; }).join('');
+  const W = x0 + labels.length*(bw+gap) + 10, VH = y0 + 34;
+  return `<div style="text-align:center"><div class="small muted" style="font-weight:700">${title}</div><svg class="chart" viewBox="0 0 ${W} ${VH}" width="${W}" height="${VH}" style="max-width:100%;height:auto" role="img" aria-label="${title}">${g}${bars}</svg></div>`; }
 // Gràfics: el tipus de gràfic, la mida dels nombres i les preguntes canvien segons el curs.
 const GDADES = [['Fruita preferida de la classe',['Poma','Pera','Plàtan','Maduixa']],['Esport preferit',['Futbol','Bàsquet','Natació','Tennis']],['Com venim a l\'escola',['A peu','Cotxe','Bici','Bus']],
   ['Llibres llegits a la biblioteca',['Contes','Còmics','Poesia','Ciència']],['Activitat extraescolar',['Música','Dansa','Escacs','Teatre']]];
 const sumA = a => a.reduce((x, y) => x + y, 0);
-skill('m-grafics','mat','Gràfics de barres',1,6,(r,c)=>{ const [title, labels] = pick(r, c <= 2 ? GDADES.slice(0,3) : GDADES);
+const GNOM = {'Fruita preferida de la classe':'vots','Esport preferit':'vots','Com venim a l\'escola':'alumnes','Llibres llegits a la biblioteca':'llibres','Activitat extraescolar':'alumnes'};
+skill('m-grafics','mat','Gràfics de barres',1,6,(r,c)=>{ const ex = grafEx(r,c), N = GNOM[ex.gtitle] || 'vots', f = t => t.replace(/\bvots\b/g, N).replace(/de vots/g, 'de ' + N); delete ex.gtitle; return {...ex, prompt:f(ex.prompt), speak:f(ex.speak)}; });
+function grafEx(r,c){ const [title, labels] = pick(r, c <= 2 ? GDADES.slice(0,3) : GDADES);
   // valors: 1r fins a 9; 2n-3r fins a 20; 4t múltiples de 5 fins a 60; 5è-6è múltiples de 10 fins a 120
   let vals;
   if (c === 1) vals = sample(r, [1,2,3,4,5,6,7,8,9], 4);
   else if (c <= 3) vals = sample(r, [2,4,6,8,10,12,14,16,18,20], 4);
   else if (c === 4) vals = sample(r, [5,10,15,20,25,30,35,40,45,50,55,60], 4);
   else { do vals = sample(r, [10,20,30,40,50,60,70,80,90,100,110,120], 4); while (c === 6 && sumA(vals) % 4); }
-  const i = ri(r,0,3), j = (i + ri(r,1,3)) % 4, mx = vals.indexOf(Math.max(...vals)), mn = vals.indexOf(Math.min(...vals)), base = {visual:barSVG(labels, vals, title, c === 1 ? 1 : c <= 3 ? 2 : c === 4 ? 5 : 10)}; // cada valor cau just sobre una ratlla de l'escala
+  const i = ri(r,0,3), j = (i + ri(r,1,3)) % 4, mx = vals.indexOf(Math.max(...vals)), mn = vals.indexOf(Math.min(...vals)), base = {gtitle:title, visual:barSVG(labels, vals, title, c === 1 ? 1 : c <= 3 ? 2 : c === 4 ? 5 : 10)}; // cada valor cau just sobre una ratlla de l'escala
   const types = c === 1 ? ['llegir','mes'] : c <= 3 ? ['llegir','mes','menys','diferencia','total'] : c === 4 ? ['llegir','diferencia','total','menys'] : c === 5 ? ['llegir','diferencia','total','doble'] : ['diferencia','total','mitjana','percent'];
   let t = pick(r, types);
   if (t === 'doble') { const k = vals.findIndex((v, a) => vals.some(w => w === 2 * v)); if (k < 0) t = 'diferencia'; }
@@ -959,13 +980,13 @@ skill('m-grafics','mat','Gràfics de barres',1,6,(r,c)=>{ const [title, labels] 
   if (t === 'mitjana') return {...base, type:'escriu', numeric:true, prompt:'Quina és la mitjana de vots de les quatre opcions?', speak:'Mira el gràfic. Quina és la mitjana de vots de les quatre opcions?', answer:String(sumA(vals) / 4)};
   // percentatge: el total és múltiple de 100 només si convé; si no, es pregunta pel total
   const tot = sumA(vals); if (tot % 100 === 0 || 10000 % tot === 0) { const p = vals[i] * 100 / tot; if (Number.isInteger(p)) return {...base, type:'escriu', numeric:true, prompt:`Quin percentatge dels vots té «${labels[i]}»?`, speak:`Mira el gràfic. Quin percentatge dels vots té ${labels[i]}?`, answer:String(p), unit:'%'}; }
-  return {...base, type:'escriu', numeric:true, prompt:'Quants vots hi ha en total?', speak:'Mira el gràfic. Quants vots hi ha en total?', answer:String(tot)}; });
+  return {...base, type:'escriu', numeric:true, prompt:'Quants vots hi ha en total?', speak:'Mira el gràfic. Quants vots hi ha en total?', answer:String(tot)}; }
 function lineSVG(labels, vals, title, step, unit){
-  const top = Math.ceil(Math.max(...vals) / step) * step + step, bot = Math.max(0, Math.floor(Math.min(...vals) / step) * step - step), H = 150, x0 = 46, dx = 46, W = x0 + (labels.length - 1) * dx + 30, y = v => 170 - (v - bot) / (top - bot) * H;
-  let g = ''; for (let v = bot; v <= top; v += step) g += `<line x1="${x0}" y1="${y(v)}" x2="${W - 14}" y2="${y(v)}" stroke="#d9d2d5"/><text x="${x0 - 8}" y="${y(v) + 4}" text-anchor="end" font-size="12" fill="#5d5258" font-family="Fira Sans, sans-serif">${v}</text>`;
-  g += labels.map((l, k) => `<line x1="${x0 + k * dx}" y1="20" x2="${x0 + k * dx}" y2="170" stroke="#ece6e8"/><text x="${x0 + k * dx}" y="190" text-anchor="middle" font-size="12" fill="#2a2230" font-family="Fira Sans, sans-serif">${l}</text>`).join('');
+  const top = Math.ceil(Math.max(...vals) / step) * step + step, bot = Math.max(0, Math.floor(Math.min(...vals) / step) * step - step), H = Math.max(160, (top - bot) / step * 22), x0 = 50, dx = 54, W = x0 + (labels.length - 1) * dx + 30, Y0 = H + 20, y = v => Y0 - (v - bot) / (top - bot) * H;
+  let g = ''; for (let v = bot; v <= top; v += step) g += `<line x1="${x0}" y1="${y(v)}" x2="${W - 14}" y2="${y(v)}" stroke="#d9d2d5"/><text x="${x0 - 8}" y="${y(v) + 4}" text-anchor="end" font-size="15" fill="#2a2230" font-family="Fira Sans, sans-serif">${v}</text>`;
+  g += labels.map((l, k) => `<line x1="${x0 + k * dx}" y1="20" x2="${x0 + k * dx}" y2="${Y0}" stroke="#e2dadd"/><text x="${x0 + k * dx}" y="${Y0 + 24}" text-anchor="middle" font-size="15" font-weight="700" fill="#2a2230" font-family="Fira Sans, sans-serif">${l}</text>`).join('');
   g += `<polyline points="${vals.map((v, k) => `${x0 + k * dx},${y(v)}`).join(' ')}" fill="none" stroke="#1f4fb4" stroke-width="3" stroke-linejoin="round"/>` + vals.map((v, k) => `<circle cx="${x0 + k * dx}" cy="${y(v)}" r="4.5" fill="#1f4fb4" stroke="#fff" stroke-width="1.5"/>`).join('');
-  return `<div style="text-align:center"><div class="small muted" style="font-weight:700">${title}${unit ? ' (' + unit + ')' : ''}</div><svg class="chart" viewBox="0 0 ${W} 200" width="${W}" height="200" style="max-width:100%;height:auto" role="img" aria-label="${title}">${g}</svg></div>`;
+  return `<div style="text-align:center"><div class="small muted" style="font-weight:700">${title}${unit ? ' (' + unit + ')' : ''}</div><svg class="chart" viewBox="0 0 ${W} ${Y0 + 34}" width="${W}" height="${Y0 + 34}" style="max-width:100%;height:auto" role="img" aria-label="${title}">${g}</svg></div>${/^D[lt]/.test(labels[0]) ? '<div class="small muted">Dl dilluns · Dt dimarts · Dc dimecres · Dj dijous · Dv divendres · Ds dissabte · Dg diumenge</div>' : labels[0] === 'S1' ? '<div class="small muted">S1 = setmana 1, S2 = setmana 2…</div>' : ''}`;
 }
 const DIES7 = ['Dl','Dt','Dc','Dj','Dv','Ds','Dg'], DIESN = {Dl:'dilluns',Dt:'dimarts',Dc:'dimecres',Dj:'dijous',Dv:'divendres',Ds:'dissabte',Dg:'diumenge'};
 skill('m-linies','mat','Gràfics de línies',4,6,(r,c)=>{
@@ -997,8 +1018,8 @@ function pieSVG(labels, pcts, hide){
   pcts.forEach((p, k) => { const a1 = a0 + p / 100 * 2 * Math.PI, big = p > 50 ? 1 : 0, x0 = cx + R * Math.cos(a0), y0 = cy + R * Math.sin(a0), x1 = cx + R * Math.cos(a1), y1 = cy + R * Math.sin(a1);
     g += `<path d="M${cx} ${cy} L${x0.toFixed(1)} ${y0.toFixed(1)} A${R} ${R} 0 ${big} 1 ${x1.toFixed(1)} ${y1.toFixed(1)} Z" fill="${cols[k]}" stroke="#fff" stroke-width="2"/>`;
     const am = (a0 + a1) / 2, lx = cx + (R + 14) * Math.cos(am), ly = cy + (R + 14) * Math.sin(am), anc = Math.cos(am) > .2 ? 'start' : Math.cos(am) < -.2 ? 'end' : 'middle';
-    t += `<text x="${lx.toFixed(1)}" y="${(ly + 4).toFixed(1)}" text-anchor="${anc}" font-size="13" font-family="Fira Sans, sans-serif" fill="#2a2230"><tspan font-weight="700">${labels[k]}</tspan> ${k === hide ? '?' : p + ' %'}</text>`; a0 = a1; });
-  return `<svg class="chart" viewBox="-60 0 360 220" width="360" height="220" style="max-width:100%;height:auto" role="img" aria-label="Gràfic de sectors">${g}${t}</svg>`;
+    t += `<text x="${lx.toFixed(1)}" y="${(ly + 4).toFixed(1)}" text-anchor="${anc}" font-size="16" font-family="Fira Sans, sans-serif" fill="#2a2230"><tspan font-weight="700">${labels[k]}</tspan> ${k === hide ? '?' : p + ' %'}</text>`; a0 = a1; });
+  return `<svg class="chart" viewBox="-90 0 420 220" width="420" height="220" style="max-width:100%;height:auto" role="img" aria-label="Gràfic de sectors">${g}${t}</svg>`;
 }
 const PIES = [[50,25,15,10],[40,30,20,10],[35,25,25,15],[45,30,15,10],[30,30,25,15],[60,20,10,10],[50,20,20,10],[40,25,20,15]];
 skill('m-sectors','mat','Gràfics de sectors',5,6,(r,c)=>{ const [title, labels] = pick(r, GDADES), pcts = shuffle(r, pick(r, PIES)), t = c === 5 ? ri(r, 0, 2) : pick(r, [0, 1, 1, 3]); // a 6è, sense la pregunta de llegir quin és el més gran
@@ -1008,13 +1029,13 @@ skill('m-sectors','mat','Gràfics de sectors',5,6,(r,c)=>{ const [title, labels]
     return {type:'escriu', numeric:true, prompt:`${title}: hi van respondre ${N} persones. Quantes van triar «${labels[k]}»?`, speak:`Mira el gràfic de sectors. Si hi van respondre ${N} persones, quantes van triar ${labels[k]}?`, visual:vis, answer:String(N * pcts[k] / 100), unit:'persones'}; }
   if (t === 2) { const m = pcts.indexOf(Math.max(...pcts)); if (pcts.filter(p => p === pcts[m]).length === 1) return {prompt:`${title}: quina opció ha triat més gent?`, speak:'Mira el gràfic de sectors. Quina opció ha triat més gent?', visual:vis, ...tria(r, labels[m], labels)};
     const k = ri(r,0,3); return {type:'escriu', numeric:true, prompt:`${title}: quin percentatge té «${labels[k]}»?`, speak:'Mira el gràfic de sectors.', visual:vis, answer:String(pcts[k]), unit:'%'}; }
-  const [a, b] = shuffle(r, [0,1,2,3]).slice(0,2);
+  let [a, b] = shuffle(r, [0,1,2,3]).slice(0,2); if (pcts[a] === pcts[b]) b = pcts.findIndex((p, k) => k !== a && p !== pcts[a]);
   return {type:'escriu', numeric:true, prompt:`${title}: quants punts percentuals més té «${labels[pcts[a] >= pcts[b] ? a : b]}» que «${labels[pcts[a] >= pcts[b] ? b : a]}»?`, speak:'Mira el gràfic de sectors i resta els dos percentatges.', visual:vis, answer:String(Math.abs(pcts[a] - pcts[b])), unit:'%'}; });
 skill('m-mitjana','mat','Mitjana, moda i mediana',5,6,(r)=>{ const t = pick(r,['mitjana','moda','mediana']); let v, ans;
   if (t === 'mitjana') { do { v = Array.from({length:5},()=>ri(r,1,10)); } while (v.reduce((a,b)=>a+b,0) % 5); ans = v.reduce((a,b)=>a+b,0) / 5; }
   else if (t === 'moda') { const base = sample(r,[1,2,3,4,5,6,7,8,9,10],4); v = shuffle(r,[...base, base[0]]); ans = base[0]; }
   else { v = sample(r,Array.from({length:20},(_,i)=>i+1),5); ans = v.slice().sort((a,b)=>a-b)[2]; }
-  return {type:'escriu', numeric:true, prompt:`Quina és la ${t} d'aquests punts?`, speak:`La Laia ha fet aquests punts en cinc partides. Quina és la ${t}?`, visual:'<div class="series num">'+v.map(x=>`<span>${x}</span>`).join('')+'</div>', answer:String(ans)}; });
+  return {type:'escriu', numeric:true, prompt:`La Laia ha fet aquests punts en cinc partides. Quina és la ${t}?`, speak:`La Laia ha fet aquests punts en cinc partides. Quina és la ${t}?`, visual:'<div class="series num">'+v.map(x=>`<span>${x}</span>`).join('')+'</div>', answer:String(ans)}; });
 
 // BLOCS de contingut (com ho veu l'alumne i la mestra)
 const BLOCS = {cat:['Ortografia','Gramàtica','Lèxic','Lectura i escriptura','Comprensió oral'], mat:['Nombres','Càlcul','Mesura','Geometria','Dades i atzar','Problemes']};
@@ -1105,7 +1126,8 @@ const PROG = {
       ['U9 Roda el món i torna al Born','m-x10 m-compdec m-divisors m-combinades m-potencies m-cercle']]}}
 };
 
-skill('c-oral','cat','Comprensió oral',1,6,(r,c)=>{ const own = (COMP_T[c] || []).filter(x => !x.off && x.q && x.q.length), tx = pick(r, own.length ? own : TEXTOS[c<=2?'ci':c<=4?'cm':'cs']), q = pick(r,tx.q), text = tx.text || tx.t;
+const NOORAL = /paràgraf|títol|titular|línia|subratll|negreta|columna|apartat|il·lustraci|imatge|fotografia|dibuix|lletra cursiva|guió/i;
+skill('c-oral','cat','Comprensió oral',1,6,(r,c)=>{ const own = (COMP_T[c] || []).filter(x => !x.off && x.q && x.q.length), tx = pick(r, own.length ? own : TEXTOS[c<=2?'ci':c<=4?'cm':'cs']), qs = tx.q.filter(x => !NOORAL.test(x.join(' '))), q = pick(r, qs.length ? qs : tx.q), text = tx.text || tx.t;
   return {prompt:q[0], speak:text+' ... '+q[0], listen:text, oral:true, visual:`<div class="listen"><button class="btn hi big" data-a="listen">${ICON.spk.replace('<svg','<svg width="26" height="26"')} Escolta el text</button><span class="small muted">El text no es mostra: escolta'l tantes vegades com vulguis.</span></div>`, ...tria(r,q[1],q.slice(2))}; });
 skill('x-cat','cat','Exercicis propis',1,6,null);
 skill('x-mat','mat','Exercicis propis',1,6,null);
@@ -1829,7 +1851,7 @@ const hl = t => esc(t).replace(/\*(.+?)\*/g, '<b class="hl">$1</b>');
 function answerText(ex){
   if (ex.type === 'tria') return ex.full ? ex.full : ex.options[ex.answer];
   if (ex.type === 'escriu' || ex.type === 'dictat') return ex.answer;
-  if (ex.type === 'ordena') return ex.items.join(' ');
+  if (ex.type === 'ordena') return ex.items.join(/síl·lab/.test(ex.prompt || '') ? '' : ' ');
   if (ex.type === 'relaciona') return ex.pairs.map(p => p[0] + ' → ' + p[1]).join(' · ');
   if (ex.type === 'classifica') return ex.buckets.map((b,bi)=> b + ': ' + (ex.items.filter(x=>x.b===bi).map(x=>x.t.replace(/\*/g,'')).join(', ') || 'cap')).join(' · ');
   return '';
@@ -2260,7 +2282,8 @@ function fExercises(){
   const out = [], seen = new Set();
   for (let v = 0; v < F.copies; v++) { const r = mulberry(F.seed * 7919 + v * 104729), exs = [], own = new Set();
     for (const [id, n] of Object.entries(F.items)) { let first = null;
-      for (let k = 0; k < Math.min(n, fCap(id, F.curs)); k++) { let ex = genPaper(id, F.curs, r, own, seen);
+      const words = new Set();
+      for (let k = 0; k < Math.min(n, fCap(id, F.curs)); k++) { if (k % 12 === 0) words.clear(); let ex = genPaper(id, F.curs, r, own, seen, words);
         // lectura: en paper, totes les preguntes del mateix text
         if (first && (id === 'c-comprensio' || id === 'c-oral')) {
           const same = e => e.visual === first.visual && e.listen === first.listen && !own.has(paperKey(e));
@@ -2268,7 +2291,7 @@ function fExercises(){
           // si el text ja no té més preguntes, se'n comença un altre
           if (!same(ex)) { ex = genPaper(id, F.curs, r, own, seen); first = ex; }
         }
-        if (!first) first = ex; seen.add(paperKey(ex)); own.add(paperKey(ex)); exs.push(ex); } }
+        if (!first) first = ex; seen.add(paperKey(ex)); own.add(paperKey(ex)); exWords(ex).forEach(w => words.add(w)); exs.push(ex); } }
     out.push(exs); }
   return out;
 }
@@ -2335,19 +2358,29 @@ const gapParts = v => { const m = String(v || '').replace(/<span class="gap">[^<
 const ordList = a => a.length < 2 ? a.join('') : a.slice(0, -1).join(', ') + ' o ' + a[a.length - 1];
 const dot = t => { t = String(t || '').trim(); return /[.?!:]$/.test(t) ? t : t + '.'; };
 const isNum = v => /^[\d.,\s€]+$/.test(String(v).replace(/\*/g, ''));
+const relRight = (ex, k) => shuffle(mulberry(hashStr(exKey(ex)) + k), ex.pairs.map((p, i) => ({t: p[1], i})));
+const longCl = ex => ex.items.some(x => x.t.replace(/\*/g, '').length > 22);
+// en paper, que la lletra bona no sigui sempre la mateixa dins d'un grup
+const pOpts = (ex, k, rot) => { const o = ex.options.map(String); if (!rot) return o; const d = k % o.length; return o.slice(d).concat(o.slice(0, d)); };
+const fmtSol = (ex, t) => { t = String(t); if (ex.numeric && /^\d{4,}(,\d+)?$/.test(t)) { const [i, d] = t.split(','); t = i.replace(/\B(?=(\d{3})+(?!\d))/g, '.') + (d ? ',' + d : ''); }
+  if (ex.unit === '€' && /^\d+,\d$/.test(t)) t += '0'; return t; };
 function paperBody(exs){
   const adult = [], sols = [], gs = paperGroups(exs), lab = {};
   const html = gs.map((g, gi) => {
     const n = gi + 1, items = g.i.map(i => exs[i]), ex0 = items[0], many = items.length > 1, L = k => many ? `<span class="lt">${LT[k]})</span>` : '';
     g.i.forEach((i, k) => lab[i] = n + (many ? LT[k] : ''));
-    sols.push(`<div class="gr"><b>${n}.</b> ${items.map((ex, k) => (many ? LT[k] + ') ' : '') + esc(answerText(ex) + (ex.unit ? ' ' + ex.unit : ''))).join(' &nbsp;·&nbsp; ')}</div>`);
+    const rot = many && items.every(x => x.type === 'tria' && x.options) && new Set(items.map(x => x.answer)).size === 1 && ex0.options.length > 1;
+    const solT = (ex, k) => ex.type === 'relaciona' ? relRight(ex, k).map((x, j) => ({n: x.i + 1, l: 'ABCDEFGH'[j]})).sort((a, b) => a.n - b.n).map(x => x.n + '-' + x.l).join(', ')
+      : ex.type === 'classifica' && longCl(ex) ? ex.buckets.map((b, bi) => b + ': ' + (ex.items.map((x, j) => x.b === bi ? j + 1 : 0).filter(Boolean).join(', ') || 'cap')).join(' · ')
+      : fmtSol(ex, answerText(ex)) + (ex.unit ? ' ' + ex.unit : '');
+    sols.push(`<div class="gr"><b>${n}.</b> ${items.map((ex, k) => (many ? LT[k] + ') ' : '') + esc(solT(ex, k))).join(' &nbsp;·&nbsp; ')}</div>`);
     const samePrompt = items.every(x => x.prompt === ex0.prompt);
     let head = '', body = '';
     // lectura (escrita o oral): el text una sola vegada i les preguntes a sota
     if (g.k.startsWith('txt|') || g.k.startsWith('oral|')) {
       if (ex0.oral) adult.push({n, t:'Llegiu en veu alta aquest text, dues vegades:', x: ex0.listen});
       head = ex0.oral ? 'Escolta el text que et llegirà un adult i respon.' : 'Llegeix el text i respon.';
-      body = (ex0.oral ? '' : cleanVis(ex0.visual)) + items.map((ex, k) => `<div class="pit" style="margin-top:10px"><div class="pq">${L(k)}${esc(ex.prompt)}</div>${ex.type === 'tria' ? `<div class="pcirc ${ex.options.some(o => String(o).length > 16) ? 'col' : ''}">${ex.options.map((o, j) => `<span><span class="ol">${'ABCDEF'[j]}.</span>${esc(String(o))}</span>`).join('')}</div>` : '<div class="pline"></div>'}</div>`).join('');
+      body = (ex0.oral ? '' : cleanVis(ex0.visual)) + items.map((ex, k) => `<div class="pit" style="margin-top:10px"><div class="pq">${L(k)}${esc(ex.prompt)}</div>${ex.type === 'tria' ? `<div class="pcirc ${ex.options.some(o => String(o).length > 16) ? 'col' : ''}">${pOpts(ex, k, rot).map((o, j) => `<span><span class="ol">${'ABCDEF'[j]}.</span>${esc(o)}</span>`).join('')}</div>` : '<div class="pline"></div>'}</div>`).join('');
       head += items.every(x => x.type === 'tria') ? ' Encercla la lletra de la resposta correcta.' : items.some(x => x.type === 'tria') ? ' Encercla la lletra de la resposta correcta o escriu la resposta.' : '';
     }
     // paraules amb una lletra que falta
@@ -2363,23 +2396,30 @@ function paperBody(exs){
       const sameOpts = items.every(x => [...x.options].sort().join('|') === [...ex0.options].sort().join('|')) && ex0.options.every(o => String(o).length <= 24);
       const vis = ex => ex.visual ? `<div>${cleanVis(ex.visual)}</div>` : '';
       if (sameOpts && many) {
-        head = samePrompt ? `${esc(dot(ex0.prompt))} Escriu la resposta.` : 'Respon. Escriu la resposta.';
+        head = samePrompt ? `${esc(dot(ex0.prompt))} Escriu la resposta.` : 'Respon cada pregunta amb una de les paraules de la caixa.';
         body = `<div class="pbankw"><b>Tria entre:</b>${esc(ordList([...ex0.options].map(String)))}</div><div class="pgrid" style="--c:${ex0.visual && !/class="chart"/.test(ex0.visual) ? 2 : 1}">${items.map((ex, k) => `<div class="pit">${samePrompt ? '' : `<div class="pq">${L(k)}${esc(ex.prompt)}</div>`}${samePrompt ? L(k) : ''}${vis(ex)}<div class="pline"></div></div>`).join('')}</div>`;
       } else {
         head = samePrompt ? `${esc(dot(ex0.prompt))} Encercla la lletra de la resposta correcta.` : 'Encercla la lletra de la resposta correcta.';
-        body = items.map((ex, k) => `<div class="pit" style="margin-top:8px">${samePrompt ? '' : `<div class="pq">${L(k)}${esc(ex.prompt)}</div>`}${samePrompt && many ? L(k) : ''}${vis(ex)}<div class="pcirc ${ex.options.some(o => String(o).length > 16) ? 'col' : ''}">${ex.options.map((o, j) => `<span><span class="ol">${'ABCDEF'[j]}.</span>${esc(String(o))}</span>`).join('')}</div></div>`).join('');
+        body = items.map((ex, k) => `<div class="pit" style="margin-top:8px">${samePrompt ? '' : `<div class="pq">${L(k)}${esc(ex.prompt)}</div>`}${samePrompt && many ? L(k) : ''}${vis(ex)}<div class="pcirc ${ex.options.some(o => String(o).length > 16) ? 'col' : ''}">${pOpts(ex, k, rot).map((o, j) => `<span><span class="ol">${'ABCDEF'[j]}.</span>${esc(o)}</span>`).join('')}</div></div>`).join('');
       }
     }
     else if (ex0.type === 'escriu') {
       const prob = items.some(x => /readtext/.test(x.visual || '') && (x.visual || '').replace(/<[^>]+>/g, '').length > 60), small = !prob && items.every(x => !x.visual || x.visual.length < 2500);
-      head = samePrompt ? esc(ex0.prompt === 'Quant fa?' ? 'Calcula.' : dot(ex0.prompt)) : 'Respon.';
+      head = samePrompt ? esc(ex0.prompt === 'Quant fa?' ? 'Calcula.' : dot(ex0.prompt)) : 'Respon cada pregunta.';
       // al paper, el «= ?» i la casella «?» de les sèries es converteixen en l'espai on s'escriu
       const inl = ex => /=\s*\?/.test(ex.visual || '') || /class="q"/.test(ex.visual || '') || /class="colop/.test(ex.visual || '');
       const pv = ex => cleanVis(ex.visual).replace(/=\s*\?/, '= <span class="pgap wide"></span>');
       if (items.every(inl) && items.every(x => /=\s*\?/.test(x.visual || ''))) head = 'Calcula.';
       const line = ex => inl(ex) ? '' : `<div class="row" style="align-items:flex-end;gap:8px;flex-wrap:nowrap"><div class="pline ${ex.numeric ? 'short' : ''}" style="flex:1"></div>${ex.unit ? `<span>${esc(ex.unit)}</span>` : ''}</div>`;
       const showQ = !samePrompt && !items.every(x => /=\s*\?/.test(x.visual || ''));
-      body = `<div class="pgrid" style="--c:${prob || items.some(x => /class="chart"/.test(x.visual || '')) ? 1 : small && ex0.visual ? 3 : 2}">${items.map((ex, k) => `<div class="pit">${showQ ? `<div class="pq">${L(k)}${esc(ex.prompt)}</div>` : L(k)}${ex.visual ? `<div>${pv(ex)}</div>` : ''}${line(ex)}</div>`).join('')}</div>`;
+      // espai per fer el càlcul quan l'operació no es pot fer de cap
+      const work = ex => { if (/class="colop/.test(ex.visual || '')) return false; const t = (ex.prompt + ' ' + String(ex.visual || '').replace(/<[^>]+>/g, ' ')).replace(/(\d)\.(\d{3})/g, '$1$2');
+        const m = t.match(/(\d+(?:,\d+)?)\s*([×x÷:+−\-])\s*(\d+(?:,\d+)?)/); if (m) { const a = parseFloat(m[1].replace(',', '.')), b = parseFloat(m[3].replace(',', '.'));
+          if (/^10+$/.test(m[3]) || /^10+$/.test(m[1])) return false; if (/[×x]/.test(m[2])) return a >= 100 || b >= 100 || (a >= 10 && b >= 10) || /,/.test(m[1] + m[3]); if (/[÷:]/.test(m[2])) return a >= 100 || /,/.test(m[1] + m[3]); return a >= 1000 || b >= 1000 || /,/.test(m[1] + m[3]); }
+        return ex.skill === 'm-problemes' && F.curs >= 3; };
+      const ser = items.some(x => /class="series"/.test(x.visual || '')), big = ser && items.some(x => /\d{3}/.test(String(x.visual || '').replace(/<[^>]+>/g, ' ')));
+      const cols = prob || items.some(x => /class="chart"/.test(x.visual || '')) || items.some(work) || ser ? 1 : items.some(x => /class="shape"/.test(x.visual || '')) ? 2 : small && ex0.visual ? 3 : 2;
+      body = `<div class="pgrid" style="--c:${cols}">${items.map((ex, k) => `<div class="pit">${showQ ? `<div class="pq">${L(k)}${esc(ex.prompt)}</div>` : L(k)}${ex.visual ? `<div>${pv(ex)}</div>` : ''}${work(ex) ? '<div class="pwork"><span>Fes aquí el càlcul</span></div>' : ''}${line(ex)}</div>`).join('')}</div>`;
     }
     else if (ex0.type === 'dictat') {
       adult.push({n, t:'Dicteu aquestes paraules, una a una:', x: items.map((ex, k) => (many ? LT[k] + ') ' : '') + ex.answer).join('     ')});
@@ -2394,13 +2434,14 @@ function paperBody(exs){
     }
     else if (ex0.type === 'relaciona') {
       head = esc(dot(ex0.prompt)) + ' Al costat de cada número, escriu la lletra que hi correspon.';
-      body = items.map((ex, k) => { const r = mulberry(hashStr(exKey(ex)) + k), right = shuffle(r, ex.pairs.map((p, i) => ({t: p[1], i})));
+      body = items.map((ex, k) => { const right = relRight(ex, k);
         return `<div class="pit" style="margin-top:8px">${L(k)}<div class="pcols"><div>${ex.pairs.map((p, i) => `<div style="margin:4px 0">${i + 1}. ${ex.bigLeft ? `<span style="font-size:1.5rem">${esc(p[0])}</span>` : esc(p[0])} &nbsp;<span class="pgap"></span></div>`).join('')}</div><div>${right.map((x, j) => `<div style="margin:4px 0">${'ABCDEFGH'[j]}. ${esc(x.t)}</div>`).join('')}</div></div></div>`; }).join('');
     }
     else if (ex0.type === 'classifica') {
-      head = esc(dot(ex0.prompt)) + ` Escriu cada ${ex0.items.every(x => isNum(x.t)) ? 'nombre' : {'c-temps':'verb','c-determinants':'grup de paraules','m-atzar':'frase'}[ex0.skill] || 'paraula'} a la seva columna.`;
-      body = items.map((ex, k) => { const r = mulberry(hashStr(exKey(ex)) + k);
-        return `<div class="pit" style="margin-top:8px">${L(k)}<div class="pbankw">${shuffle(r, ex.items).map(x => hl(x.t)).join(' &nbsp;·&nbsp; ')}</div><table class="ptable"><tr>${ex.buckets.map(b => `<th>${esc(b)}</th>`).join('')}</tr><tr>${ex.buckets.map(() => '<td></td>').join('')}</tr></table></div>`; }).join('');
+      const lng = items.some(longCl), what = ex0.items.every(x => isNum(x.t)) ? 'nombre' : {'c-temps':'verb','c-determinants':'grup de paraules','m-atzar':'frase'}[ex0.skill] || 'paraula';
+      head = (samePrompt ? esc(dot(ex0.prompt)) + ' ' : '') + (lng ? `Escriu el número de cada ${what} a la columna que li toca.` : `Escriu cada ${what} a la seva columna.`);
+      body = items.map((ex, k) => { const r = mulberry(hashStr(exKey(ex)) + k), its = lng ? ex.items : shuffle(r, ex.items), mx = Math.max(...ex.buckets.map((_, bi) => ex.items.filter(x => x.b === bi).length));
+        return `<div class="pit" style="margin-top:8px">${samePrompt ? L(k) : `<div class="pq">${L(k)}${esc(ex.prompt)}</div>`}${lng ? `<ol class="plist">${its.map(x => `<li>${hl(x.t)}</li>`).join('')}</ol>` : `<div class="pbankw pchips">${its.map(x => `<span>${hl(x.t)}</span>`).join('')}</div>`}<table class="ptable"><tr>${ex.buckets.map(b => `<th>${esc(b)}</th>`).join('')}</tr><tr>${ex.buckets.map(() => `<td style="height:${lng ? 56 : Math.max(80, mx * 34 + 16)}px"></td>`).join('')}</tr></table></div>`; }).join('');
     }
     return `<section class="pex"><b>${n}. ${head}</b>${body}</section>`;
   }).join('');
@@ -2831,12 +2872,14 @@ function draftTasks(){
 }
 function genFresh(id, curs, r, avoid){ let ex; for (let k = 0; k < 15; k++) { ex = genEx(id, curs, r); if (!avoid.has(exKey(ex))) return ex; } return ex; }
 /* en paper, dos exercicis són el mateix si es veuen igual (encara que les opcions vinguin en un altre ordre) */
-const paperKey = e => { const gap = /class="gap"/.test(e.visual || ''); return String(hashStr(JSON.stringify([gap ? 'gap' : e.skill, gap ? '' : e.prompt, String(e.visual || '').replace(/\s+/g, ' '), gap ? '' : e.options && e.options.map(String).sort(), e.items && e.items.map(x => typeof x === 'object' ? x.t : x).sort(), e.pairs && e.pairs.map(String).sort(), e.type === 'dictat' ? e.answer : '', e.listen || '']))); };
+const paperKey = e => { if (e.skill === 'c-comprensio' || e.skill === 'c-oral') return String(hashStr(JSON.stringify(['comp', e.prompt, e.options && e.options.map(String).sort()]))); const gap = /class="gap"/.test(e.visual || ''); return String(hashStr(JSON.stringify([gap ? 'gap' : e.skill, gap ? '' : e.prompt, String(e.visual || '').replace(/\s+/g, ' '), gap ? '' : e.options && e.options.map(String).sort(), e.items && e.items.map(x => typeof x === 'object' ? x.t : x).sort(), e.pairs && e.pairs.map(String).sort(), e.type === 'dictat' ? e.answer : '', e.listen || '']))); };
 const FCAPS = {};
 function fCap(id, c){ const k = id + c; if (!(k in FCAPS)) { const set = new Set(), r = mulberry(4242 + c); for (let i = 0; i < 600 && set.size < 20; i++) set.add(paperKey(genEx(id, c, r))); FCAPS[k] = set.size; } return FCAPS[k]; }
-function genPaper(id, curs, r, avoid, prefer){ let ex; for (let k = 0; k < 300; k++) { ex = genEx(id, curs, r); const pk = paperKey(ex); if (!avoid.has(pk) && (k > 120 || !prefer || !prefer.has(pk)) && (k > 200 || paperOk(ex))) return ex; } return ex; }
+function genPaper(id, curs, r, avoid, prefer, words){ let ex; for (let k = 0; k < 300; k++) { ex = genEx(id, curs, r); const pk = paperKey(ex); if (!avoid.has(pk) && (k > 120 || !prefer || !prefer.has(pk)) && (k > 200 || paperOk(ex)) && (k > 90 || !words || !exWords(ex).some(w => words.has(w)))) return ex; } return ex; }
 // en paper, cap columna de classificar buida
-const paperOk = ex => ex.type !== 'classifica' || ex.buckets.every((b, bi) => ex.items.some(x => x.b === bi));
+const paperOk = ex => ex.type !== 'classifica' || (ex.buckets.every((b, bi) => ex.items.some(x => x.b === bi)) && new Set(ex.items.map(x => x.t)).size === ex.items.length);
+// paraules d'un exercici, per no repetir-les entre els apartats d'un mateix grup
+const exWords = ex => ex.type === 'classifica' ? ex.items.map(x => x.t) : ex.type === 'relaciona' ? ex.pairs.flat().map(String) : ex.type === 'tria' && ex.options ? ['=' + ex.options[ex.answer]] : ex.type === 'ordena' ? [ex.items.join(' ')] : [];
 function taskExercises(t, sid){
   const c = cls(t.classId), st = stu(sid), r = mulberry(t.seed + (t.same ? 0 : hashStr(sid))), out = [], seen = new Set(t.same ? [] : (S.seen && S.seen[sid]) || []);
   for (const [id, n0] of Object.entries(t.items)) { const n = st && st.adapt && st.adapt.menys && !t.diag ? Math.max(1, Math.ceil(n0 * .6)) : n0, cc = st ? cursFor(st, SKM(id).mat) : c.curs;
