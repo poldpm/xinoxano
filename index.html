@@ -2296,7 +2296,7 @@ function fExercises(){
   for (let v = 0; v < F.copies; v++) { const r = mulberry(F.seed * 7919 + v * 104729), exs = [], own = new Set(), figs = new Set();
     for (const [id, n] of Object.entries(F.items)) { let first = null;
       const words = new Set(), start = exs.length; GP.like = null; GP.figs = figs;
-      for (let k = 0; k < Math.min(n, fCap(id, F.curs)); k++) { if (k % 12 === 0) words.clear(); let ex = genPaper(id, F.curs, r, own, seen, words);
+      for (let k = 0, tries = 0, lastClear = -1; k < Math.min(n, fCap(id, F.curs)) && tries < 400; tries++) { if (k % 12 === 0 && lastClear !== k) { words.clear(); lastClear = k; } let ex = genPaper(id, F.curs, r, own, seen, words);
         // lectura: en paper, totes les preguntes del mateix text
         if (!first && (id === 'c-comprensio' || id === 'c-oral')) { const need = Math.min(3, n - k), qn = e => { const p = new Set(), rr = mulberry(hashStr(String(e.visual) + e.listen)); for (let t = 0; t < 150 && p.size < need; t++) { const x = genEx(id, F.curs, rr); if (x.visual === e.visual && x.listen === e.listen && !own.has(paperKey(x))) p.add(x.prompt); } return p.size; };
           for (let t = 0; t < 30 && qn(ex) < need; t++) ex = genPaper(id, F.curs, r, own, seen); }
@@ -2310,7 +2310,7 @@ function fExercises(){
         // garantia: cap apartat de classificar o relacionar no pot repetir una paraula, frase o operació del mateix exercici
         { const tk = ex.type === 'classifica' ? (ex.skill === 'm-divisors' ? [] : ex.items.map(x => 'n' + x.t)) : ex.type === 'relaciona' ? toks(ex.pairs.flat()) : [];
           if (tk.some(w => words.has(w))) continue; }
-        if (!first) first = ex; if (!GP.like || GP.like.type !== ex.type) GP.like = ex; if (shapeK(ex)) figs.add(shapeK(ex)); if (ex.type === 'relaciona' || ex.type === 'classifica') toks(ex.type === 'relaciona' ? ex.pairs.flat() : ex.items.map(x => x.t)).forEach(w => figs.add('w:' + w)); seen.add(paperKey(ex)); own.add(paperKey(ex)); exWords(ex).forEach(w => words.add(w)); exs.push(ex); }
+        if (!first) first = ex; if (!GP.like || GP.like.type !== ex.type) GP.like = ex; if (shapeK(ex)) figs.add(shapeK(ex)); if (ex.type === 'relaciona' || ex.type === 'classifica') toks(ex.type === 'relaciona' ? ex.pairs.flat() : ex.items.map(x => x.t)).forEach(w => figs.add('w:' + w)); seen.add(paperKey(ex)); own.add(paperKey(ex)); exWords(ex).forEach(w => words.add(w)); exs.push(ex); k++; }
       // els exercicis del mateix tipus, junts (un sol enunciat)
       const blk = exs.splice(start), ord = [...new Set(blk.map(pKey))]; exs.push(...ord.flatMap(k => blk.filter(e => pKey(e) === k))); GP.like = null; GP.figs = null; }
     // ortografia: la paraula que s'ha d'escriure no pot sortir ben escrita en un altre exercici de la mateixa fitxa
