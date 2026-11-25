@@ -311,6 +311,7 @@ textarea{width:100%;min-height:170px;font-family:var(--f-num);font-size:.9rem;li
 .pbankw b{margin-right:6px}
 .pit .word,.pit .bigemoji{font-size:1.5rem;margin:2px 0}
 .pit svg{max-height:120px;width:auto}
+.pit svg.chart{max-height:250px;width:auto;max-width:100%}
 .pline.short{max-width:150px}
 .pit .series span{background:#fff;border:1.5px solid #bbb;font-size:1.3rem;min-width:48px;padding:6px}
 .pit .series span.q{background:#fff;border:2px solid #222;color:transparent}
@@ -546,7 +547,9 @@ const EXPL = {
   'm-poligons':"Compta els costats: 3, triangle; 4, quadrilàter; 5, pentàgon; 6, hexàgon; 8, octàgon.",
   'm-cercle':"El radi va del centre a la vora. El diàmetre travessa tot el cercle i fa el doble del radi.",
   'm-atzar':"Segur: passa sempre. Possible: pot passar o no. Impossible: no pot passar mai.",
-  'm-grafics':"Mira fins on arriba cada barra i llegeix el número de l'esquerra. Per comparar, resta els dos valors.",
+  'm-grafics':"Mira fins on arriba cada barra i llegeix el número de l'esquerra. Per comparar, resta els dos valors. La mitjana és el total dividit pel nombre de barres.",
+  'm-linies':"Cada punt és un valor: mira on queda a l'escala de l'esquerra. Si la línia puja, el valor augmenta; si baixa, disminueix.",
+  'm-sectors':"Tot el cercle és el 100 %. Per saber quantes persones són, multiplica el total pel percentatge i divideix entre 100.",
   'm-mitjana':"Mitjana: suma-ho tot i divideix pel nombre de dades. Moda: el valor que surt més vegades. Mediana: el del mig quan els ordenes.",
   'c-sil':"Pica de mans mentre dius la paraula a poc a poc: cada cop és una síl·laba. Pi-lo-ta.",
   'c-imatge':"Llegeix cada paraula a poc a poc i pensa quin dibuix és.",
@@ -914,18 +917,87 @@ skill('m-atzar','mat','Segur, possible o impossible',2,6,(r)=>({type:'classifica
   items:sample(r,[['Treure un nombre de l\'1 al 6 amb un dau',0],['Treure una bola vermella d\'una bossa on totes són vermelles',0],['Que després de dilluns vingui dimarts',0],
     ['Treure un 6 amb un dau',1],['Que demà plogui',1],['Treure cara en tirar una moneda',1],['Treure una bola blava d\'una bossa amb boles blaves i grogues',1],
     ['Treure un 7 amb un dau normal',2],['Treure una bola verda d\'una bossa amb boles vermelles',2],['Que una setmana tingui 8 dies',2]],6).map(([t,b])=>({t,b}))}));
-function barSVG(labels, vals, title){ const max = Math.max(...vals), step = max <= 10 ? 2 : max <= 30 ? 5 : 10, top = Math.ceil(max / step) * step, H = 150, x0 = 40, bw = 44, gap = 22;
+function barSVG(labels, vals, title, st){ const max = Math.max(...vals), step = st || (max <= 10 ? 2 : max <= 30 ? 5 : 10), top = Math.ceil(max / step) * step, H = 150, x0 = 40, bw = 44, gap = 22;
   let g = ''; for (let v = 0; v <= top; v += step) { const y = 170 - v / top * H; g += `<line x1="${x0}" y1="${y}" x2="${x0 + labels.length*(bw+gap)}" y2="${y}" stroke="var(--line)"/><text x="${x0-8}" y="${y+5}" text-anchor="end" font-size="12" fill="var(--soft)" font-family="Fira Sans, sans-serif">${v}</text>`; }
   const bars = labels.map((l,i)=>{ const x = x0 + 12 + i*(bw+gap), h = vals[i] / top * H; return `<rect x="${x}" y="${170-h}" width="${bw}" height="${h}" rx="4" fill="var(--mat)"/><text x="${x+bw/2}" y="190" text-anchor="middle" font-size="13" fill="var(--ink)" font-family="Fira Sans, sans-serif">${l}</text>`; }).join('');
   const W = x0 + labels.length*(bw+gap) + 10;
-  return `<div style="text-align:center"><div class="small muted" style="font-weight:700">${title}</div><svg viewBox="0 0 ${W} 200" width="${W}" height="200" style="max-width:100%;height:auto" role="img" aria-label="${title}">${g}${bars}</svg></div>`; }
-skill('m-grafics','mat','Gràfics de barres',1,6,(r,c)=>{ const [title, labels] = pick(r, [['Fruita preferida de la classe',['Poma','Pera','Plàtan','Maduixa']],['Esport preferit',['Futbol','Bàsquet','Natació','Tennis']],['Com venim a l\'escola',['A peu','Cotxe','Bici','Bus']]]);
-  const vals = sample(r, Array.from({length: c <= 3 ? 9 : 25}, (_,i)=>i+1), 4), t = ri(r,0, c >= 4 ? 3 : 2), i = ri(r,0,3), j = (i + ri(r,1,3)) % 4, mx = vals.indexOf(Math.max(...vals));
-  const base = {visual:barSVG(labels, vals, title)};
-  if (t === 0) return {...base, type:'escriu', numeric:true, prompt:`Quants vots té «${labels[i]}»?`, speak:`Mira el gràfic. Quants vots té ${labels[i]}?`, answer:String(vals[i])};
-  if (t === 1) return {...base, prompt:'Quina opció té més vots?', speak:'Mira el gràfic. Quina opció té més vots?', ...tria(r,labels[mx],labels)};
-  if (t === 2) return {...base, type:'escriu', numeric:true, prompt:`Quants vots més té «${labels[vals[i] > vals[j] ? i : j]}» que «${labels[vals[i] > vals[j] ? j : i]}»?`, speak:'Mira el gràfic i calcula la diferència de vots.', answer:String(Math.abs(vals[i]-vals[j]))};
-  return {...base, type:'escriu', numeric:true, prompt:'Quants vots hi ha en total?', speak:'Mira el gràfic. Quants vots hi ha en total?', answer:String(vals.reduce((a,b)=>a+b,0))}; });
+  return `<div style="text-align:center"><div class="small muted" style="font-weight:700">${title}</div><svg class="chart" viewBox="0 0 ${W} 200" width="${W}" height="200" style="max-width:100%;height:auto" role="img" aria-label="${title}">${g}${bars}</svg></div>`; }
+// Gràfics: el tipus de gràfic, la mida dels nombres i les preguntes canvien segons el curs.
+const GDADES = [['Fruita preferida de la classe',['Poma','Pera','Plàtan','Maduixa']],['Esport preferit',['Futbol','Bàsquet','Natació','Tennis']],['Com venim a l\'escola',['A peu','Cotxe','Bici','Bus']],
+  ['Llibres llegits a la biblioteca',['Contes','Còmics','Poesia','Ciència']],['Activitat extraescolar',['Música','Dansa','Escacs','Teatre']]];
+const sumA = a => a.reduce((x, y) => x + y, 0);
+skill('m-grafics','mat','Gràfics de barres',1,6,(r,c)=>{ const [title, labels] = pick(r, c <= 2 ? GDADES.slice(0,3) : GDADES);
+  // valors: 1r fins a 9; 2n-3r fins a 20; 4t múltiples de 5 fins a 60; 5è-6è múltiples de 10 fins a 120
+  let vals;
+  if (c === 1) vals = sample(r, [1,2,3,4,5,6,7,8,9], 4);
+  else if (c <= 3) vals = sample(r, [2,4,6,8,10,12,14,16,18,20], 4);
+  else if (c === 4) vals = sample(r, [5,10,15,20,25,30,35,40,45,50,55,60], 4);
+  else { do vals = sample(r, [10,20,30,40,50,60,70,80,90,100,110,120], 4); while (c === 6 && sumA(vals) % 4); }
+  const i = ri(r,0,3), j = (i + ri(r,1,3)) % 4, mx = vals.indexOf(Math.max(...vals)), mn = vals.indexOf(Math.min(...vals)), base = {visual:barSVG(labels, vals, title, c === 1 ? 1 : c <= 3 ? 2 : c === 4 ? 5 : 10)}; // cada valor cau just sobre una ratlla de l'escala
+  const types = c === 1 ? ['llegir','mes'] : c <= 3 ? ['llegir','mes','menys','diferencia','total'] : c === 4 ? ['llegir','diferencia','total','menys'] : c === 5 ? ['llegir','diferencia','total','doble'] : ['diferencia','total','mitjana','percent'];
+  let t = pick(r, types);
+  if (t === 'doble') { const k = vals.findIndex((v, a) => vals.some(w => w === 2 * v)); if (k < 0) t = 'diferencia'; }
+  if (t === 'llegir') return {...base, type:'escriu', numeric:true, prompt:`Quants vots té «${labels[i]}»?`, speak:`Mira el gràfic. Quants vots té ${labels[i]}?`, answer:String(vals[i])};
+  if (t === 'mes') return {...base, prompt:'Quina opció té més vots?', speak:'Mira el gràfic. Quina opció té més vots?', ...tria(r,labels[mx],labels)};
+  if (t === 'menys') return {...base, prompt:'Quina opció té menys vots?', speak:'Mira el gràfic. Quina opció té menys vots?', ...tria(r,labels[mn],labels)};
+  if (t === 'diferencia') return {...base, type:'escriu', numeric:true, prompt:`Quants vots més té «${labels[vals[i] > vals[j] ? i : j]}» que «${labels[vals[i] > vals[j] ? j : i]}»?`, speak:'Mira el gràfic i calcula la diferència de vots.', answer:String(Math.abs(vals[i]-vals[j]))};
+  if (t === 'total') return {...base, type:'escriu', numeric:true, prompt:'Quants vots hi ha en total?', speak:'Mira el gràfic. Quants vots hi ha en total?', answer:String(sumA(vals))};
+  if (t === 'doble') { const a = vals.findIndex(v => vals.includes(2 * v)), b = vals.indexOf(2 * vals[a]);
+    return {...base, prompt:`Quina opció té el doble de vots que «${labels[a]}»?`, speak:`Mira el gràfic. Quina opció té el doble de vots que ${labels[a]}?`, ...tria(r, labels[b], labels.filter((_, k) => k !== a))}; }
+  if (t === 'mitjana') return {...base, type:'escriu', numeric:true, prompt:'Quina és la mitjana de vots de les quatre opcions?', speak:'Mira el gràfic. Quina és la mitjana de vots de les quatre opcions?', answer:String(sumA(vals) / 4)};
+  // percentatge: el total és múltiple de 100 només si convé; si no, es pregunta pel total
+  const tot = sumA(vals); if (tot % 100 === 0 || 10000 % tot === 0) { const p = vals[i] * 100 / tot; if (Number.isInteger(p)) return {...base, type:'escriu', numeric:true, prompt:`Quin percentatge dels vots té «${labels[i]}»?`, speak:`Mira el gràfic. Quin percentatge dels vots té ${labels[i]}?`, answer:String(p), unit:'%'}; }
+  return {...base, type:'escriu', numeric:true, prompt:'Quants vots hi ha en total?', speak:'Mira el gràfic. Quants vots hi ha en total?', answer:String(tot)}; });
+function lineSVG(labels, vals, title, step, unit){
+  const top = Math.ceil(Math.max(...vals) / step) * step + step, bot = Math.max(0, Math.floor(Math.min(...vals) / step) * step - step), H = 150, x0 = 46, dx = 46, W = x0 + (labels.length - 1) * dx + 30, y = v => 170 - (v - bot) / (top - bot) * H;
+  let g = ''; for (let v = bot; v <= top; v += step) g += `<line x1="${x0}" y1="${y(v)}" x2="${W - 14}" y2="${y(v)}" stroke="#d9d2d5"/><text x="${x0 - 8}" y="${y(v) + 4}" text-anchor="end" font-size="12" fill="#5d5258" font-family="Fira Sans, sans-serif">${v}</text>`;
+  g += labels.map((l, k) => `<line x1="${x0 + k * dx}" y1="20" x2="${x0 + k * dx}" y2="170" stroke="#ece6e8"/><text x="${x0 + k * dx}" y="190" text-anchor="middle" font-size="12" fill="#2a2230" font-family="Fira Sans, sans-serif">${l}</text>`).join('');
+  g += `<polyline points="${vals.map((v, k) => `${x0 + k * dx},${y(v)}`).join(' ')}" fill="none" stroke="#1f4fb4" stroke-width="3" stroke-linejoin="round"/>` + vals.map((v, k) => `<circle cx="${x0 + k * dx}" cy="${y(v)}" r="4.5" fill="#1f4fb4" stroke="#fff" stroke-width="1.5"/>`).join('');
+  return `<div style="text-align:center"><div class="small muted" style="font-weight:700">${title}${unit ? ' (' + unit + ')' : ''}</div><svg class="chart" viewBox="0 0 ${W} 200" width="${W}" height="200" style="max-width:100%;height:auto" role="img" aria-label="${title}">${g}</svg></div>`;
+}
+const DIES7 = ['Dl','Dt','Dc','Dj','Dv','Ds','Dg'], DIESN = {Dl:'dilluns',Dt:'dimarts',Dc:'dimecres',Dj:'dijous',Dv:'divendres',Ds:'dissabte',Dg:'diumenge'};
+skill('m-linies','mat','Gràfics de línies',4,6,(r,c)=>{
+  const kind = pick(r, ['temp','planta','visites']), n = c === 4 ? 5 : 7, labels = kind === 'planta' ? Array.from({length:n}, (_,k) => 'S' + (k + 1)) : DIES7.slice(0, n);
+  const step = kind === 'temp' ? 2 : kind === 'planta' ? 5 : 10, unit = kind === 'temp' ? '°C' : kind === 'planta' ? 'cm' : 'visites';
+  let vals;
+  for (let tries = 0; tries < 200; tries++) {
+    if (kind === 'planta') { vals = [step * ri(r,1,2)]; for (let k = 1; k < n; k++) vals.push(vals[k-1] + step * ri(r,0,2)); }
+    else { const lo = kind === 'temp' ? 4 : 2, hi = kind === 'temp' ? 13 : 9; vals = Array.from({length:n}, () => step * ri(r, lo, hi)); }
+    if (new Set(vals).size >= 4 && (c < 6 || sumA(vals) % n === 0) && vals.indexOf(Math.max(...vals)) === vals.lastIndexOf(Math.max(...vals))) break;
+  }
+  const title = {temp:'Temperatura a les 12 del migdia', planta:'Alçada d\'una planta setmana a setmana', visites:'Visites a la web de l\'escola'}[kind];
+  const nom = k => kind === 'planta' ? `la setmana ${k + 1}` : DIESN[labels[k]], base = {visual:lineSVG(labels, vals, title, step, unit)};
+  const ups = vals.map((v, k) => k && v > vals[k-1] ? k : -1).filter(k => k > 0);
+  const types = c === 4 ? ['llegir','maxim','llegir'] : c === 5 ? ['llegir','maxim','pujada','minim'] : ['pujada','mitjana','diferencia','maxim'];
+  let t = pick(r, types); if (kind === 'planta' && (t === 'maxim' || t === 'minim')) t = 'pujada'; if (t === 'pujada' && !ups.length) t = 'llegir';
+  const k = ri(r, 0, n - 1);
+  if (t === 'llegir') return {...base, type:'escriu', numeric:true, prompt: kind === 'temp' ? `Quina temperatura feia ${nom(k)}?` : kind === 'planta' ? `Quant feia la planta ${nom(k)}?` : `Quantes visites hi va haver ${nom(k)}?`, speak:'Mira el gràfic de línies i respon.', answer:String(vals[k]), unit};
+  if (t === 'maxim' || t === 'minim') { const v = t === 'maxim' ? Math.max(...vals) : Math.min(...vals), idx = vals.map((x, q) => x === v ? q : -1).filter(q => q >= 0);
+    if (idx.length > 1) return {...base, type:'escriu', numeric:true, prompt: `Quin és el valor ${t === 'maxim' ? 'més alt' : 'més baix'} del gràfic?`, speak:'Mira el gràfic de línies i respon.', answer:String(v), unit};
+    const opts = labels.map((_, q) => kind === 'planta' ? `La setmana ${q + 1}` : DIESN[labels[q]][0].toUpperCase() + DIESN[labels[q]].slice(1));
+    return {...base, prompt: kind === 'temp' ? `Quin dia va fer ${t === 'maxim' ? 'més calor' : 'més fred'}?` :  `Quin dia hi va haver ${t === 'maxim' ? 'més' : 'menys'} visites?`, speak:'Mira el gràfic de línies i respon.', ...tria(r, opts[idx[0]], shuffle(r, opts))}; }
+  if (t === 'pujada') { const q = pick(r, ups);
+    return {...base, type:'escriu', numeric:true, prompt: kind === 'temp' ? `Quants graus va pujar la temperatura de ${nom(q-1)} a ${nom(q)}?` : kind === 'planta' ? `Quants centímetres va créixer la planta de ${nom(q-1)} a ${nom(q)}?` : `Quantes visites més hi va haver ${nom(q)} que ${nom(q-1)}?`, speak:'Mira el gràfic de línies i respon.', answer:String(vals[q] - vals[q-1]), unit}; }
+  if (t === 'diferencia') return {...base, type:'escriu', numeric:true, prompt:'Quina diferència hi ha entre el valor més alt i el més baix del gràfic?', speak:'Mira el gràfic de línies i respon.', answer:String(Math.max(...vals) - Math.min(...vals)), unit};
+  return {...base, type:'escriu', numeric:true, prompt:`Quina és la mitjana dels ${n} valors del gràfic?`, speak:'Mira el gràfic de línies i calcula la mitjana.', answer:String(sumA(vals) / n), unit}; });
+function pieSVG(labels, pcts, hide){
+  const cols = ['#e8434f','#4f7cff','#f2c230','#2fbf71','#9b6bff'], cx = 120, cy = 110, R = 80; let a0 = -Math.PI / 2, g = '', t = '';
+  pcts.forEach((p, k) => { const a1 = a0 + p / 100 * 2 * Math.PI, big = p > 50 ? 1 : 0, x0 = cx + R * Math.cos(a0), y0 = cy + R * Math.sin(a0), x1 = cx + R * Math.cos(a1), y1 = cy + R * Math.sin(a1);
+    g += `<path d="M${cx} ${cy} L${x0.toFixed(1)} ${y0.toFixed(1)} A${R} ${R} 0 ${big} 1 ${x1.toFixed(1)} ${y1.toFixed(1)} Z" fill="${cols[k]}" stroke="#fff" stroke-width="2"/>`;
+    const am = (a0 + a1) / 2, lx = cx + (R + 14) * Math.cos(am), ly = cy + (R + 14) * Math.sin(am), anc = Math.cos(am) > .2 ? 'start' : Math.cos(am) < -.2 ? 'end' : 'middle';
+    t += `<text x="${lx.toFixed(1)}" y="${(ly + 4).toFixed(1)}" text-anchor="${anc}" font-size="13" font-family="Fira Sans, sans-serif" fill="#2a2230"><tspan font-weight="700">${labels[k]}</tspan> ${k === hide ? '?' : p + ' %'}</text>`; a0 = a1; });
+  return `<svg class="chart" viewBox="-60 0 360 220" width="360" height="220" style="max-width:100%;height:auto" role="img" aria-label="Gràfic de sectors">${g}${t}</svg>`;
+}
+const PIES = [[50,25,15,10],[40,30,20,10],[35,25,25,15],[45,30,15,10],[30,30,25,15],[60,20,10,10],[50,20,20,10],[40,25,20,15]];
+skill('m-sectors','mat','Gràfics de sectors',5,6,(r,c)=>{ const [title, labels] = pick(r, GDADES), pcts = shuffle(r, pick(r, PIES)), t = c === 5 ? ri(r, 0, 2) : pick(r, [0, 1, 1, 3]); // a 6è, sense la pregunta de llegir quin és el més gran
+  if (t === 0) { const h = ri(r,0,3); return {type:'escriu', numeric:true, prompt:`${title}: quin percentatge li correspon a «${labels[h]}»?`, speak:'Mira el gràfic de sectors. Tots els sectors junts fan el cent per cent.', visual:pieSVG(labels, pcts, h), answer:String(pcts[h]), unit:'%'}; }
+  const vis = pieSVG(labels, pcts, -1);
+  if (t === 1) { const k = ri(r,0,3), N = pick(r, [20,40,60,80,100,200,300,400,500].filter(N => N * pcts[k] % 100 === 0));
+    return {type:'escriu', numeric:true, prompt:`${title}: hi van respondre ${N} persones. Quantes van triar «${labels[k]}»?`, speak:`Mira el gràfic de sectors. Si hi van respondre ${N} persones, quantes van triar ${labels[k]}?`, visual:vis, answer:String(N * pcts[k] / 100), unit:'persones'}; }
+  if (t === 2) { const m = pcts.indexOf(Math.max(...pcts)); if (pcts.filter(p => p === pcts[m]).length === 1) return {prompt:`${title}: quina opció ha triat més gent?`, speak:'Mira el gràfic de sectors. Quina opció ha triat més gent?', visual:vis, ...tria(r, labels[m], labels)};
+    const k = ri(r,0,3); return {type:'escriu', numeric:true, prompt:`${title}: quin percentatge té «${labels[k]}»?`, speak:'Mira el gràfic de sectors.', visual:vis, answer:String(pcts[k]), unit:'%'}; }
+  const [a, b] = shuffle(r, [0,1,2,3]).slice(0,2);
+  return {type:'escriu', numeric:true, prompt:`${title}: quants punts percentuals més té «${labels[pcts[a] >= pcts[b] ? a : b]}» que «${labels[pcts[a] >= pcts[b] ? b : a]}»?`, speak:'Mira el gràfic de sectors i resta els dos percentatges.', visual:vis, answer:String(Math.abs(pcts[a] - pcts[b])), unit:'%'}; });
 skill('m-mitjana','mat','Mitjana, moda i mediana',5,6,(r)=>{ const t = pick(r,['mitjana','moda','mediana']); let v, ans;
   if (t === 'mitjana') { do { v = Array.from({length:5},()=>ri(r,1,10)); } while (v.reduce((a,b)=>a+b,0) % 5); ans = v.reduce((a,b)=>a+b,0) / 5; }
   else if (t === 'moda') { const base = sample(r,[1,2,3,4,5,6,7,8,9,10],4); v = shuffle(r,[...base, base[0]]); ans = base[0]; }
@@ -945,7 +1017,7 @@ for (const [b, ids] of Object.entries({
   'Càlcul':'m-suma m-suma-portant m-resta m-resta-portant m-desenes m-dobles m-taules m-taules-rel m-divisio m-divresidu m-x10 m-decimals m-percent m-combinades m-potencies x-mat',
   'Mesura':'m-mesura1 m-rellotge m-digital m-monedes m-longitud m-massa m-capacitat m-temps m-calendari m-perimetre m-area',
   'Geometria':'m-figures m-cossos m-posicio m-angles m-triangles m-poligons m-cercle',
-  'Dades i atzar':'m-atzar m-grafics m-mitjana',
+  'Dades i atzar':'m-atzar m-grafics m-linies m-sectors m-mitjana',
   'Problemes':'m-problemes'})) for (const id of ids.split(' ')) BLOC_OF[id] = b;
 const blocOf = id => BLOC_OF[id] || (SKM(id).mat === 'cat' ? 'Lectura i escriptura' : 'Càlcul');
 
@@ -985,9 +1057,9 @@ const PROG = {
       ['SA7 A l\'abordatge!','c-ll c-temps'],['SA8 Una història en imatges','c-finals c-dictat c-categories'],['SA9 Viatgem pel món','c-tantquan c-categories c-dictat']]},
      mat:{font:'Matemàtiques Raona 6è', u:[
       ['U1 Tornem a l\'escola','m-decimals m-compdec m-mitjana m-perimetre m-area m-angles'],['U2 Anem a comprar','m-percent m-x10 m-problemes m-capacitat m-triangles'],
-      ['U3 Controlem les despeses de casa','m-decimals m-compdec m-ordena m-percent m-area m-grafics'],['U4 Anem de colònies','m-divresidu m-divisors m-temps m-longitud'],
+      ['U3 Controlem les despeses de casa','m-decimals m-compdec m-ordena m-percent m-area m-grafics m-sectors m-linies m-mitjana'],['U4 Anem de colònies','m-divresidu m-divisors m-temps m-longitud'],
       ['U5 Participem en les olimpíades','m-decimals m-primers m-temps m-atzar'],['U6 Ens agrada construir','m-combinades'],
-      ['U7 Muntem una paradeta','m-decimals m-fraccions m-longitud m-massa m-capacitat m-perimetre m-area'],['U8 Continuem creixent','m-potencies m-series'],
+      ['U7 Muntem una paradeta','m-decimals m-fraccions m-longitud m-massa m-capacitat m-perimetre m-area m-mitjana m-grafics'],['U8 Continuem creixent','m-potencies m-series'],
       ['U9 Roda el món i torna al Born','m-x10 m-compdec m-divisors m-combinades m-potencies m-cercle']]}}
 };
 
@@ -2217,7 +2289,7 @@ function paperBody(exs){
       const vis = ex => ex.visual ? `<div>${cleanVis(ex.visual)}</div>` : '';
       if (sameOpts && many) {
         head = samePrompt ? `${esc(dot(ex0.prompt))} Escriu la resposta.` : 'Respon. Escriu la resposta.';
-        body = `<div class="pbankw"><b>Tria entre:</b>${esc(ordList([...ex0.options].map(String)))}</div><div class="pgrid" style="--c:${ex0.visual ? 2 : 1}">${items.map((ex, k) => `<div class="pit">${samePrompt ? '' : `<div class="pq">${L(k)}${esc(ex.prompt)}</div>`}${samePrompt ? L(k) : ''}${vis(ex)}<div class="pline"></div></div>`).join('')}</div>`;
+        body = `<div class="pbankw"><b>Tria entre:</b>${esc(ordList([...ex0.options].map(String)))}</div><div class="pgrid" style="--c:${ex0.visual && !/class="chart"/.test(ex0.visual) ? 2 : 1}">${items.map((ex, k) => `<div class="pit">${samePrompt ? '' : `<div class="pq">${L(k)}${esc(ex.prompt)}</div>`}${samePrompt ? L(k) : ''}${vis(ex)}<div class="pline"></div></div>`).join('')}</div>`;
       } else {
         head = samePrompt ? `${esc(dot(ex0.prompt))} Encercla la lletra de la resposta correcta.` : 'Encercla la lletra de la resposta correcta.';
         body = items.map((ex, k) => `<div class="pit" style="margin-top:8px">${samePrompt ? '' : `<div class="pq">${L(k)}${esc(ex.prompt)}</div>`}${samePrompt && many ? L(k) : ''}${vis(ex)}<div class="pcirc ${ex.options.some(o => String(o).length > 16) ? 'col' : ''}">${ex.options.map((o, j) => `<span><span class="ol">${'ABCDEF'[j]}.</span>${esc(String(o))}</span>`).join('')}</div></div>`).join('');
@@ -2232,7 +2304,7 @@ function paperBody(exs){
       if (items.every(inl) && items.every(x => /=\s*\?/.test(x.visual || ''))) head = 'Calcula.';
       const line = ex => inl(ex) ? '' : `<div class="row" style="align-items:flex-end;gap:8px;flex-wrap:nowrap"><div class="pline ${ex.numeric ? 'short' : ''}" style="flex:1"></div>${ex.unit ? `<span>${esc(ex.unit)}</span>` : ''}</div>`;
       const showQ = !samePrompt && !items.every(x => /=\s*\?/.test(x.visual || ''));
-      body = `<div class="pgrid" style="--c:${prob ? 1 : small && ex0.visual ? 3 : 2}">${items.map((ex, k) => `<div class="pit">${showQ ? `<div class="pq">${L(k)}${esc(ex.prompt)}</div>` : L(k)}${ex.visual ? `<div>${pv(ex)}</div>` : ''}${line(ex)}</div>`).join('')}</div>`;
+      body = `<div class="pgrid" style="--c:${prob || items.some(x => /class="chart"/.test(x.visual || '')) ? 1 : small && ex0.visual ? 3 : 2}">${items.map((ex, k) => `<div class="pit">${showQ ? `<div class="pq">${L(k)}${esc(ex.prompt)}</div>` : L(k)}${ex.visual ? `<div>${pv(ex)}</div>` : ''}${line(ex)}</div>`).join('')}</div>`;
     }
     else if (ex0.type === 'dictat') {
       adult.push({n, t:'Dicteu aquestes paraules, una a una:', x: items.map((ex, k) => (many ? LT[k] + ') ' : '') + ex.answer).join('     ')});
