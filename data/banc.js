@@ -4051,7 +4051,7 @@ window.BANC = {
    {
     "titol": "Volem ser amics de correspondència",
     "tema": "La comunicació (correu electrònic)",
-    "text": "De: Alumnes de 4t B\nPer a: Alumnes de 4t de l'Escola del Pont\nAssumpte: Volem ser els vostres amics de correspondència!\nHola, companys!\nSom els vint-i-cinc alumnes de quart B d'una escola de Vic. La nostra mestra, la Mireia, ens ha explicat que viviu en un poble de muntanya.\nUs expliquem com som: ens agrada molt jugar a bàsquet al pati, la plàstica i les mates. A la classe tenim una mascota: un peix vermell que es diu Bombolla.\nVolem saber moltes coses de vosaltres: neva molt a l'hivern? Aneu a l'escola amb autobús? Teniu animals a la classe?\nUs proposem una cosa: cada mes us enviarem una carta en paper amb dibuixos, i vosaltres ens en podríeu enviar una altra. I al juny, potser podríem fer una excursió per conèixer-nos!\nUna abraçada,\nEls alumnes de 4t B",
+    "text": "De: Alumnes de 4t B\nPer a: Alumnes de 4t de l'Escola del Pont\nAssumpte: Volem ser els vostres amics de correspondència!\nHola, companys!\nSom els vint-i-cinc alumnes de quart B d'una escola de Vic. La nostra mestra, la Mireia, ens ha explicat que viviu en un poble de muntanya.\nUs expliquem com som: ens agrada molt jugar a bàsquet al pati, i també ens agraden la plàstica i les mates. A la classe tenim una mascota: un peix vermell que es diu Bombolla.\nVolem saber moltes coses de vosaltres: neva molt a l'hivern? Aneu a l'escola amb autobús? Teniu animals a la classe?\nUs proposem una cosa: cada mes us enviarem una carta en paper amb dibuixos, i vosaltres ens en podríeu enviar una altra. I al juny, potser podríem fer una excursió per conèixer-nos!\nUna abraçada,\nEls alumnes de 4t B",
     "q": [
      [
       "Quina mascota té la classe de 4t B?",
@@ -13596,10 +13596,6 @@ window.BANC = {
   ],
   [
    "culpa seva",
-   2
-  ],
-  [
-   "cosa meva",
    2
   ],
   [
