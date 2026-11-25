@@ -2931,10 +2931,17 @@ function genFresh(id, curs, r, avoid){ let ex; for (let k = 0; k < 15; k++) { ex
 /* en paper, dos exercicis són el mateix si es veuen igual (encara que les opcions vinguin en un altre ordre) */
 const paperKey = e => { if (e.skill === 'c-comprensio' || e.skill === 'c-oral') return String(hashStr(JSON.stringify(['comp', e.prompt, e.options && e.options.map(String).sort()]))); const gap = /class="gap"/.test(e.visual || ''); return String(hashStr(JSON.stringify([gap ? 'gap' : e.skill, gap ? '' : e.prompt, String(e.visual || '').replace(/\s+/g, ' '), gap ? '' : e.options && e.options.map(String).sort(), e.items && e.items.map(x => typeof x === 'object' ? x.t : x).sort(), e.pairs && e.pairs.map(String).sort(), e.type === 'dictat' ? e.answer : '', e.listen || '']))); };
 const FCAPS = {};
-function fCap(id, c){ const k = id + c; if (!(k in FCAPS)) { const set = new Set(), r = mulberry(4242 + c); let pool = null, per = 0, n = 0;
-  for (let i = 0; i < 600; i++) { const e = genEx(id, c, r); set.add(paperKey(e)); if ((e.type === 'classifica' && !e.items.every(x => isNum(x.t))) || e.type === 'relaciona') { pool = pool || new Set(); const its = e.type === 'classifica' ? e.items.map(x => x.t) : e.pairs.map(p => p[0]); its.forEach(t => pool.add(t)); per += its.length; n++; } if (set.size >= 20 && i > 300) break; }
-  // classificar i relacionar: només tants apartats com permetin no repetir cap paraula ni frase
-  FCAPS[k] = Math.min(20, set.size, pool ? Math.max(1, Math.floor(pool.size / (per / n))) : 20); } return FCAPS[k]; }
+function fCap(id, c){ const k = id + c; if (!(k in FCAPS)) { const set = new Set(), r = mulberry(4242 + c); let vis = false;
+  for (let i = 0; i < 600; i++) { const e = genEx(id, c, r); set.add(paperKey(e)); if (e.type === 'classifica' || e.type === 'relaciona') vis = true; if (set.size >= 20 && i > 300) break; }
+  let cap = Math.min(20, set.size);
+  // classificar i relacionar: tants apartats com el generador pugui fer sense repetir cap paraula ni frase (es simula)
+  if (vis) { const g = GP.like, f = GP.figs; GP.like = null; GP.figs = null; let best = 20;
+    for (const sd of [11, 29]) { const rr = mulberry(sd * 977 + c), own = new Set(), used = new Set(); let n = 0;
+      for (; n < cap; n++) { const e = genPaper(id, c, rr, own, null, used); const tk = e.type === 'classifica' ? (e.items.every(x => isNum(x.t)) ? [] : toks(e.items.map(x => x.t))) : e.type === 'relaciona' ? toks(e.pairs.flat()) : [];
+        if (own.has(paperKey(e)) || tk.some(w => used.has(w))) break; own.add(paperKey(e)); tk.forEach(w => used.add(w)); exWords(e).forEach(w => used.add(w)); }
+      best = Math.min(best, n); }
+    GP.like = g; GP.figs = f; cap = Math.max(1, Math.min(cap, best)); }
+  FCAPS[k] = cap; } return FCAPS[k]; }
 function genPaper(id, curs, r, avoid, prefer, words){ let best = null, bs = 1e9;
   for (let k = 0; k < 320; k++) { const ex = genEx(id, curs, r), pk = paperKey(ex); if (avoid.has(pk)) continue;
     const ws = words ? exWords(ex) : [], ov = ws.filter(w => !w.startsWith('q:') && words.has(w)).length, oq = ws.some(w => w.startsWith('q:') && words.has(w)) ? 1 : 0;
@@ -2950,7 +2957,7 @@ const stemOk = ex => ex.skill !== 'c-temps' || new Set(ex.items.map(x => x.t.spl
 const hlOk = ex => { const h = ex.items.map(x => (String(x.t).match(/\*([^*]+)\*/) || [])[1]).filter(Boolean).map(w => w.toLowerCase()); return new Set(h).size === h.length; };
 const paperOk = ex => ex.type !== 'classifica' || stemOk(ex) && hlOk(ex) && (ex.buckets.every((b, bi) => ex.items.some(x => x.b === bi)) && new Set(ex.items.map(x => x.t)).size === ex.items.length);
 // paraules d'un exercici, per no repetir-les entre els apartats d'un mateix grup
-const toks = a => a.flatMap(t => { t = String(t).replace(/\*/g, '').toLowerCase(); return t.split(' ').length > 3 ? [t] : t.split(/[^a-zà-ÿ·0-9']+/); }).filter(w => w.length >= 2 || /^\d+$/.test(w));
+const toks = a => a.flatMap(t => { t = String(t).replace(/\*/g, '').toLowerCase().trim(); return [t, ...(/\s/.test(t) && t.split(' ').length <= 3 ? t.split(/[^a-zà-ÿ·']+/).filter(w => w.length >= 5) : [])]; }).filter(w => w && !/^[\d\s×x:+−=→-]+$/.test(w));
 const exWords = ex => [ex.prompt && !/^(Quant fa\?|Calcula)/.test(ex.prompt) ? 'q:' + ex.prompt : '', ...(ex.type === 'classifica' ? toks(ex.items.map(x => x.t)) : ex.type === 'relaciona' ? toks(ex.pairs.flat()) : (ex.type === 'tria' && ex.options) ? ['=' + ex.options[ex.answer]] : ex.type === 'escriu' ? ['=' + ex.answer, ...(String(ex.prompt).match(/\d[\d.,]*/g) || []).map(n => 'n:' + n.replace(/[.,]/g, '').replace(/0+$/, '')).filter(n => n.length > 3)] : ex.type === 'ordena' ? [ex.items.join(' ')] : [])].filter(Boolean);
 function taskExercises(t, sid){
   const c = cls(t.classId), st = stu(sid), r = mulberry(t.seed + (t.same ? 0 : hashStr(sid))), out = [], seen = new Set(t.same ? [] : (S.seen && S.seen[sid]) || []);
