@@ -281,6 +281,12 @@ textarea{width:100%;min-height:170px;font-family:var(--f-num);font-size:.9rem;li
 .pname{display:flex;gap:18px;margin:0 0 16px;font-size:1rem}
 .pname span{flex:1;border-bottom:1.5px solid #555;padding-bottom:2px}
 .pex{margin:0 0 18px}
+.pcg{display:flex;gap:6px;align-items:flex-start;margin:0 0 14px;padding-bottom:10px;border-bottom:1px solid #ddd;break-inside:avoid;page-break-inside:avoid}
+.pcg:last-of-type{border-bottom:none}
+.pcg-n{font-size:1.1rem;min-width:1.6em;line-height:1.3}
+.pcg img{min-width:0;height:auto;background:#fff}
+.pcg-intro{margin:4px 0 14px}
+.pcg-credit{font-size:.8rem;color:#666;margin-top:10px}
 .pex>b{break-after:avoid;page-break-after:avoid}
 .pex .readtext,.ptable,.pbankw{break-inside:avoid;page-break-inside:avoid}
 .pex > b{display:block;font-size:1.08rem;margin-bottom:6px}
@@ -338,6 +344,7 @@ textarea{width:100%;min-height:170px;font-family:var(--f-num);font-size:.9rem;li
 <div class="toast" id="toast" hidden></div>
 
 <script src="data/banc.js"></script>
+<script src="data/cangur.js"></script>
 <script src="personatge.js"></script>
 <script>
 'use strict';
@@ -2258,30 +2265,58 @@ function fExercises(){
     out.push(exs); }
   return out;
 }
+/* proves Cangur: només els problemes 1 a 8 de cada prova oficial (els més assequibles), 5è i 6è */
+const cangPool = c => (window.CANGUR && window.CANGUR[c]) || [];
+const cangMax = c => { const p = cangPool(c); return p.length - (p.length - new Set(p.map(x => x.g || x.f)).size); };
+function cangPick(){
+  const pool = cangPool(F.curs), n = Math.min(F.cn || 10, cangMax(F.curs)), out = [];
+  for (let v = 0; v < F.copies; v++) { const r = mulberry(F.seed * 7919 + v * 104729 + 31);
+    // problemes gairebé iguals (models de dos dies del mateix any) no surten mai junts
+    const sel = [], gs = new Set();
+    for (const p of shuffle(r, pool.slice())) { if (sel.length >= n) break; if (p.g && gs.has(p.g)) continue; if (p.g) gs.add(p.g); sel.push(p); }
+    sel.sort((a, b) => a.n - b.n || a.y - b.y);
+    out.push(sel); }
+  return out;
+}
+function cangSheet(title, sub0, items, sol){
+  const head = sub => `<div class="phead"><img src="assets/logo-h.png" alt="Vedruna Escorial Vic"><div style="flex:1"><h2>${esc(title)}</h2><span class="small muted">${esc(sub0)}${sub ? ' · ' + sub : ''}</span></div><b style="color:var(--brand2)">Xino-Xano</b></div>`;
+  const src = p => `Cangur ${p.y}${p.d ? ' (' + p.d + ')' : ''}, problema ${p.n}`;
+  const alumne = `<article class="psheet">${head('')}<div class="pname"><span>Nom:</span><span style="flex:.5">Data:</span></div>
+    <p class="pcg-intro"><b>Problemes de les proves Cangur.</b> Llegeix cada problema amb calma i encercla la lletra de la resposta correcta. Només n'hi ha una de bona.</p>
+    ${items.map((p, i) => `<section class="pcg"><b class="pcg-n">${i + 1}.</b><img src="assets/cangur/${p.f}" width="${p.w}" height="${p.h}" alt="Problema ${i + 1} (${src(p)})" style="aspect-ratio:${p.w}/${p.h};width:min(100%, ${(p.w / 150 * (p.k || 1)).toFixed(2)}in)"></section>`).join('')}
+    <p class="pcg-credit">Problemes de les proves Cangur de la Societat Catalana de Matemàtiques (IEC), cangur.org.</p></article>`;
+  const pera = !sol ? '' : `<article class="psheet psol">${head("Full per a l'adult")}<h3>Solucions</h3>
+    ${items.map((p, i) => `<div class="gr"><b>${i + 1}.</b> ${p.r.split('/').join(' o ')} <span class="small muted">· ${src(p)}, ${CURS[F.curs]}${p.r.includes('/') ? ' (l\'organització dona per bones les dues respostes)' : ''}</span></div>`).join('')}
+    <p class="small muted" style="margin-top:12px">Font: proves oficials del Cangur de la Societat Catalana de Matemàtiques (IEC). Solucions oficials publicades a cangur.org i scm.iec.cat.</p></article>`;
+  return alumne + pera;
+}
 function vFitxes(){
-  const c = F.curs, sks = SK.filter(k => k.gen && !k.hidden && c >= k.min && c <= k.max), total = Object.values(F.items).reduce((a, b) => a + b, 0), pg = PROG[c];
+  const c = F.curs, sks = SK.filter(k => k.gen && !k.hidden && c >= k.min && c <= k.max), pg = PROG[c], cpool = cangPool(c);
+  const mode = F.mode === 'cang' && cpool.length ? 'cang' : F.mode === 'prog' && pg ? 'prog' : 'cont';
+  const total = mode === 'cang' ? Math.min(F.cn || 10, cangMax(c)) : Object.values(F.items).reduce((a, b) => a + b, 0);
   const row = k => `<div class="skrow"><span>${esc(k.nom)}</span><span class="stepper"><button data-a="fstep" data-v="${k.id}" data-d="-1" aria-label="Un menys de ${esc(k.nom)}">−</button><b class="num">${F.items[k.id] || 0}</b><button data-a="fstep" data-v="${k.id}" data-d="1" aria-label="Un més de ${esc(k.nom)}">+</button></span></div>`;
   const det = (nom, l, extra = '') => `<details ${l.some(k => F.items[k.id]) ? 'open' : ''}><summary style="cursor:pointer;font-weight:700;padding:8px 0">${esc(nom)} <span class="small muted">${extra}</span></summary>${l.map(row).join('')}</details>`;
   const perCont = mat => `<div class="stack" style="gap:4px"><h3 style="color:var(--${mat})">${mat === 'cat' ? 'Català' : 'Matemàtiques'}</h3>${BLOCS[mat].map(b => { const l = sks.filter(k => k.mat === mat && blocOf(k.id) === b); return l.length ? det(b, l, `(${l.length})`) : ''; }).join('')}</div>`;
   const perProg = mat => !pg || !pg[mat] ? '' : `<div class="stack" style="gap:4px"><h3 style="color:var(--${mat})">${mat === 'cat' ? 'Català' : 'Matemàtiques'}</h3>${pg[mat].u.map(([nom, ids]) => { const l = ids.split(' ').map(SKM).filter(k => k.gen); return l.length ? det(nom, l) : ''; }).join('')}</div>`;
-  const mode = F.mode === 'prog' && pg ? 'prog' : 'cont';
   const chosen = Object.entries(F.items).map(([k, n]) => `<span class="chip">${esc(SKM(k).nom)} ×${n}</span>`).join('');
-  const sheets = total ? fExercises().map((exs, v) => sheetHTML(F.title || 'Fitxa de repàs', CURS[c] + (F.copies > 1 ? ' · model ' + 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'[v % 26] + (v >= 26 ? Math.floor(v / 26) : '') : ''), '', exs, F.sol)).join('') : '';
+  const sheets = !total ? '' : mode === 'cang' ? cangPick().map((it, v) => cangSheet(F.title || 'Problemes Cangur', CURS[c] + (F.copies > 1 ? ' · model ' + 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'[v % 26] + (v >= 26 ? Math.floor(v / 26) : '') : ''), it, F.sol)).join('') : fExercises().map((exs, v) => sheetHTML(F.title || 'Fitxa de repàs', CURS[c] + (F.copies > 1 ? ' · model ' + 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'[v % 26] + (v >= 26 ? Math.floor(v / 26) : '') : ''), '', exs, F.sol)).join('');
   return `<div class="stack fitxes">
     <section class="noprint stack" style="gap:6px"><h1>Fitxes per imprimir</h1><p class="muted" style="max-width:62ch">Tria el curs i els continguts. Xino-Xano prepara una fitxa amb exercicis nous cada vegada i, si vols, un full per a l'adult amb els dictats i les solucions.</p></section>
     <section class="card stack noprint"><h2>1. Curs</h2><div class="row" role="group" aria-label="Curs">${[1,2,3,4,5,6].map(x => `<button class="btn ${x === c ? '' : 'ghost'}" data-a="fcurs" data-v="${x}" aria-pressed="${x === c}">${CURS[x]}</button>`).join('')}</div></section>
-    <section class="card stack noprint"><div class="row"><h2 style="flex:1">2. Continguts</h2>${pg ? `<div class="seg" role="group" aria-label="Com vols triar"><button data-a="fmode" data-v="cont" aria-pressed="${mode === 'cont'}">Per continguts</button><button data-a="fmode" data-v="prog" aria-pressed="${mode === 'prog'}">Segons la programació</button></div>` : ''}</div>
+    <section class="card stack noprint"><div class="row"><h2 style="flex:1">2. Continguts</h2>${pg || cpool.length ? `<div class="seg" role="group" aria-label="Com vols triar"><button data-a="fmode" data-v="cont" aria-pressed="${mode === 'cont'}">Per continguts</button>${pg ? `<button data-a="fmode" data-v="prog" aria-pressed="${mode === 'prog'}">Segons la programació</button>` : ''}${cpool.length ? `<button data-a="fmode" data-v="cang" aria-pressed="${mode === 'cang'}">Proves Cangur</button>` : ''}</div>` : ''}</div>
+      ${mode === 'cang' ? `<p class="small muted" style="max-width:68ch">Problemes de les proves Cangur oficials de ${CURS[c]} (${Math.min(...cpool.map(p => p.y))}–${Math.max(...cpool.map(p => p.y))}). Només hi ha els 8 primers problemes de cada prova, que són els més assequibles. Surten ordenats de més fàcil a més difícil. Hi ha ${cangMax(c)} problemes diferents.</p>
+      <div class="skrow"><span>Nombre de problemes</span><span class="stepper"><button data-a="fcn" data-d="-1" aria-label="Un problema menys">−</button><b class="num">${total}</b><button data-a="fcn" data-d="1" aria-label="Un problema més">+</button></span></div>` : `
       <p class="small muted">Amb + i − tries quants exercicis de cada tipus hi vols.${total ? ` Ara n'hi ha <b>${total}</b>.` : ''}</p>
       ${chosen ? `<div class="row" style="gap:6px">${chosen}<button class="link" data-a="fclear">Treu-ho tot</button></div>` : ''}
-      <div class="grid g2" style="align-items:start">${mode === 'prog' ? perProg('cat') + perProg('mat') : perCont('cat') + perCont('mat')}</div></section>
+      <div class="grid g2" style="align-items:start">${mode === 'prog' ? perProg('cat') + perProg('mat') : perCont('cat') + perCont('mat')}</div>`}</section>
     <section class="card stack noprint"><h2>3. Opcions</h2>
-      <label class="f" for="fTitle">Títol de la fitxa<input type="text" id="fTitle" maxlength="60" value="${esc(F.title)}" placeholder="Fitxa de repàs" data-a="ftitle"></label>
+      <label class="f" for="fTitle">Títol de la fitxa<input type="text" id="fTitle" maxlength="60" value="${esc(F.title)}" placeholder="${mode === 'cang' ? 'Problemes Cangur' : 'Fitxa de repàs'}" data-a="ftitle"></label>
       <div class="skrow"><span>Models diferents<br><span class="small muted">Cada model té exercicis diferents. Útil perquè no es copiïn.</span></span><span class="stepper"><button data-a="fcopies" data-d="-1" aria-label="Un model menys">−</button><b class="num">${F.copies}</b><button data-a="fcopies" data-d="1" aria-label="Un model més">+</button></span></div>
       <div class="checks"><label><input type="checkbox" data-a="fsol" ${F.sol ? 'checked' : ''}> Afegeix el full per a l'adult amb les solucions</label></div>
-      <div class="row"><button class="btn big" onclick="window.print()" ${total ? '' : 'disabled'}>Imprimeix o desa en PDF</button><button class="btn ghost" data-a="fnew" ${total ? '' : 'disabled'}>Canvia els exercicis</button></div>
+      <div class="row"><button class="btn big" onclick="window.print()" ${total ? '' : 'disabled'}>Imprimeix o desa en PDF</button><button class="btn ghost" data-a="fnew" ${total ? '' : 'disabled'}>${mode === 'cang' ? 'Canvia els problemes' : 'Canvia els exercicis'}</button></div>
       <p class="small muted">Per desar-la en PDF, tria «Desa com a PDF» a la finestra d'imprimir.</p></section>
     ${total ? `<section class="stack"><h2 class="noprint">Vista prèvia</h2>${sheets}</section>` : `<p class="note noprint">Encara no has triat cap contingut.</p>`}
-    <footer class="noprint small muted" style="margin-top:12px;max-width:70ch">Eina de Vedruna Escorial Vic per al professorat. No demana cap dada ni compte: el que tries només es guarda en aquest navegador. Els exercicis s'han preparat amb ajuda d'IA i s'han revisat; si en trobeu algun d'erroni, digueu-ho a l'equip de comunicació de l'escola.</footer></div>`;
+    <footer class="noprint small muted" style="margin-top:12px;max-width:70ch">Eina de Vedruna Escorial Vic per al professorat. No demana cap dada ni compte: el que tries només es guarda en aquest navegador. ${mode === 'cang' ? "Els problemes Cangur són de les proves oficials de la Societat Catalana de Matemàtiques (IEC), amb les seves solucions oficials." : "Els exercicis s'han preparat amb ajuda d'IA i s'han revisat; si en trobeu algun d'erroni, digueu-ho a l'equip de comunicació de l'escola."}</footer></div>`;
 }
 /* ============ fitxes en paper: exercicis agrupats per fer a mà ============ */
 const LT = 'abcdefghijklmnopqrstuvwxyz';
@@ -2732,6 +2767,7 @@ Respon només amb un array JSON amb aquest format: ${fmt}`;
   fcurs:(d)=>{ F.curs = +d.v; F.items = {}; fSave(); render(); },
   fmode:(d)=>{ F.mode = d.v; fSave(); render(); },
   fstep:(d)=>{ const n = Math.max(0, Math.min(20, (F.items[d.v] || 0) + (+d.d))); if (n) F.items[d.v] = n; else delete F.items[d.v]; fSave(); render(); },
+  fcn:(d)=>{ F.cn = Math.max(1, Math.min(cangMax(F.curs) || 40, (F.cn || 10) + (+d.d))); fSave(); render(); },
   fclear:()=>{ F.items = {}; fSave(); render(); },
   fcopies:(d)=>{ F.copies = Math.max(1, Math.min(30, F.copies + (+d.d))); fSave(); render(); },
   fsol:(d, el)=>{ F.sol = el.checked; fSave(); render(); },
