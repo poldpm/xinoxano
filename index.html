@@ -311,8 +311,10 @@ textarea{width:100%;min-height:170px;font-family:var(--f-num);font-size:.9rem;li
 .pgrid > .pit:not(.row){display:flex;flex-direction:column}
 .pgrid > .pit:not(.row) > .pline:last-child,.pgrid > .pit:not(.row) > .row:last-child{margin-top:auto}
 .pit .series{flex-wrap:wrap!important;justify-content:flex-start!important}
-.pwork{border:1.5px dashed #aaa;border-radius:8px;height:96px;margin:8px 0 4px;position:relative}
-.pwork span{position:absolute;top:4px;left:8px;font-size:.75rem;color:#888}
+.pwork{border:1.5px dashed #999;border-radius:8px;height:130px;margin:8px 0 4px;position:relative}
+.pwork span{position:absolute;top:4px;left:8px;font-size:.85rem;color:#555}
+.prel{width:100%;min-width:0;border-collapse:collapse;margin-top:4px}.prel td{padding:5px 4px;vertical-align:bottom;border:none!important;font-size:1rem}.prel td.n{font-weight:700;width:1.6em;white-space:nowrap}.prel td.g{width:3.2em;padding-right:22px}
+.ptable,.ptable tr,.ptable td{break-inside:avoid;page-break-inside:avoid}
 .plist{margin:6px 0 8px 22px;padding:0;line-height:1.55}
 .plist li{padding-left:4px}
 .pchips{display:flex;flex-wrap:wrap;gap:6px 18px}
@@ -326,11 +328,12 @@ textarea{width:100%;min-height:170px;font-family:var(--f-num);font-size:.9rem;li
 .pbankw{border:2px dashed #999;border-radius:10px;padding:6px 12px;margin:6px 0 4px;font-size:1.05rem}
 .pbankw > b{margin-right:6px}
 .pit .word,.pit .bigemoji{font-size:1.5rem;margin:2px 0}
+.pit .word.num{white-space:nowrap}
 .pit svg{max-height:120px;width:auto}
 .pit svg.chart{max-height:250px;width:auto;max-width:100%}
 .pit svg.shape{max-height:210px;width:auto;max-width:100%}
 .pit svg.chart{max-height:330px}
-.pline.short{max-width:150px}
+.pline.short{max-width:230px}
 .pit .series span{background:#fff;border:1.5px solid #bbb;font-size:1.3rem;min-width:44px;padding:6px}
 .pit .series span.q{background:#fff;border:2px solid #222;color:transparent}
 .pgap.wide{width:3.2em}
@@ -346,7 +349,7 @@ textarea{width:100%;min-height:170px;font-family:var(--f-num);font-size:.9rem;li
 .psol .gr{margin-bottom:6px}
 .padult{border:2px dashed #999;border-radius:10px;padding:10px 14px;margin:8px 0}
 @page{size:A4;margin:12mm}
-@media print{main,body,html{padding-bottom:0!important;margin-bottom:0!important}.psheet:last-of-type{page-break-after:auto!important;break-after:auto!important}header.top,#top,.tabs,.noprint,.toast,body::before{display:none!important}.pex{break-inside:auto!important;page-break-inside:auto!important}.pex>b{break-after:avoid;page-break-after:avoid}.psheet{border:none;border-radius:0;padding:0;margin:0;page-break-after:always;break-after:page}.psheet:last-child{page-break-after:auto}body,#app{background:#fff!important}.slips{grid-template-columns:1fr 1fr}.slip{border-color:#888}}
+@media print{.pex.pkeep{break-inside:avoid!important;page-break-inside:avoid!important}main,body,html{padding-bottom:0!important;margin-bottom:0!important}.psheet:last-of-type{page-break-after:auto!important;break-after:auto!important}header.top,#top,.tabs,.noprint,.toast,body::before{display:none!important}.pex{break-inside:auto!important;page-break-inside:auto!important}.pex>b{break-after:avoid;page-break-after:avoid}.psheet{border:none;border-radius:0;padding:0;margin:0;page-break-after:always;break-after:page}.psheet:last-child{page-break-after:auto}body,#app{background:#fff!important}.slips{grid-template-columns:1fr 1fr}.slip{border-color:#888}}
 @media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
 @keyframes pop{0%{transform:scale(.9)}60%{transform:scale(1.06)}100%{transform:scale(1)}}
 .pop{animation:pop .35s ease-out}
@@ -725,7 +728,7 @@ Object.assign(RULES, {
   'c-gugu':{tag:'gu / gü / qu / qü',opts:['gu','gü','qu','qü'],w:['pin[gü]í','ai[gü]era','llen[gü]eta','[gu]itarra','fi[gu]era','[gu]erra','[qü]estió','fre[qü]ent','se[qü]ència','[qu]eixal','pa[qu]et','es[qu]irol']},
   'c-xix':{tag:'x / ix / tx / ig',opts:['x','ix','tx','ig'],w:['pe[ix]','ca[ix]a','[x]ocolata','[x]ai','co[ix]í','mar[x]a','fa[ix]a','co[tx]e','despa[tx]','fle[tx]a','ma[ig]','bo[ig]','ro[ig]','pu[ig]']},
   'c-vneutra':{tag:'a / e àtones',opts:['a','e'],w:['c[a]vall','m[a]duixa','p[e]tit','s[e]tmana','[e]squirol','gr[a]nota','f[a]rina','t[e]atre','d[e]sert','c[a]rrer','p[e]rsona','m[a]rtell','[a]vió']},
-  'c-ou':{tag:'o / u àtones',opts:['o','u'],w:['c[o]nill','b[u]fanda','f[o]rmatge','p[o]llastre','t[o]màquet','p[u]jar','m[u]ntanya','c[o]rrer','c[u]llera','s[o]rtir','c[o]berta','esp[o]nja']}
+  'c-ou':{tag:'o / u àtones',opts:['o','u'],w:['c[o]nill','b[u]fanda','f[o]rmatge','p[o]llastre','t[o]màquet','p[u]jar','m[u]ntanya','c[u]llera','s[o]rtir','c[o]berta','esp[o]nja']}
 });
 for (const [id, nom, min, max] of [['c-gj','G o J',2,5],['c-gugu','GU, GÜ, QU o QÜ',3,6],['c-xix','X, IX, TX o IG',2,4],['c-vneutra','A o E (vocal neutra)',2,6],['c-ou','O o U',2,6]]) {
   skill(id,'cat',nom,min,max,(r)=>{ const R = RULES[id], g = gapWord(pick(r,R.w));
@@ -798,7 +801,7 @@ skill('m-descomp','mat','Compondre nombres',1,4,(r,c)=>{ const parts = c===1 ? [
   const n = parts.reduce((s,[,v],i)=>s + v * 10 ** (parts.length-1-i), 0), txt = parts.filter(([,v])=>v).map(([k,v])=>`${v} ${v===1 ? {centena:'centena',desenes:'desena',unitats:'unitat',milers:'miler',centenes:'centena'}[k] : k}`).join(', ');
   return {type:'escriu', numeric:true, prompt:'Quin nombre és?', speak:`Quin nombre té ${txt}?`, visual:`<div class="readtext">${esc(txt)}</div>`, answer:String(n)}; });
 skill('m-compdec','mat','Comparar decimals',5,6,(r,c)=>{ const i = ri(r,0,9), a = i + ri(r,1,9)/10, b = i + ri(r,10,99)/100 + (c===6 ? ri(r,0,9)/1000 : 0), x = Math.round(a*1000), y = Math.round(b*1000);
-  const ok = x === y ? 'Són iguals' : x > y ? fmtX(a) : fmtX(b); return {prompt:'Quin nombre és més gran?', speak:`Quin nombre és més gran: ${fmtX(a)} o ${fmtX(b)}?`, ...tria(r,ok,[fmtX(a),fmtX(b),'Són iguals'])}; });
+  const bS = b.toFixed(c === 6 ? 3 : 2).replace('.', ','), ok = x === y ? 'Són iguals' : x > y ? fmtX(a) : bS; return {prompt:'Quin nombre és més gran?', speak:`Quin nombre és més gran: ${fmtX(a)} o ${bS}?`, ...tria(r,ok,[fmtX(a),bS,'Són iguals'])}; });
 skill('m-divisors','mat','Múltiples i divisors',5,6,(r)=>{ const N = pick(r,[12,18,20,24,30,36]); return {type:'classifica', prompt:`Quins són divisors de ${N}?`, speak:`Classifica els nombres: són divisors de ${N} o no?`, buckets:[`Divisors de ${N}`,'No ho són'], items:sample(r,[2,3,4,5,6,7,8,9,10,11,12],6).map(x=>({t:String(x), b:N % x ? 1 : 0}))}; });
 skill('m-primers','mat','Nombres primers i compostos',5,6,(r)=>({type:'classifica', prompt:'Primer o compost?', speak:'Classifica els nombres: primers o compostos.', buckets:['Primer','Compost'],
   items:shuffle(r,[...sample(r,[2,3,5,7,11,13,17,19,23,29,31,37,41,43,47],3).map(x=>({t:String(x),b:0})), ...sample(r,[4,6,8,9,10,12,14,15,16,18,21,22,25,27,33,35,39,49],3).map(x=>({t:String(x),b:1}))])}));
@@ -937,8 +940,8 @@ skill('m-mesura1','mat','Comparar i mesurar',1,2,(r)=>{ const t = ri(r,0,3);
     ...tria(r, (mes ? a > b : a < b) ? 'El got 1' : 'El got 2', ['El got 1','El got 2'])}; });
 skill('m-poligons','mat','Polígons',2,4,(r)=>{ const N = {3:'Triangle',4:'Quadrilàter',5:'Pentàgon',6:'Hexàgon',8:'Octàgon'}, n = pick(r,[3,4,5,6,8]);
   return {prompt:'Com es diu aquest polígon?', speak:'Compta els costats. Com es diu aquest polígon?', visual:polySVG(n), ...tria(r,N[n],Object.values(N))}; });
-skill('m-cercle','mat','El cercle',6,6,(r)=>{ const rad = ri(r,2,12), asR = r() < .5;
-  const svg = `<svg viewBox="0 0 200 200" width="180" height="180" role="img" aria-label="Cercle"><circle cx="100" cy="100" r="80" fill="var(--brand-soft)" stroke="var(--brand2)" stroke-width="3"/>${asR ? '<path d="M100 100 H180" stroke="var(--ink)" stroke-width="3"/>' : '<path d="M20 100 H180" stroke="var(--ink)" stroke-width="3"/>'}<circle cx="100" cy="100" r="4" fill="var(--ink)"/><text x="${asR?140:100}" y="90" text-anchor="middle" font-size="16" font-weight="700" fill="var(--ink)" font-family="Fira Sans, sans-serif">${asR ? rad : 2*rad} cm</text></svg>`;
+skill('m-cercle','mat','El cercle',6,6,(r)=>{ const rad = ri(r,2,12), asR = r() < .5, R = 24 + rad * 6, cx = 110, cy = 16 + R;
+  const svg = `<svg class="shape" viewBox="0 0 220 ${2 * R + 60}" width="220" height="${2 * R + 60}" style="max-width:100%;height:auto" role="img" aria-label="Cercle"><circle cx="${cx}" cy="${cy}" r="${R}" fill="#f6d3dc" stroke="var(--brand2)" stroke-width="3"/>${asR ? `<path d="M${cx} ${cy} H${cx + R}" stroke="#1b1b1b" stroke-width="3"/>` : `<path d="M${cx - R} ${cy} H${cx + R}" stroke="#1b1b1b" stroke-width="3"/>`}<circle cx="${cx}" cy="${cy}" r="4" fill="#1b1b1b"/><text x="${cx}" y="${2 * R + 48}" text-anchor="middle" font-size="19" font-weight="700" fill="#1b1b1b" font-family="Fira Sans, sans-serif">${asR ? 'radi' : 'diàmetre'} ${asR ? rad : 2 * rad} cm</text></svg>`;
   return {type:'escriu', numeric:true, prompt: asR ? `El radi fa ${rad} cm. Quant fa el diàmetre?` : `El diàmetre fa ${2*rad} cm. Quant fa el radi?`, speak: asR ? `El radi fa ${rad} centímetres. Quant fa el diàmetre?` : `El diàmetre fa ${2*rad} centímetres. Quant fa el radi?`, visual:svg, answer:String(asR ? 2*rad : rad)}; });
 
 // MATEMÀTIQUES · dades i atzar
@@ -958,7 +961,7 @@ const GDADES = [['Fruita preferida de la classe',['Poma','Pera','Plàtan','Madui
   ['Llibres llegits a la biblioteca',['Contes','Còmics','Poesia','Ciència']],['Activitat extraescolar',['Música','Dansa','Escacs','Teatre']]];
 const sumA = a => a.reduce((x, y) => x + y, 0);
 const GNOM = {'Fruita preferida de la classe':'vots','Esport preferit':'vots','Com venim a l\'escola':'alumnes','Llibres llegits a la biblioteca':'llibres','Activitat extraescolar':'alumnes'};
-skill('m-grafics','mat','Gràfics de barres',1,6,(r,c)=>{ const ex = grafEx(r,c), N = GNOM[ex.gtitle] || 'vots', f = t => t.replace(/\bvots\b/g, N).replace(/de vots/g, 'de ' + N); delete ex.gtitle; return {...ex, prompt:f(ex.prompt), speak:f(ex.speak)}; });
+skill('m-grafics','mat','Gràfics de barres',1,6,(r,c)=>{ const ex = grafEx(r,c), N = GNOM[ex.gtitle] || 'vots', f = t => N === 'alumnes' ? t.replace(/Quants vots té «/, 'Quants alumnes han triat «').replace(/Quants vots més té «/, 'Quants alumnes més han triat «').replace(/Quina opció té (més|menys) vots\?/, 'Quina opció han triat $1 alumnes?').replace(/Quina opció té el doble de vots que/, 'Quina opció han triat el doble d\'alumnes que').replace(/mitjana de vots/, "mitjana d'alumnes").replace(/Quin percentatge dels vots té «/, 'Quin percentatge dels alumnes ha triat «').replace(/\bvots\b/g, 'alumnes') : t.replace(/\bvots\b/g, N).replace(/de vots/g, 'de ' + N); delete ex.gtitle; return {...ex, prompt:f(ex.prompt), speak:f(ex.speak)}; });
 function grafEx(r,c){ const [title, labels] = pick(r, c <= 2 ? GDADES.slice(0,3) : GDADES);
   // valors: 1r fins a 9; 2n-3r fins a 20; 4t múltiples de 5 fins a 60; 5è-6è múltiples de 10 fins a 120
   let vals;
@@ -986,7 +989,7 @@ function lineSVG(labels, vals, title, step, unit){
   let g = ''; for (let v = bot; v <= top; v += step) g += `<line x1="${x0}" y1="${y(v)}" x2="${W - 14}" y2="${y(v)}" stroke="#d9d2d5"/><text x="${x0 - 8}" y="${y(v) + 4}" text-anchor="end" font-size="15" fill="#2a2230" font-family="Fira Sans, sans-serif">${v}</text>`;
   g += labels.map((l, k) => `<line x1="${x0 + k * dx}" y1="20" x2="${x0 + k * dx}" y2="${Y0}" stroke="#e2dadd"/><text x="${x0 + k * dx}" y="${Y0 + 24}" text-anchor="middle" font-size="15" font-weight="700" fill="#2a2230" font-family="Fira Sans, sans-serif">${l}</text>`).join('');
   g += `<polyline points="${vals.map((v, k) => `${x0 + k * dx},${y(v)}`).join(' ')}" fill="none" stroke="#1f4fb4" stroke-width="3" stroke-linejoin="round"/>` + vals.map((v, k) => `<circle cx="${x0 + k * dx}" cy="${y(v)}" r="4.5" fill="#1f4fb4" stroke="#fff" stroke-width="1.5"/>`).join('');
-  return `<div style="text-align:center"><div class="small muted" style="font-weight:700">${title}${unit ? ' (' + unit + ')' : ''}</div><svg class="chart" viewBox="0 0 ${W} ${Y0 + 34}" width="${W}" height="${Y0 + 34}" style="max-width:100%;height:auto" role="img" aria-label="${title}">${g}</svg></div>${/^D[lt]/.test(labels[0]) ? '<div class="small muted">Dl dilluns · Dt dimarts · Dc dimecres · Dj dijous · Dv divendres · Ds dissabte · Dg diumenge</div>' : labels[0] === 'S1' ? '<div class="small muted">S1 = setmana 1, S2 = setmana 2…</div>' : ''}`;
+  return `<div style="text-align:center"><div class="small muted" style="font-weight:700">${title}${unit && !title.toLowerCase().includes(unit) ? ' (' + unit + ')' : ''}</div><svg class="chart" viewBox="0 0 ${W} ${Y0 + 34}" width="${W}" height="${Y0 + 34}" style="max-width:100%;height:auto" role="img" aria-label="${title}">${g}</svg></div>${/^D[lt]/.test(labels[0]) ? '<div class="small muted">Dl dilluns · Dt dimarts · Dc dimecres · Dj dijous · Dv divendres · Ds dissabte · Dg diumenge</div>' : labels[0] === 'S1' ? '<div class="small muted">S1 = setmana 1, S2 = setmana 2…</div>' : ''}`;
 }
 const DIES7 = ['Dl','Dt','Dc','Dj','Dv','Ds','Dg'], DIESN = {Dl:'dilluns',Dt:'dimarts',Dc:'dimecres',Dj:'dijous',Dv:'divendres',Ds:'dissabte',Dg:'diumenge'};
 skill('m-linies','mat','Gràfics de línies',4,6,(r,c)=>{
@@ -2282,7 +2285,7 @@ function fExercises(){
   const out = [], seen = new Set();
   for (let v = 0; v < F.copies; v++) { const r = mulberry(F.seed * 7919 + v * 104729), exs = [], own = new Set();
     for (const [id, n] of Object.entries(F.items)) { let first = null;
-      const words = new Set();
+      const words = new Set(), start = exs.length;
       for (let k = 0; k < Math.min(n, fCap(id, F.curs)); k++) { if (k % 12 === 0) words.clear(); let ex = genPaper(id, F.curs, r, own, seen, words);
         // lectura: en paper, totes les preguntes del mateix text
         if (first && (id === 'c-comprensio' || id === 'c-oral')) {
@@ -2291,7 +2294,14 @@ function fExercises(){
           // si el text ja no té més preguntes, se'n comença un altre
           if (!same(ex)) { ex = genPaper(id, F.curs, r, own, seen); first = ex; }
         }
-        if (!first) first = ex; seen.add(paperKey(ex)); own.add(paperKey(ex)); exWords(ex).forEach(w => words.add(w)); exs.push(ex); } }
+        if (!first) first = ex; seen.add(paperKey(ex)); own.add(paperKey(ex)); exWords(ex).forEach(w => words.add(w)); exs.push(ex); }
+      // els exercicis del mateix tipus, junts (un sol enunciat)
+      const blk = exs.splice(start), ord = [...new Set(blk.map(pKey))]; exs.push(...ord.flatMap(k => blk.filter(e => pKey(e) === k))); }
+    // ortografia: la paraula que s'ha d'escriure no pot sortir ben escrita en un altre exercici de la mateixa fitxa
+    const spellW = e => { if (e.type === 'dictat') return String(e.answer); const g = e.type === 'tria' && gapParts(e.visual); return g ? g[0] + e.options[e.answer] + g[1] : ''; };
+    const txtOf = e => [e.prompt, String(e.visual || '').replace(/<[^>]+>/g, ' '), ...(e.options || []).map(String), ...(e.items || []).map(x => typeof x === 'object' ? x.t : x), ...(e.pairs || []).flat()].join(' ').toLowerCase();
+    const leaks = i => { const w = spellW(exs[i]).toLowerCase().trim(); if (w.length < 3) return false; const re = new RegExp('(^|[^a-zà-ÿ·])' + w.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + '($|[^a-zà-ÿ·])'); return exs.some((o, j) => j !== i && re.test(txtOf(o))); };
+    for (let i = 0; i < exs.length; i++) for (let t = 0; t < 40 && spellW(exs[i]) && leaks(i); t++) { const nx = genPaper(exs[i].skill, F.curs, r, own, seen); if (spellW(nx) && paperKey(nx) !== paperKey(exs[i])) { own.add(paperKey(nx)); exs[i] = nx; } }
     out.push(exs); }
   return out;
 }
@@ -2358,12 +2368,17 @@ const gapParts = v => { const m = String(v || '').replace(/<span class="gap">[^<
 const ordList = a => a.length < 2 ? a.join('') : a.slice(0, -1).join(', ') + ' o ' + a[a.length - 1];
 const dot = t => { t = String(t || '').trim(); return /[.?!:]$/.test(t) ? t : t + '.'; };
 const isNum = v => /^[\d.,\s€]+$/.test(String(v).replace(/\*/g, ''));
-const relRight = (ex, k) => shuffle(mulberry(hashStr(exKey(ex)) + k), ex.pairs.map((p, i) => ({t: p[1], i})));
+const relRight = (ex, k) => { const r = mulberry(hashStr(exKey(ex)) + k); let o; for (let t = 0; t < 30; t++) { o = shuffle(r, ex.pairs.map((p, i) => ({t: p[1], i}))); if (o.filter((x, j) => x.i === j).length <= 1) break; } return o; };
 const longCl = ex => ex.items.some(x => x.t.replace(/\*/g, '').length > 22);
 // en paper, que la lletra bona no sigui sempre la mateixa dins d'un grup
 const pOpts = (ex, k, rot) => { const o = ex.options.map(String); if (!rot) return o; const d = k % o.length; return o.slice(d).concat(o.slice(0, d)); };
 const fmtSol = (ex, t) => { t = String(t); if (ex.numeric && /^\d{4,}(,\d+)?$/.test(t)) { const [i, d] = t.split(','); t = i.replace(/\B(?=(\d{3})+(?!\d))/g, '.') + (d ? ',' + d : ''); }
   if (ex.unit === '€' && /^\d+,\d$/.test(t)) t += '0'; return t; };
+function needWork(ex){ if (/class="colop/.test(ex.visual || '')) return false; if (ex.skill === 'm-divresidu') return true; const t = (ex.prompt + ' ' + String(ex.visual || '').replace(/<[^>]+>/g, ' ')).replace(/(\d)\.(\d{3})/g, '$1$2');
+        const m = t.match(/(\d+(?:,\d+)?)\s*([×x÷:+−\-])\s*(\d+(?:,\d+)?)/); if (m) { const a = parseFloat(m[1].replace(',', '.')), b = parseFloat(m[3].replace(',', '.'));
+          if (/^10+$/.test(m[3]) || /^10+$/.test(m[1])) return false; if (/[×x]/.test(m[2])) return a >= 100 || b >= 100 || (a >= 10 && b >= 10) || /,/.test(m[1] + m[3]); if (/[÷:]/.test(m[2])) return a >= 100 || /,/.test(m[1] + m[3]); return a >= 1000 || b >= 1000 || /,/.test(m[1] + m[3]); }
+        const d = t.match(/doble de (\d+)|meitat de (\d+)|triple de (\d+)/); if (d) return +(d[1] || d[2] || d[3]) >= 100;
+        return ex.skill === 'm-problemes' && F.curs >= 3; }
 function paperBody(exs){
   const adult = [], sols = [], gs = paperGroups(exs), lab = {};
   const html = gs.map((g, gi) => {
@@ -2400,7 +2415,7 @@ function paperBody(exs){
         body = `<div class="pbankw"><b>Tria entre:</b>${esc(ordList([...ex0.options].map(String)))}</div><div class="pgrid" style="--c:${ex0.visual && !/class="chart"/.test(ex0.visual) ? 2 : 1}">${items.map((ex, k) => `<div class="pit">${samePrompt ? '' : `<div class="pq">${L(k)}${esc(ex.prompt)}</div>`}${samePrompt ? L(k) : ''}${vis(ex)}<div class="pline"></div></div>`).join('')}</div>`;
       } else {
         head = samePrompt ? `${esc(dot(ex0.prompt))} Encercla la lletra de la resposta correcta.` : 'Encercla la lletra de la resposta correcta.';
-        body = items.map((ex, k) => `<div class="pit" style="margin-top:8px">${samePrompt ? '' : `<div class="pq">${L(k)}${esc(ex.prompt)}</div>`}${samePrompt && many ? L(k) : ''}${vis(ex)}<div class="pcirc ${ex.options.some(o => String(o).length > 16) ? 'col' : ''}">${pOpts(ex, k, rot).map((o, j) => `<span><span class="ol">${'ABCDEF'[j]}.</span>${esc(o)}</span>`).join('')}</div></div>`).join('');
+        body = items.map((ex, k) => `<div class="pit" style="margin-top:8px">${samePrompt ? '' : `<div class="pq">${L(k)}${esc(ex.prompt)}</div>`}${samePrompt && many ? L(k) : ''}${vis(ex)}${needWork(ex) ? '<div class="pwork"><span>Fes aquí el càlcul</span></div>' : ''}<div class="pcirc ${ex.options.some(o => String(o).length > 16) ? 'col' : ''}">${pOpts(ex, k, rot).map((o, j) => `<span><span class="ol">${'ABCDEF'[j]}.</span>${esc(o)}</span>`).join('')}</div></div>`).join('');
       }
     }
     else if (ex0.type === 'escriu') {
@@ -2413,12 +2428,9 @@ function paperBody(exs){
       const line = ex => inl(ex) ? '' : `<div class="row" style="align-items:flex-end;gap:8px;flex-wrap:nowrap"><div class="pline ${ex.numeric ? 'short' : ''}" style="flex:1"></div>${ex.unit ? `<span>${esc(ex.unit)}</span>` : ''}</div>`;
       const showQ = !samePrompt && !items.every(x => /=\s*\?/.test(x.visual || ''));
       // espai per fer el càlcul quan l'operació no es pot fer de cap
-      const work = ex => { if (/class="colop/.test(ex.visual || '')) return false; const t = (ex.prompt + ' ' + String(ex.visual || '').replace(/<[^>]+>/g, ' ')).replace(/(\d)\.(\d{3})/g, '$1$2');
-        const m = t.match(/(\d+(?:,\d+)?)\s*([×x÷:+−\-])\s*(\d+(?:,\d+)?)/); if (m) { const a = parseFloat(m[1].replace(',', '.')), b = parseFloat(m[3].replace(',', '.'));
-          if (/^10+$/.test(m[3]) || /^10+$/.test(m[1])) return false; if (/[×x]/.test(m[2])) return a >= 100 || b >= 100 || (a >= 10 && b >= 10) || /,/.test(m[1] + m[3]); if (/[÷:]/.test(m[2])) return a >= 100 || /,/.test(m[1] + m[3]); return a >= 1000 || b >= 1000 || /,/.test(m[1] + m[3]); }
-        return ex.skill === 'm-problemes' && F.curs >= 3; };
-      const ser = items.some(x => /class="series"/.test(x.visual || '')), big = ser && items.some(x => /\d{3}/.test(String(x.visual || '').replace(/<[^>]+>/g, ' ')));
-      const cols = prob || items.some(x => /class="chart"/.test(x.visual || '')) || items.some(work) || ser ? 1 : items.some(x => /class="shape"/.test(x.visual || '')) ? 2 : small && ex0.visual ? 3 : 2;
+      const work = needWork;
+      const ser = items.some(x => /class="series/.test(x.visual || '')), big = ser && items.some(x => /\d{3}/.test(String(x.visual || '').replace(/<[^>]+>/g, ' ')));
+      const cols = prob || items.some(x => /class="chart"/.test(x.visual || '')) || items.some(work) || ser ? 1 : items.some(x => /class="shape"/.test(x.visual || '')) ? 2 : small && ex0.visual ? (vl => vl <= 11 ? 3 : vl <= 14 ? 2 : 1)(Math.max(...items.map(x => String(x.visual || '').replace(/<[^>]+>/g, '').trim().length))) : 2;
       body = `<div class="pgrid" style="--c:${cols}">${items.map((ex, k) => `<div class="pit">${showQ ? `<div class="pq">${L(k)}${esc(ex.prompt)}</div>` : L(k)}${ex.visual ? `<div>${pv(ex)}</div>` : ''}${work(ex) ? '<div class="pwork"><span>Fes aquí el càlcul</span></div>' : ''}${line(ex)}</div>`).join('')}</div>`;
     }
     else if (ex0.type === 'dictat') {
@@ -2435,7 +2447,7 @@ function paperBody(exs){
     else if (ex0.type === 'relaciona') {
       head = esc(dot(ex0.prompt)) + ' Al costat de cada número, escriu la lletra que hi correspon.';
       body = items.map((ex, k) => { const right = relRight(ex, k);
-        return `<div class="pit" style="margin-top:8px">${L(k)}<div class="pcols"><div>${ex.pairs.map((p, i) => `<div style="margin:4px 0">${i + 1}. ${ex.bigLeft ? `<span style="font-size:1.5rem">${esc(p[0])}</span>` : esc(p[0])} &nbsp;<span class="pgap"></span></div>`).join('')}</div><div>${right.map((x, j) => `<div style="margin:4px 0">${'ABCDEFGH'[j]}. ${esc(x.t)}</div>`).join('')}</div></div></div>`; }).join('');
+        return `<div class="pit" style="margin-top:8px">${L(k)}<table class="prel">${ex.pairs.map((p, i) => `<tr><td class="n">${i + 1}.</td><td>${ex.bigLeft ? `<span style="font-size:1.5rem">${esc(p[0])}</span>` : esc(p[0])}</td><td class="g"><span class="pgap"></span></td><td class="n">${'ABCDEFGH'[i]}.</td><td>${esc(right[i].t)}</td></tr>`).join('')}</table></div>`; }).join('');
     }
     else if (ex0.type === 'classifica') {
       const lng = items.some(longCl), what = ex0.items.every(x => isNum(x.t)) ? 'nombre' : {'c-temps':'verb','c-determinants':'grup de paraules','m-atzar':'frase'}[ex0.skill] || 'paraula';
@@ -2452,6 +2464,7 @@ function keepHeads(html){
   const t = document.createElement('template'); t.innerHTML = html;
   t.content.querySelectorAll('.pex').forEach(g => {
     const b = g.querySelector(':scope > b'); if (!b) return;
+    if (/^\d+\. Escolta/.test(b.textContent) && g.children.length < 8) { g.classList.add('pkeep'); return; }
     const keep = document.createElement('div'); keep.className = 'pkeep'; g.insertBefore(keep, b); keep.appendChild(b);
     let k = keep.nextElementSibling;
     while (k && (k.matches('.pbankw') || (!k.matches('.pit, .pgrid') && !k.querySelector('.pit')))) { const nx = k.nextElementSibling; keep.appendChild(k); k = nx; }
@@ -2875,11 +2888,11 @@ function genFresh(id, curs, r, avoid){ let ex; for (let k = 0; k < 15; k++) { ex
 const paperKey = e => { if (e.skill === 'c-comprensio' || e.skill === 'c-oral') return String(hashStr(JSON.stringify(['comp', e.prompt, e.options && e.options.map(String).sort()]))); const gap = /class="gap"/.test(e.visual || ''); return String(hashStr(JSON.stringify([gap ? 'gap' : e.skill, gap ? '' : e.prompt, String(e.visual || '').replace(/\s+/g, ' '), gap ? '' : e.options && e.options.map(String).sort(), e.items && e.items.map(x => typeof x === 'object' ? x.t : x).sort(), e.pairs && e.pairs.map(String).sort(), e.type === 'dictat' ? e.answer : '', e.listen || '']))); };
 const FCAPS = {};
 function fCap(id, c){ const k = id + c; if (!(k in FCAPS)) { const set = new Set(), r = mulberry(4242 + c); for (let i = 0; i < 600 && set.size < 20; i++) set.add(paperKey(genEx(id, c, r))); FCAPS[k] = set.size; } return FCAPS[k]; }
-function genPaper(id, curs, r, avoid, prefer, words){ let ex; for (let k = 0; k < 300; k++) { ex = genEx(id, curs, r); const pk = paperKey(ex); if (!avoid.has(pk) && (k > 120 || !prefer || !prefer.has(pk)) && (k > 200 || paperOk(ex)) && (k > 90 || !words || !exWords(ex).some(w => words.has(w)))) return ex; } return ex; }
+function genPaper(id, curs, r, avoid, prefer, words){ let ex; for (let k = 0; k < 320; k++) { ex = genEx(id, curs, r); const pk = paperKey(ex); if (!avoid.has(pk) && (k > 120 || !prefer || !prefer.has(pk)) && (k > 200 || paperOk(ex)) && (k > 260 || !words || !exWords(ex).some(w => words.has(w)))) return ex; } return ex; }
 // en paper, cap columna de classificar buida
 const paperOk = ex => ex.type !== 'classifica' || (ex.buckets.every((b, bi) => ex.items.some(x => x.b === bi)) && new Set(ex.items.map(x => x.t)).size === ex.items.length);
 // paraules d'un exercici, per no repetir-les entre els apartats d'un mateix grup
-const exWords = ex => ex.type === 'classifica' ? ex.items.map(x => x.t) : ex.type === 'relaciona' ? ex.pairs.flat().map(String) : ex.type === 'tria' && ex.options ? ['=' + ex.options[ex.answer]] : ex.type === 'ordena' ? [ex.items.join(' ')] : [];
+const exWords = ex => /class="chart"/.test(ex.visual || '') ? ['chart:' + ((String(ex.visual).match(/aria-label="([^"]+)"/) || [])[1] || '')] : ex.type === 'classifica' ? ex.items.map(x => x.t) : ex.type === 'relaciona' ? ex.pairs.flat().map(String) : ex.type === 'tria' && ex.options ? ['=' + ex.options[ex.answer]] : ex.type === 'ordena' ? [ex.items.join(' ')] : [];
 function taskExercises(t, sid){
   const c = cls(t.classId), st = stu(sid), r = mulberry(t.seed + (t.same ? 0 : hashStr(sid))), out = [], seen = new Set(t.same ? [] : (S.seen && S.seen[sid]) || []);
   for (const [id, n0] of Object.entries(t.items)) { const n = st && st.adapt && st.adapt.menys && !t.diag ? Math.max(1, Math.ceil(n0 * .6)) : n0, cc = st ? cursFor(st, SKM(id).mat) : c.curs;

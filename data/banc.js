@@ -7670,7 +7670,6 @@ window.BANC = {
    "[u]nivers",
    "c[u]ltura",
    "f[u]tbol",
-   "c[o]rrer",
    "s[o]rpresa",
    "c[o]rtina",
    "p[o]rter",
