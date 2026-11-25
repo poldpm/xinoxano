@@ -3046,7 +3046,7 @@ window.BANC = {
       "amb una escopeta"
      ],
      [
-      "A quina part del cos va picar la formiga el caçador?",
+      "A quina part del cos la formiga va picar el caçador?",
       "peu",
       "al peu"
      ]
@@ -3055,7 +3055,7 @@ window.BANC = {
    {
     "titol": "Dia de neu",
     "tema": "L'hivern (diari personal)",
-    "text": "Dimecres, 20 de gener\nEstimat diari:\nAvui m'he despertat i tot era blanc! A la nit ha nevat molt i el carrer estava cobert per un pam de neu. A la ràdio han dit que l'escola estaria tancada, perquè els autobusos no podien passar.\nM'he posat les botes i els guants vermells que em va regalar l'àvia, i he baixat a la plaça amb el meu germà Jan. Hem fet un ninot de neu ben gros. Li hem posat una pastanaga per nas, dues pedres per ulls i la bufanda vella del pare.\nDesprés hem fet una batalla de boles amb els veïns. En Jan ha perdut, però no s'ha enfadat.\nA la tarda, amb les mans gelades, hem pres una tassa de llet calenta amb galetes.\nTant de bo demà també nevi!\nOt",
+    "text": "Dimecres, 20 de gener\nEstimat diari:\nAvui m'he despertat i tot era blanc! Aquesta nit ha nevat molt i el carrer estava cobert per un pam de neu. A la ràdio han dit que l'escola estaria tancada, perquè els autobusos no podien passar.\nM'he posat les botes i els guants vermells que em va regalar l'àvia, i he baixat a la plaça amb el meu germà Jan. Hem fet un ninot de neu ben gros. Li hem posat una pastanaga per nas, dues pedres per ulls i la bufanda vella del pare.\nDesprés hem fet una batalla de boles amb els veïns. En Jan ha perdut, però no s'ha enfadat.\nA la tarda, amb les mans gelades, hem pres una tassa de llet calenta amb galetes.\nTant de bo demà també nevi!\nOt",
     "q": [
      [
       "Per què l'escola estava tancada?",
@@ -3214,7 +3214,7 @@ window.BANC = {
    {
     "titol": "El cor, un motor que no s'atura",
     "tema": "El cos humà i la salut (text expositiu)",
-    "text": "El cor és un múscul que tenim al pit, una mica cap a l'esquerra. És més o menys de la mida del nostre puny tancat. La seva feina és bombar la sang perquè arribi a totes les parts del cos.\nLa sang porta l'oxigen i els nutrients que necessiten les cèl·lules, i circula per uns tubs anomenats vasos sanguinis: com les artèries i les venes.\nEl cor batega sense parar, de dia i de nit, fins i tot quan dormim. En un nen de la vostra edat, fa uns noranta batecs per minut! Quan correm o juguem, batega més de pressa, perquè els músculs necessiten més oxigen.\nPer tenir un cor sa, cal fer exercici, menjar fruita i verdura i no abusar dels dolços ni de la sal.",
+    "text": "El cor és un múscul que tenim al pit, una mica cap a l'esquerra. És més o menys de la mida del nostre puny tancat. La seva feina és bombar la sang perquè arribi a totes les parts del cos.\nLa sang porta l'oxigen i els nutrients que necessiten les cèl·lules, i circula per uns tubs anomenats vasos sanguinis, com les artèries i les venes.\nEl cor batega sense parar, de dia i de nit, fins i tot quan dormim. En un nen de la vostra edat, fa uns noranta batecs per minut! Quan correm o juguem, batega més de pressa, perquè els músculs necessiten més oxigen.\nPer tenir un cor sa, cal fer exercici, menjar fruita i verdura i no abusar dels dolços ni de la sal.",
     "q": [
      [
       "De quina mida és el cor, més o menys?",
@@ -4108,7 +4108,7 @@ window.BANC = {
      [
       "Per on surt la lluna?",
       "per darrere del campanar",
-      "per darrere la muntanya",
+      "per darrere de la muntanya",
       "per sobre del mar",
       "entre els núvols"
      ],
@@ -6486,7 +6486,7 @@ window.BANC = {
    {
     "titol": "Per què hi ha estacions?",
     "tema": "Divulgació científica: les estacions de l'any",
-    "text": "Molta gent pensa que a l'estiu fa calor perquè la Terra és més a prop del Sol, i que a l'hivern fa fred perquè n'és més lluny. Sembla lògic, però és un error. De fet, la Terra és una mica més a prop del Sol a principis de gener, en ple hivern per a nosaltres!\nLlavors, d'on vénen les estacions? La clau és que l'eix de la Terra, la línia imaginària al voltant de la qual gira el planeta, està inclinat. Mentre la Terra fa la volta al Sol, un viatge que dura un any, aquesta inclinació no canvia. Per això, durant uns mesos l'hemisferi nord, on vivim nosaltres, està inclinat cap al Sol, i durant uns altres mesos n'està inclinat en sentit contrari.\nQuan el nostre hemisferi està inclinat cap al Sol, els raigs ens arriben més drets i escalfen més. A més, els dies són més llargs que les nits, i el Sol té més hores per escalfar. És l'estiu.\nQuan està inclinat en sentit contrari, els raigs arriben més inclinats, s'escampen per una superfície més gran i escalfen menys. Els dies són curts i les nits, llargues. És l'hivern.\nUna curiositat: quan aquí és estiu, a l'hemisferi sud és hivern, i al revés. Per això, a l'Argentina o a Austràlia celebren el Nadal en ple estiu.",
+    "text": "Molta gent pensa que a l'estiu fa calor perquè la Terra és més a prop del Sol, i que a l'hivern fa fred perquè n'és més lluny. Sembla lògic, però és un error. De fet, la Terra és una mica més a prop del Sol a principis de gener, en ple hivern per a nosaltres!\nLlavors, d'on vénen les estacions? La clau és que l'eix de la Terra, la línia imaginària al voltant de la qual gira el planeta, està inclinat. Mentre la Terra fa la volta al Sol, un viatge que dura un any, aquesta inclinació no canvia. Per això, durant uns mesos l'hemisferi nord, on vivim nosaltres, està inclinat cap al Sol, i durant uns altres mesos està inclinat en sentit contrari.\nQuan el nostre hemisferi està inclinat cap al Sol, els raigs ens arriben més drets i escalfen més. A més, els dies són més llargs que les nits, i el Sol té més hores per escalfar. És l'estiu.\nQuan està inclinat en sentit contrari, els raigs arriben més inclinats, s'escampen per una superfície més gran i escalfen menys. Els dies són curts i les nits, llargues. És l'hivern.\nUna curiositat: quan aquí és estiu, a l'hemisferi sud és hivern, i al revés. Per això, a l'Argentina o a Austràlia celebren el Nadal en ple estiu.",
     "q": [
      [
       "Quina idea equivocada desmenteix el text?",

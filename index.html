@@ -863,7 +863,7 @@ function gridRect(w, h){ const s = 30, W = (w+2)*s, H = (h+2)*s; let g = `<rect 
   return `<svg class="shape grid" viewBox="0 0 ${W} ${H}" width="${W}" height="${H}" style="width:${Math.round(W * .78)}px;max-width:100%;height:auto" role="img" aria-label="Figura en una quadrícula">${g}<rect x="${s}" y="${s}" width="${w*s}" height="${h*s}" fill="none" stroke="var(--brand2)" stroke-width="3.5"/><rect x="0.5" y="0.5" width="${W-1}" height="${H-1}" fill="none" stroke="#a89ca2" stroke-width="1.2"/></svg>`; }
 /* figures amb mides: el dibuix és proporcional a les mides */
 function labeledShape(kind, w, h){ const T = (x,y,t,a = 'middle') => `<text x="${x}" y="${y}" text-anchor="${a}" font-size="19" font-weight="700" fill="#1b1b1b" font-family="Fira Sans, sans-serif">${t}</text>`;
-  const k = kind === 'rect' ? 13 : 10.5, pw = w * k, ph = h * k;
+  const k = 9, pw = w * k, ph = h * k;
   if (kind === 'rect') { const x0 = 30, y0 = 16, W = x0 + pw + 80, H = y0 + ph + 36;
     return `<svg class="shape" viewBox="0 0 ${W} ${H}" width="${W}" height="${H}" style="max-width:100%;height:auto" role="img" aria-label="Rectangle de ${w} per ${h} cm"><rect x="${x0}" y="${y0}" width="${pw}" height="${ph}" fill="#f6d3dc" stroke="var(--brand2)" stroke-width="3"/>${T(x0 + pw/2, y0 + ph + 26, w + ' cm')}${T(x0 + pw + 10, y0 + ph/2 + 7, h + ' cm', 'start')}</svg>`; }
   const x0 = 120, y0 = 16, yb = y0 + ph, xa = x0 + pw * .35, W = x0 + pw + 20, H = yb + 36;
@@ -881,7 +881,7 @@ function angleSVG(deg){ const a = deg * Math.PI / 180, x = 110 + 100 * Math.cos(
   return `<svg viewBox="0 0 230 170" width="230" height="170" style="max-width:100%;height:auto" role="img" aria-label="Angle"><path d="M210 150 L110 150 L${x.toFixed(1)} ${y.toFixed(1)}" fill="none" stroke="var(--ink)" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>${mark}<circle cx="110" cy="150" r="5" fill="var(--ink)"/></svg>`; }
 skill('m-angles','mat','Tipus d\'angles',3,6,(r)=>{ const deg = r() < .25 ? 90 : r() < .5 ? ri(r,4,14) * 5 : ri(r,22,32) * 5, ok = deg === 90 ? 'Recte' : deg < 90 ? 'Agut' : 'Obtús';
   return {prompt:'Quin tipus d\'angle és?', speak:'Quin tipus d\'angle és: agut, recte o obtús?', visual:angleSVG(deg), ...tria(r,ok,['Agut','Recte','Obtús'])}; });
-skill('m-triangles','mat','Tipus de triangles',3,6,(r)=>{ const t = ri(r,0,2), a = ri(r,3,9); const s = t === 0 ? [a,a,a] : t === 1 ? shuffle(r,[a,a,a+ri(r,1,3)]) : shuffle(r,[a,a+1,a+3]); const L = ['Equilàter','Isòsceles','Escalè'];
+skill('m-triangles','mat','Tipus de triangles',3,6,(r)=>{ const t = ri(r,0,2), a = ri(r,3,9); const s = t === 0 ? [a,a,a] : t === 1 ? shuffle(r,[a,a,a+ri(r,1,Math.min(3,a-1))]) : shuffle(r,[a,a+1,a+3]); const L = ['Equilàter','Isòsceles','Escalè'];
   return {prompt:`Un triangle té els costats de ${s[0]} cm, ${s[1]} cm i ${s[2]} cm. Com és?`, speak:`Un triangle té els costats de ${s[0]}, ${s[1]} i ${s[2]} centímetres. Com és?`, ...tria(r,L[t],L)}; });
 function polySVG(n){ const p = Array.from({length:n},(_,i)=>{ const a = -Math.PI/2 + i * 2 * Math.PI / n; return `${(100 + 80*Math.cos(a)).toFixed(1)},${(100 + 80*Math.sin(a)).toFixed(1)}`; }).join(' ');
   return `<svg viewBox="0 0 200 200" width="180" height="180" role="img" aria-label="Polígon"><polygon points="${p}" fill="var(--brand-soft)" stroke="var(--brand2)" stroke-width="4" stroke-linejoin="round"/></svg>`; }
@@ -948,8 +948,8 @@ skill('m-mesura1','mat','Comparar i mesurar',1,2,(r)=>{ const t = ri(r,0,3);
     ...tria(r, (mes ? a > b : a < b) ? 'El got 1' : 'El got 2', ['El got 1','El got 2'])}; });
 skill('m-poligons','mat','Polígons',2,4,(r)=>{ const N = {3:'Triangle',4:'Quadrilàter',5:'Pentàgon',6:'Hexàgon',8:'Octàgon'}, n = pick(r,[3,4,5,6,8]);
   return {prompt:'Com es diu aquest polígon?', speak:'Compta els costats. Com es diu aquest polígon?', visual:polySVG(n), ...tria(r,N[n],Object.values(N))}; });
-skill('m-cercle','mat','El cercle',6,6,(r)=>{ const rad = ri(r,2,12), asR = r() < .5, R = rad * 8, cx = 110, cy = 16 + R;
-  const svg = `<svg class="shape" viewBox="0 0 220 ${2 * R + 60}" width="220" height="${2 * R + 60}" style="max-width:100%;height:auto" role="img" aria-label="Cercle"><circle cx="${cx}" cy="${cy}" r="${R}" fill="#f6d3dc" stroke="var(--brand2)" stroke-width="3"/>${asR ? `<path d="M${cx} ${cy} H${cx + R}" stroke="#1b1b1b" stroke-width="3"/>` : `<path d="M${cx - R} ${cy} H${cx + R}" stroke="#1b1b1b" stroke-width="3"/>`}<circle cx="${cx}" cy="${cy}" r="4" fill="#1b1b1b"/><text x="${cx}" y="${2 * R + 48}" text-anchor="middle" font-size="19" font-weight="700" fill="#1b1b1b" font-family="Fira Sans, sans-serif">${asR ? 'radi' : 'diàmetre'} ${asR ? rad : 2 * rad} cm</text></svg>`;
+skill('m-cercle','mat','El cercle',6,6,(r)=>{ const rad = ri(r,2,12), asR = r() < .5, R = rad * 9, cx = Math.max(110, R + 10), cy = 16 + R;
+  const svg = `<svg class="shape" viewBox="0 0 ${2 * cx} ${2 * R + 60}" width="${2 * cx}" height="${2 * R + 60}" style="max-width:100%;height:auto" role="img" aria-label="Cercle"><circle cx="${cx}" cy="${cy}" r="${R}" fill="#f6d3dc" stroke="var(--brand2)" stroke-width="3"/>${asR ? `<path d="M${cx} ${cy} H${cx + R}" stroke="#1b1b1b" stroke-width="3"/>` : `<path d="M${cx - R} ${cy} H${cx + R}" stroke="#1b1b1b" stroke-width="3"/>`}<circle cx="${cx}" cy="${cy}" r="4" fill="#1b1b1b"/><text x="${cx}" y="${2 * R + 48}" text-anchor="middle" font-size="19" font-weight="700" fill="#1b1b1b" font-family="Fira Sans, sans-serif">${asR ? 'radi' : 'diàmetre'} ${asR ? rad : 2 * rad} cm</text></svg>`;
   return {type:'escriu', numeric:true, prompt: asR ? `El radi fa ${rad} cm. Quant fa el diàmetre?` : `El diàmetre fa ${2*rad} cm. Quant fa el radi?`, speak: asR ? `El radi fa ${rad} centímetres. Quant fa el diàmetre?` : `El diàmetre fa ${2*rad} centímetres. Quant fa el radi?`, visual:svg, answer:String(asR ? 2*rad : rad)}; });
 
 // MATEMÀTIQUES · dades i atzar
@@ -966,7 +966,8 @@ function barSVG(labels, vals, title, st){ const max = Math.max(...vals), step = 
   return `<div style="text-align:center"><div class="small muted" style="font-weight:700">${title}</div><svg class="chart" viewBox="0 0 ${W} ${VH}" width="${W}" height="${VH}" style="max-width:100%;height:auto" role="img" aria-label="${title}">${g}${bars}</svg></div>`; }
 // Gràfics: el tipus de gràfic, la mida dels nombres i les preguntes canvien segons el curs.
 const GDADES = [['Fruita preferida de la classe',['Poma','Pera','Plàtan','Maduixa']],['Esport preferit',['Futbol','Bàsquet','Natació','Tennis']],['Com venim a l\'escola',['A peu','Cotxe','Bici','Bus']],
-  ['Llibres llegits a la biblioteca',['Contes','Còmics','Poesia','Ciència']],['Activitat extraescolar',['Música','Dansa','Escacs','Teatre']]];
+  ['Llibres llegits a la biblioteca',['Contes','Còmics','Poesia','Ciència']],['Activitat extraescolar',['Música','Dansa','Escacs','Teatre']],
+  ['Animal preferit',['Gos','Gat','Conill','Peix']],['Estació preferida',['Primavera','Estiu','Tardor','Hivern']],['Color preferit',['Blau','Vermell','Verd','Groc']],['Instrument preferit',['Guitarra','Piano','Flauta','Bateria']]];
 const sumA = a => a.reduce((x, y) => x + y, 0);
 const GNOM = {'Fruita preferida de la classe':'vots','Esport preferit':'vots','Com venim a l\'escola':'alumnes','Llibres llegits a la biblioteca':'llibres','Activitat extraescolar':'alumnes'};
 skill('m-grafics','mat','Gràfics de barres',1,6,(r,c)=>{ const ex = grafEx(r,c), N = GNOM[ex.gtitle] || 'vots', f = t => N === 'llibres' ? t.replace(/Quants vots té «([^»]+)»\?/, 'Quants llibres de «$1» s\'han llegit?').replace(/Quants vots més té «([^»]+)» que «([^»]+)»\?/, 'Quants llibres més de «$1» que de «$2» s\'han llegit?').replace(/Quina opció té (més|menys) vots\?/, 'De quin tipus s\'han llegit $1 llibres?').replace(/Quina opció té el doble de vots que «([^»]+)»\?/, 'De quin tipus s\'han llegit el doble de llibres que de «$1»?').replace(/Quants vots hi ha en total\?/, 'Quants llibres s\'han llegit en total?').replace(/mitjana de vots de les quatre opcions/, 'mitjana de llibres llegits dels quatre tipus').replace(/Quin percentatge dels vots té «([^»]+)»\?/, 'Quin percentatge dels llibres són de «$1»?').replace(/\bvots\b/g, 'llibres') : N === 'alumnes' ? t.replace(/Quants vots té «/, 'Quants alumnes han triat «').replace(/Quants vots més té «/, 'Quants alumnes més han triat «').replace(/Quina opció té (més|menys) vots\?/, 'Quina opció han triat $1 alumnes?').replace(/Quina opció té el doble de vots que/, 'Quina opció han triat el doble d\'alumnes que').replace(/mitjana de vots/, "mitjana d'alumnes").replace(/Quin percentatge dels vots té «/, 'Quin percentatge dels alumnes ha triat «').replace(/\bvots\b/g, 'alumnes') : t.replace(/\bvots\b/g, N).replace(/de vots/g, 'de ' + N); delete ex.gtitle; return {...ex, prompt:f(ex.prompt), speak:f(ex.speak)}; });
@@ -1039,7 +1040,7 @@ skill('m-sectors','mat','Gràfics de sectors',5,6,(r,c)=>{ const [title, labels]
   if (t === 1) { const k = ri(r,0,3), N = pick(r, [20,40,60,80,100,200,300,400,500].filter(N => N * pcts[k] % 100 === 0));
     return {type:'escriu', numeric:true, prompt:`${title}: hi van respondre ${N} persones. Quantes van triar «${labels[k]}»?`, speak:`Mira el gràfic de sectors. Si hi van respondre ${N} persones, quantes van triar ${labels[k]}?`, visual:vis, answer:String(N * pcts[k] / 100), unit:'persones'}; }
   if (t === 2) { const m = pcts.indexOf(Math.max(...pcts)); if (pcts.filter(p => p === pcts[m]).length === 1) return {prompt:`${title}: quina opció ha triat més gent?`, speak:'Mira el gràfic de sectors. Quina opció ha triat més gent?', visual:vis, ...tria(r, labels[m], labels)};
-    const k = ri(r,0,3); return {type:'escriu', numeric:true, prompt:`${title}: quin percentatge té «${labels[k]}»?`, speak:'Mira el gràfic de sectors.', visual:vis, answer:String(pcts[k]), unit:'%'}; }
+    const k = ri(r,0,3); return {type:'escriu', numeric:true, prompt:`${title}: quin percentatge té «${labels[k]}»?`, speak:'Mira el gràfic de sectors.', visual:pieSVG(labels, pcts, k), answer:String(pcts[k]), unit:'%'}; }
   let [a, b] = shuffle(r, [0,1,2,3]).slice(0,2); if (pcts[a] === pcts[b]) b = pcts.findIndex((p, k) => k !== a && p !== pcts[a]);
   return {type:'escriu', numeric:true, prompt:`${title}: quants punts percentuals més té «${labels[pcts[a] >= pcts[b] ? a : b]}» que «${labels[pcts[a] >= pcts[b] ? b : a]}»?`, speak:'Mira el gràfic de sectors i resta els dos percentatges.', visual:vis, answer:String(Math.abs(pcts[a] - pcts[b])), unit:'%'}; });
 skill('m-mitjana','mat','Mitjana, moda i mediana',5,6,(r)=>{ const t = pick(r,['mitjana','moda','mediana']); let v, ans;
@@ -2305,15 +2306,15 @@ function fExercises(){
           if (!same(ex)) { ex = genPaper(id, F.curs, r, own, seen); first = ex; const need = Math.min(3, n - k), qn = e => { const p = new Set(), rr = mulberry(hashStr(String(e.visual) + e.listen)); for (let t = 0; t < 150 && p.size < need; t++) { const x = genEx(id, F.curs, rr); if (x.visual === e.visual && x.listen === e.listen && !own.has(paperKey(x))) p.add(x.prompt); } return p.size; };
             for (let t = 0; t < 30 && qn(ex) < need; t++) { ex = genPaper(id, F.curs, r, own, seen); first = ex; } }
         }
-        if (!first) first = ex; if (!GP.like || GP.like.type !== ex.type) GP.like = ex; if (shapeK(ex)) figs.add(shapeK(ex)); seen.add(paperKey(ex)); own.add(paperKey(ex)); exWords(ex).forEach(w => words.add(w)); exs.push(ex); }
+        if (!first) first = ex; if (!GP.like || GP.like.type !== ex.type) GP.like = ex; if (shapeK(ex)) figs.add(shapeK(ex)); if (ex.type === 'relaciona' || ex.type === 'classifica') toks(ex.type === 'relaciona' ? ex.pairs.flat() : ex.items.map(x => x.t)).forEach(w => figs.add('w:' + w)); seen.add(paperKey(ex)); own.add(paperKey(ex)); exWords(ex).forEach(w => words.add(w)); exs.push(ex); }
       // els exercicis del mateix tipus, junts (un sol enunciat)
       const blk = exs.splice(start), ord = [...new Set(blk.map(pKey))]; exs.push(...ord.flatMap(k => blk.filter(e => pKey(e) === k))); GP.like = null; GP.figs = null; }
     // ortografia: la paraula que s'ha d'escriure no pot sortir ben escrita en un altre exercici de la mateixa fitxa
     const nrm = t => String(t).toLowerCase().normalize('NFD').replace(/[\u0300-\u036f·]/g, '');
     const spellW = e => { if (e.type === 'dictat') return String(e.answer); if (e.type === 'tria' && blocOf(e.skill) === 'Ortografia' && e.options && e.options.length > 1 && /^[a-zà-ÿ·'-]+$/i.test(String(e.options[e.answer])) && new Set(e.options.map(o => nrm(o).replace(/[^a-z]/g, '').slice(0, 3))).size === 1) return String(e.options[e.answer]); const g = e.type === 'tria' && gapParts(e.visual); return g ? g[0] + e.options[e.answer] + g[1] : ''; };
     const txtOf = e => [e.prompt, String(e.visual || '').replace(/<[^>]+>/g, ' '), ...(e.options || []).map(String), ...(e.items || []).map(x => typeof x === 'object' ? x.t : x), ...(e.pairs || []).flat()].join(' ').toLowerCase();
-    const leaks = i => { const w = spellW(exs[i]).toLowerCase().trim(); if (w.length < 3) return false; const st = w.length >= 5 ? w.slice(0, -1) : w, re = new RegExp('(^|[^a-zà-ÿ·])' + st.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + (w.length >= 5 ? '[a-zà-ÿ·]{0,3}' : '') + '($|[^a-zà-ÿ·])'); return exs.some((o, j) => j !== i && re.test(txtOf(o))); };
-    for (let i = 0; i < exs.length; i++) for (let t = 0; t < 40 && spellW(exs[i]) && leaks(i); t++) { const nx = genPaper(exs[i].skill, F.curs, r, own, seen); if (spellW(nx) && !own.has(paperKey(nx))) { own.add(paperKey(nx)); exs[i] = nx; } }
+    const leaks = i => { const w = spellW(exs[i]).toLowerCase().trim(); if (w.length < 3) return false; const st = w.length >= 5 ? w.slice(0, -1) : w, re = new RegExp('(^|[^a-zà-ÿ·])' + st.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + (w.length >= 5 ? '[a-zà-ÿ·]{0,3}' : '') + '($|[^a-zà-ÿ·])'); return exs.some((o, j) => j !== i && (re.test(txtOf(o)) || (j < i && spellW(o).toLowerCase().trim() === w))); };
+    for (let i = 0; i < exs.length; i++) for (let t = 0; t < 40 && spellW(exs[i]) && leaks(i); t++) { const nx = genPaper(exs[i].skill, F.curs, r, own, seen, new Set(exs.filter((o, j) => j !== i && o.skill === exs[i].skill).flatMap(exWords))); if (spellW(nx) && !own.has(paperKey(nx))) { own.add(paperKey(nx)); exs[i] = nx; } }
     out.push(exs); }
   return out;
 }
@@ -2389,9 +2390,9 @@ const longCl = ex => ex.items.some(x => x.t.replace(/\*/g, '').length > 22) || (
 const pOpts = (ex, k, rot) => { const o = ex.options.map(String); if (!rot) return o; const d = k % o.length; return o.slice(d).concat(o.slice(0, d)); };
 const fmtSol = (ex, t) => { t = String(t); if (ex.numeric && /^\d{4,}(,\d+)?$/.test(t)) { const [i, d] = t.split(','); t = i.replace(/\B(?=(\d{3})+(?!\d))/g, '.') + (d ? ',' + d : ''); }
   if (ex.unit === '€' && /^\d+,\d$/.test(t)) t += '0'; return t; };
-function needWork(ex){ if (/class="colop/.test(ex.visual || '')) return false; if (ex.skill === 'm-divresidu') return true; const t = (ex.prompt + ' ' + String(ex.visual || '').replace(/<[^>]+>/g, ' ')).replace(/(\d)\.(\d{3})/g, '$1$2');
+function needWork(ex){ if (/class="colop/.test(ex.visual || '')) return false; if (ex.skill === 'm-divresidu') return true; if (ex.skill === 'm-potencies') return +ex.answer >= 100; const t = (ex.prompt + ' ' + String(ex.visual || '').replace(/<[^>]+>/g, ' ')).replace(/(\d)\.(\d{3})/g, '$1$2');
         const m = t.match(/(\d+(?:,\d+)?)\s*([×x÷:+−\-])\s*(\d+(?:,\d+)?)/); if (m) { const a = parseFloat(m[1].replace(',', '.')), b = parseFloat(m[3].replace(',', '.'));
-          if (/^10+$/.test(m[3]) || /^10+$/.test(m[1])) return false; if (/[×x]/.test(m[2])) return a >= 100 || b >= 100 || (a >= 10 && b >= 10) || /,/.test(m[1] + m[3]); if (/[÷:]/.test(m[2])) return a >= 100 || /,/.test(m[1] + m[3]); return a >= 1000 || b >= 1000 || /,/.test(m[1] + m[3]); }
+          if (/^10+$/.test(m[3]) || /^10+$/.test(m[1])) return false; if (/[×x]/.test(m[2])) return a >= 100 || b >= 100 || (a >= 10 && b >= 10) || /,/.test(m[1] + m[3]); if (/[÷:]/.test(m[2])) return a >= 100 || (b && a / b >= 10) || /,/.test(m[1] + m[3]); return a >= 1000 || b >= 1000 || /,/.test(m[1] + m[3]); }
         const d = t.match(/doble de (\d+)|meitat de (\d+)|triple de (\d+)/); if (d) return +(d[1] || d[2] || d[3]) >= 100;
         return ex.skill === 'm-problemes' && F.curs >= 3; }
 // en paper, els nombres de 4 xifres o més amb el punt dels milers (com a la resta de la fitxa), excepte els anys
@@ -2399,7 +2400,7 @@ const thou = t => String(t).replace(/(\d+)/g, (d, _x, off, str) => { if (d.lengt
   if (/[.,:\/]$/.test(pre) || /\d[.,]$/.test(pre) || /any\s*$/i.test(pre) || /^[.,]\d{3}/.test(str.slice(off + d.length))) return d; return d.replace(/\B(?=(\d{3})+(?!\d))/g, '.'); });
 const thouHTML = h => /<svg|class="colop/.test(h) ? h : String(h).replace(/>([^<]+)</g, (m, t) => '>' + thou(t) + '<');
 function fmtPaperEx(ex){ const sk = SKM(ex.skill); if (!sk || sk.mat !== 'mat' || ex.skill === 'm-calendari') return ex;
-  const o = {...ex, prompt: thou(ex.prompt)}; if (ex.visual) o.visual = thouHTML('<i>' + ex.visual + '</i>').slice(3, -4); if (ex.options) o.options = ex.options.map(x => thou(x)); return o; }
+  const o = {...ex, prompt: thou(ex.prompt)}; if (ex.type === 'ordena' && ex.items.every(isNum)) o.items = ex.items.map(x => thou(x)); if (ex.visual) o.visual = thouHTML('<i>' + ex.visual + '</i>').slice(3, -4); if (ex.options) o.options = ex.options.map(x => thou(x)); return o; }
 let PAPERC = 3;
 function paperBody(exs){
   exs = exs.map(fmtPaperEx); const petits = PAPERC <= 2;
@@ -2428,7 +2429,7 @@ function paperBody(exs){
       head = 'Respon cada pregunta. Quan hi hagi opcions, encercla la lletra de la resposta correcta.';
       const pv = ex => cleanVis(ex.visual).replace(/=\s*\?/, '= <span class="pgap wide"></span>'), inl = ex => /=\s*\?/.test(ex.visual || '');
       const one = items.some(x => /class="(chart|readtext)/.test(x.visual || '') || needWork(x) || (String(x.visual || '').match(/<svg/g) || []).length >= 4);
-      body = `<div class="pgrid" style="--c:${one ? 1 : 2}">${items.map((ex, k) => `<div class="pit"><div class="pq">${L(k)}${esc(ex.prompt)}</div>${ex.visual ? `<div>${pv(ex)}</div>` : ''}${needWork(ex) ? '<div class="pwork"><span>Fes aquí el càlcul</span></div>' : ''}${ex.type === 'tria'
+      body = `<div class="pgrid" style="--c:${one ? 1 : 2}">${items.map((ex, k) => `<div class="pit"><div class="pq">${L(k)}${esc(ex.prompt)}</div>${ex.visual ? `<div>${pv(ex)}</div>` : ''}${items.some(needWork) ? '<div class="pwork"><span>Fes aquí el càlcul</span></div>' : ''}${ex.type === 'tria'
         ? `<div class="pcirc ${ex.options.some(o => String(o).length > 16) ? 'col' : ''}">${ex.options.map((o, j) => `<span><span class="ol">${'ABCDEF'[j]}.</span>${esc(String(o))}</span>`).join('')}</div>`
         : inl(ex) ? '' : `<div class="row" style="align-items:flex-end;gap:8px;flex-wrap:nowrap"><div class="pline ${ex.numeric ? 'short' : ''}" style="flex:1"></div>${ex.unit ? `<span>${esc(ex.unit)}</span>` : ''}</div>`}</div>`).join('')}</div>`;
     }
@@ -2449,7 +2450,7 @@ function paperBody(exs){
         body = `<div class="pbankw"><b>Tria entre:</b>${esc(ordList([...ex0.options].map(o => LOWSK.has(ex0.skill) ? String(o).charAt(0).toLowerCase() + String(o).slice(1) : String(o))))}</div><div class="pgrid" style="--c:${ex0.visual && !/class="chart"/.test(ex0.visual) ? 2 : 1}">${items.map((ex, k) => `<div class="pit">${samePrompt ? '' : `<div class="pq">${L(k)}${esc(ex.prompt)}</div>`}${samePrompt ? L(k) : ''}${vis(ex)}<div class="pline"></div></div>`).join('')}</div>`;
       } else {
         head = samePrompt ? `${esc(dot(ex0.prompt))} Encercla la lletra de la resposta correcta.` : 'Encercla la lletra de la resposta correcta.';
-        body = items.map((ex, k) => `<div class="pit" style="margin-top:8px">${samePrompt ? '' : `<div class="pq">${L(k)}${esc(ex.prompt)}</div>`}${samePrompt && many ? L(k) : ''}${vis(ex)}${needWork(ex) ? '<div class="pwork"><span>Fes aquí el càlcul</span></div>' : ''}<div class="pcirc ${ex.options.some(o => String(o).length > 16) ? 'col' : ''}">${pOpts(ex, k, rot).map((o, j) => `<span><span class="ol">${'ABCDEF'[j]}.</span>${esc(o)}</span>`).join('')}</div></div>`).join('');
+        body = items.map((ex, k) => `<div class="pit" style="margin-top:8px">${samePrompt ? '' : `<div class="pq">${L(k)}${esc(ex.prompt)}</div>`}${samePrompt && many ? L(k) : ''}${vis(ex)}${items.some(needWork) ? '<div class="pwork"><span>Fes aquí el càlcul</span></div>' : ''}<div class="pcirc ${ex.options.some(o => String(o).length > 16) ? 'col' : ''}">${pOpts(ex, k, rot).map((o, j) => `<span><span class="ol">${'ABCDEF'[j]}.</span>${esc(o)}</span>`).join('')}</div></div>`).join('');
       }
     }
     else if (ex0.type === 'escriu') {
@@ -2457,7 +2458,7 @@ function paperBody(exs){
       head = samePrompt ? esc(ex0.prompt === 'Quant fa?' ? 'Calcula.' : dot(ex0.prompt)) : 'Respon cada pregunta.';
       // al paper, el «= ?» i la casella «?» de les sèries es converteixen en l'espai on s'escriu
       const inl = ex => /=\s*\?/.test(ex.visual || '') || /class="q"/.test(ex.visual || '') || /class="colop/.test(ex.visual || '');
-      const pv = ex => cleanVis(ex.visual).replace(/=\s*\?/, `= <span class="pgap wide" style="width:${Math.min(6, Math.max(3.2, String(ex.answer || '').length * .8 + 1.4)).toFixed(1)}em"></span>`);
+      const pv = ex => cleanVis(ex.visual).replace(/=\s*\?/, `= <span class="pgap wide" style="width:${Math.min(6, Math.max(3.2, Math.max(...items.map(x => String(x.answer || '').length)) * .8 + 1.4)).toFixed(1)}em"></span>`);
       if (items.every(inl) && items.every(x => /=\s*\?/.test(x.visual || ''))) head = 'Calcula.';
       const line = ex => inl(ex) ? '' : `<div class="row" style="align-items:flex-end;gap:8px;flex-wrap:nowrap"><div class="pline ${ex.numeric ? 'short' : ''}" style="flex:1"></div>${ex.unit ? `<span>${esc(ex.unit)}</span>` : ''}</div>`;
       const showQ = !samePrompt && !items.every(x => /=\s*\?/.test(x.visual || ''));
@@ -2466,7 +2467,7 @@ function paperBody(exs){
       const ser = items.some(x => /class="series/.test(x.visual || '')), big = ser && items.some(x => /\d{3}/.test(String(x.visual || '').replace(/<[^>]+>/g, ' ')));
       let cols = prob || items.some(x => /class="chart"/.test(x.visual || '')) || items.some(work) || ser || items.some(x => (String(x.visual || '').match(/<svg/g) || []).length >= 4) ? 1 : items.some(x => /class="shape/.test(x.visual || '') || (String(x.visual || '').match(/<svg/g) || []).length >= 2) ? 2 : small && ex0.visual ? (vl => vl <= 11 ? 3 : vl <= 14 ? 2 : 1)(Math.max(...items.map(x => String(x.visual || '').replace(/<[^>]+>/g, '').trim().length + (/=\s*\?/.test(x.visual || '') ? String(x.answer || '').length * .9 : 0)))) : 2;
       if (cols === 2 && items.length === 3 && !items.some(x => /class="shape/.test(x.visual || ''))) cols = items.every(x => ((showQ ? x.prompt : '') + String(x.visual || '').replace(/<[^>]+>/g, '')).length <= 34) ? 3 : 1;
-      body = `<div class="pgrid" style="--c:${cols}">${items.map((ex, k) => `<div class="pit">${showQ ? `<div class="pq">${L(k)}${esc(ex.prompt)}</div>` : L(k)}${ex.visual ? `<div>${pv(ex)}</div>` : ''}${work(ex) ? '<div class="pwork"><span>Fes aquí el càlcul</span></div>' : ''}${line(ex)}</div>`).join('')}</div>`;
+      body = `<div class="pgrid" style="--c:${cols}">${items.map((ex, k) => `<div class="pit">${showQ ? `<div class="pq">${L(k)}${esc(ex.prompt)}</div>` : L(k)}${ex.visual ? `<div>${pv(ex)}</div>` : ''}${items.some(work) ? '<div class="pwork"><span>Fes aquí el càlcul</span></div>' : ''}${line(ex)}</div>`).join('')}</div>`;
     }
     else if (ex0.type === 'dictat') {
       adult.push({n, t:'Dicteu aquestes paraules, una a una:', x: items.map((ex, k) => (many ? LT[k] + ') ' : '') + ex.answer).join('     ')});
@@ -2932,13 +2933,15 @@ function fCap(id, c){ const k = id + c; if (!(k in FCAPS)) { const set = new Set
 function genPaper(id, curs, r, avoid, prefer, words){ let ex; for (let k = 0; k < 320; k++) { ex = genEx(id, curs, r); const pk = paperKey(ex); if (!avoid.has(pk) && (k > 120 || !prefer || !prefer.has(pk)) && (k > 200 || paperOk(ex)) && (!words || !exWords(ex).some(w => words.has(w) && (k < 150 || (k < 270 && !w.startsWith('q:'))))) && (k > 200 || paperLike(ex))) return ex; } for (let k = 0; k < 4000; k++) { ex = genEx(id, curs, r); if (!avoid.has(paperKey(ex))) return ex; } return ex; }
 // en paper, cap columna de classificar buida
 const GP = {like: null, figs: null};
-const shapeK = ex => /class="shape/.test(ex.visual || '') ? String(ex.visual) : /class="chart"/.test(ex.visual || '') ? 'chart:' + (ex.skill === 'm-sectors' ? ex.prompt.split(':')[0] : ((String(ex.visual).match(/aria-label="([^"]+)"/) || [])[1] || '')).replace("de l'escola", 'de la classe') : '';
-const paperLike = ex => (!GP.like || GP.like.type !== ex.type || !GP.like.options || !ex.options || GP.like.options.length === ex.options.length) && (!GP.figs || !shapeK(ex) || !GP.figs.has(shapeK(ex)));
+const shapeK = ex => ex.type === 'relaciona' ? 'rel:' + toks(ex.pairs.flat()).join('|') : shapeK0(ex);
+const shapeK0 = ex => /class="shape/.test(ex.visual || '') ? String(ex.visual) : /class="chart"/.test(ex.visual || '') ? 'chart:' + (ex.skill === 'm-sectors' ? ex.prompt.split(':')[0] : ((String(ex.visual).match(/aria-label="([^"]+)"/) || [])[1] || '')).replace("de l'escola", 'de la classe') : '';
+const paperLike = ex => (!GP.like || GP.like.type !== ex.type || !GP.like.options || !ex.options || GP.like.options.length === ex.options.length) && (!GP.figs || (ex.type === 'relaciona' || ex.type === 'classifica' ? !toks(ex.type === 'relaciona' ? ex.pairs.flat() : ex.items.map(x => x.t)).some(w => GP.figs.has('w:' + w)) : !shapeK(ex) || !GP.figs.has(shapeK(ex))));
 const stemOk = ex => ex.skill !== 'c-temps' || new Set(ex.items.map(x => x.t.split(' ').pop().slice(0, 4))).size === ex.items.length;
-const paperOk = ex => ex.type !== 'classifica' || stemOk(ex) && (ex.buckets.every((b, bi) => ex.items.some(x => x.b === bi)) && new Set(ex.items.map(x => x.t)).size === ex.items.length);
+const hlOk = ex => { const h = ex.items.map(x => (String(x.t).match(/\*([^*]+)\*/) || [])[1]).filter(Boolean).map(w => w.toLowerCase()); return new Set(h).size === h.length; };
+const paperOk = ex => ex.type !== 'classifica' || stemOk(ex) && hlOk(ex) && (ex.buckets.every((b, bi) => ex.items.some(x => x.b === bi)) && new Set(ex.items.map(x => x.t)).size === ex.items.length);
 // paraules d'un exercici, per no repetir-les entre els apartats d'un mateix grup
-const toks = a => a.flatMap(t => String(t).replace(/\*/g, '').toLowerCase().split(/[^a-zà-ÿ·0-9']+/)).filter(w => w.length >= 4 || /^\d+$/.test(w));
-const exWords = ex => [ex.prompt && !/^(Quant fa\?|Calcula)/.test(ex.prompt) ? 'q:' + ex.prompt : '', ...(ex.type === 'classifica' ? toks(ex.items.map(x => x.t)) : ex.type === 'relaciona' ? toks(ex.pairs.flat()) : (ex.type === 'tria' && ex.options) ? ['=' + ex.options[ex.answer]] : ex.type === 'escriu' ? ['=' + ex.answer] : ex.type === 'ordena' ? [ex.items.join(' ')] : [])].filter(Boolean);
+const toks = a => a.flatMap(t => { t = String(t).replace(/\*/g, '').toLowerCase(); return t.split(' ').length > 3 ? [t] : t.split(/[^a-zà-ÿ·0-9']+/); }).filter(w => w.length >= 3 || /^\d+$/.test(w));
+const exWords = ex => [ex.prompt && !/^(Quant fa\?|Calcula)/.test(ex.prompt) ? 'q:' + ex.prompt : '', ...(ex.type === 'classifica' ? toks(ex.items.map(x => x.t)) : ex.type === 'relaciona' ? toks(ex.pairs.flat()) : (ex.type === 'tria' && ex.options) ? ['=' + ex.options[ex.answer]] : ex.type === 'escriu' ? ['=' + ex.answer, ...(String(ex.prompt).match(/\d[\d.,]*/g) || []).map(n => 'n:' + n.replace(/[.,]/g, '').replace(/0+$/, '')).filter(n => n.length > 3)] : ex.type === 'ordena' ? [ex.items.join(' ')] : [])].filter(Boolean);
 function taskExercises(t, sid){
   const c = cls(t.classId), st = stu(sid), r = mulberry(t.seed + (t.same ? 0 : hashStr(sid))), out = [], seen = new Set(t.same ? [] : (S.seen && S.seen[sid]) || []);
   for (const [id, n0] of Object.entries(t.items)) { const n = st && st.adapt && st.adapt.menys && !t.diag ? Math.max(1, Math.ceil(n0 * .6)) : n0, cc = st ? cursFor(st, SKM(id).mat) : c.curs;
