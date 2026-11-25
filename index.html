@@ -2310,10 +2310,10 @@ function fExercises(){
       const blk = exs.splice(start), ord = [...new Set(blk.map(pKey))]; exs.push(...ord.flatMap(k => blk.filter(e => pKey(e) === k))); GP.like = null; GP.figs = null; }
     // ortografia: la paraula que s'ha d'escriure no pot sortir ben escrita en un altre exercici de la mateixa fitxa
     const nrm = t => String(t).toLowerCase().normalize('NFD').replace(/[\u0300-\u036f·]/g, '');
-    const spellW = e => { if (e.type === 'dictat') return String(e.answer); if (e.type === 'tria' && e.options && e.options.length > 1 && /^[a-zà-ÿ·'-]+$/i.test(String(e.options[e.answer])) && new Set(e.options.map(o => nrm(o).replace(/[^a-z]/g, '').slice(0, 3))).size === 1) return String(e.options[e.answer]); const g = e.type === 'tria' && gapParts(e.visual); return g ? g[0] + e.options[e.answer] + g[1] : ''; };
+    const spellW = e => { if (e.type === 'dictat') return String(e.answer); if (e.type === 'tria' && blocOf(e.skill) === 'Ortografia' && e.options && e.options.length > 1 && /^[a-zà-ÿ·'-]+$/i.test(String(e.options[e.answer])) && new Set(e.options.map(o => nrm(o).replace(/[^a-z]/g, '').slice(0, 3))).size === 1) return String(e.options[e.answer]); const g = e.type === 'tria' && gapParts(e.visual); return g ? g[0] + e.options[e.answer] + g[1] : ''; };
     const txtOf = e => [e.prompt, String(e.visual || '').replace(/<[^>]+>/g, ' '), ...(e.options || []).map(String), ...(e.items || []).map(x => typeof x === 'object' ? x.t : x), ...(e.pairs || []).flat()].join(' ').toLowerCase();
     const leaks = i => { const w = spellW(exs[i]).toLowerCase().trim(); if (w.length < 3) return false; const st = w.length >= 5 ? w.slice(0, -1) : w, re = new RegExp('(^|[^a-zà-ÿ·])' + st.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + (w.length >= 5 ? '[a-zà-ÿ·]{0,3}' : '') + '($|[^a-zà-ÿ·])'); return exs.some((o, j) => j !== i && re.test(txtOf(o))); };
-    for (let i = 0; i < exs.length; i++) for (let t = 0; t < 40 && spellW(exs[i]) && leaks(i); t++) { const nx = genPaper(exs[i].skill, F.curs, r, own, seen); if (spellW(nx) && paperKey(nx) !== paperKey(exs[i])) { own.add(paperKey(nx)); exs[i] = nx; } }
+    for (let i = 0; i < exs.length; i++) for (let t = 0; t < 40 && spellW(exs[i]) && leaks(i); t++) { const nx = genPaper(exs[i].skill, F.curs, r, own, seen); if (spellW(nx) && !own.has(paperKey(nx))) { own.add(paperKey(nx)); exs[i] = nx; } }
     out.push(exs); }
   return out;
 }
@@ -2464,7 +2464,7 @@ function paperBody(exs){
       // espai per fer el càlcul quan l'operació no es pot fer de cap
       const work = needWork;
       const ser = items.some(x => /class="series/.test(x.visual || '')), big = ser && items.some(x => /\d{3}/.test(String(x.visual || '').replace(/<[^>]+>/g, ' ')));
-      let cols = prob || items.some(x => /class="chart"/.test(x.visual || '')) || items.some(work) || ser || items.some(x => (String(x.visual || '').match(/<svg/g) || []).length >= 4) ? 1 : items.some(x => /class="shape/.test(x.visual || '') || (String(x.visual || '').match(/<svg/g) || []).length >= 2) ? 2 : small && ex0.visual ? (vl => vl <= 11 ? 3 : vl <= 14 ? 2 : 1)(Math.max(...items.map(x => String(x.visual || '').replace(/<[^>]+>/g, '').trim().length))) : 2;
+      let cols = prob || items.some(x => /class="chart"/.test(x.visual || '')) || items.some(work) || ser || items.some(x => (String(x.visual || '').match(/<svg/g) || []).length >= 4) ? 1 : items.some(x => /class="shape/.test(x.visual || '') || (String(x.visual || '').match(/<svg/g) || []).length >= 2) ? 2 : small && ex0.visual ? (vl => vl <= 11 ? 3 : vl <= 14 ? 2 : 1)(Math.max(...items.map(x => String(x.visual || '').replace(/<[^>]+>/g, '').trim().length + (/=\s*\?/.test(x.visual || '') ? String(x.answer || '').length * .9 : 0)))) : 2;
       if (cols === 2 && items.length === 3 && !items.some(x => /class="shape/.test(x.visual || ''))) cols = items.every(x => ((showQ ? x.prompt : '') + String(x.visual || '').replace(/<[^>]+>/g, '')).length <= 34) ? 3 : 1;
       body = `<div class="pgrid" style="--c:${cols}">${items.map((ex, k) => `<div class="pit">${showQ ? `<div class="pq">${L(k)}${esc(ex.prompt)}</div>` : L(k)}${ex.visual ? `<div>${pv(ex)}</div>` : ''}${work(ex) ? '<div class="pwork"><span>Fes aquí el càlcul</span></div>' : ''}${line(ex)}</div>`).join('')}</div>`;
     }
