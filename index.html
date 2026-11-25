@@ -2931,8 +2931,16 @@ function genFresh(id, curs, r, avoid){ let ex; for (let k = 0; k < 15; k++) { ex
 /* en paper, dos exercicis són el mateix si es veuen igual (encara que les opcions vinguin en un altre ordre) */
 const paperKey = e => { if (e.skill === 'c-comprensio' || e.skill === 'c-oral') return String(hashStr(JSON.stringify(['comp', e.prompt, e.options && e.options.map(String).sort()]))); const gap = /class="gap"/.test(e.visual || ''); return String(hashStr(JSON.stringify([gap ? 'gap' : e.skill, gap ? '' : e.prompt, String(e.visual || '').replace(/\s+/g, ' '), gap ? '' : e.options && e.options.map(String).sort(), e.items && e.items.map(x => typeof x === 'object' ? x.t : x).sort(), e.pairs && e.pairs.map(String).sort(), e.type === 'dictat' ? e.answer : '', e.listen || '']))); };
 const FCAPS = {};
-function fCap(id, c){ const k = id + c; if (!(k in FCAPS)) { const set = new Set(), r = mulberry(4242 + c); for (let i = 0; i < 600 && set.size < 20; i++) set.add(paperKey(genEx(id, c, r))); FCAPS[k] = set.size; } return FCAPS[k]; }
-function genPaper(id, curs, r, avoid, prefer, words){ let ex; for (let k = 0; k < 320; k++) { ex = genEx(id, curs, r); const pk = paperKey(ex); if (!avoid.has(pk) && (k > 120 || !prefer || !prefer.has(pk)) && (k > 200 || paperOk(ex)) && (!words || !exWords(ex).some(w => words.has(w) && (k < 150 || (k < 270 && !w.startsWith('q:'))))) && (k > 200 || paperLike(ex))) return ex; } for (let k = 0; k < 4000; k++) { ex = genEx(id, curs, r); if (!avoid.has(paperKey(ex))) return ex; } return ex; }
+function fCap(id, c){ const k = id + c; if (!(k in FCAPS)) { const set = new Set(), r = mulberry(4242 + c); let pool = null, per = 0, n = 0;
+  for (let i = 0; i < 600; i++) { const e = genEx(id, c, r); set.add(paperKey(e)); if ((e.type === 'classifica' && !e.items.every(x => isNum(x.t))) || e.type === 'relaciona') { pool = pool || new Set(); const its = e.type === 'classifica' ? e.items.map(x => x.t) : e.pairs.map(p => p[0]); its.forEach(t => pool.add(t)); per += its.length; n++; } if (set.size >= 20 && i > 300) break; }
+  // classificar i relacionar: només tants apartats com permetin no repetir cap paraula ni frase
+  FCAPS[k] = Math.min(20, set.size, pool ? Math.max(1, Math.floor(pool.size / (per / n))) : 20); } return FCAPS[k]; }
+function genPaper(id, curs, r, avoid, prefer, words){ let best = null, bs = 1e9;
+  for (let k = 0; k < 320; k++) { const ex = genEx(id, curs, r), pk = paperKey(ex); if (avoid.has(pk)) continue;
+    const ws = words ? exWords(ex) : [], ov = ws.filter(w => !w.startsWith('q:') && words.has(w)).length, oq = ws.some(w => w.startsWith('q:') && words.has(w)) ? 1 : 0;
+    const sc = ov * 20 + (paperOk(ex) ? 0 : 50) + (paperLike(ex) ? 0 : 8) + (prefer && prefer.has(pk) ? 4 : 0) + oq;
+    if (sc === 0) return ex; if (sc < bs) { bs = sc; best = ex; } }
+  if (best) return best; let ex; for (let k = 0; k < 4000; k++) { ex = genEx(id, curs, r); if (!avoid.has(paperKey(ex))) return ex; } return ex; }
 // en paper, cap columna de classificar buida
 const GP = {like: null, figs: null};
 const shapeK = ex => ex.type === 'relaciona' ? 'rel:' + toks(ex.pairs.flat()).join('|') : shapeK0(ex);
