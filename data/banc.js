@@ -519,7 +519,7 @@ window.BANC = {
       "dues castanyes"
      ],
      [
-      "Què es posa per sortir al jardí?",
+      "Què es posa el nen per sortir al jardí?",
       "l'abric i les botes",
       "el banyador i les xancletes",
       "el pijama i les sabatilles",
