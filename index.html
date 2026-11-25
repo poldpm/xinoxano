@@ -665,17 +665,20 @@ skill('m-problemes','mat','Problemes',1,6,(r,c)=>{ const own = PTPL.filter(p=>c>
 skill('c-sil','cat','Ordenar síl·labes',1,2,(r)=>{ const w = pick(r,SIL), syl = w.slice(0,-1);
   return {type:'ordena', prompt:'Ordena les síl·labes', speak:'Ordena les síl·labes per formar la paraula '+syl.join(''), visual:`<div class="bigemoji">${w[w.length-1]}</div>`, items:syl}; });
 skill('c-imatge','cat','Paraula i dibuix',1,1,(r)=>({type:'relaciona', prompt:'Relaciona cada dibuix amb la seva paraula', speak:'Relaciona cada dibuix amb la seva paraula.', pairs:samplePairs(r,IMG,4).map(([e,w])=>[e,w]), bigLeft:true}));
-for (const [id, nom, min, max] of [['c-cqu','C o QU',1,3],['c-ggu','G o GU',1,3],['c-rrr','R o RR',1,3],['c-bv','B o V',3,6],['c-sss','S, SS, Ç o Z',2,6],['c-ll','L, LL o L·L',4,6]]) {
+for (const [id, nom, min, max] of [['c-cqu','C o QU',1,3],['c-ggu','G o GU',1,3],['c-rrr','R o RR',1,3],['c-bv','B o V',2,6],['c-sss','S, SS, Ç o Z',2,6],['c-ll','L, LL o L·L',4,6]]) {
   skill(id,'cat',nom,min,max,(r)=>{ const R = RULES[id], g = gapWord(pick(r,R.w));
     return {prompt:'Quina lletra hi falta?', speak:'Quina lletra hi falta a la paraula '+g.full+'?', visual:`<div class="word">${esc(g.before)}<span class="gap">?</span>${esc(g.after)}</div>`, tag:R.tag, full:g.full, ...tria(r,g.ans,R.opts)}; });
 }
-skill('c-accents','cat','Accents',4,6,(r)=>{ const w = pick(r,ACCENTS); return {prompt:'Quina està ben escrita?', speak:'Quina paraula està ben escrita?', tag:'accents', ...tria(r,w[0],w.slice(1))}; });
+skill('c-accents','cat','Accents',3,6,(r)=>{ const w = pick(r,ACCENTS); return {prompt:'Quina està ben escrita?', speak:'Quina paraula està ben escrita?', tag:'accents', ...tria(r,w[0],w.slice(1))}; });
 skill('c-dictat','cat','Dictat',1,6,(r,c)=>{ const w = pick(r,DICTAT[c]); const em = c<=2 ? (SIL.find(s=>s.slice(0,-1).join('')===w)||IMG.find(i=>i[1]===w)) : null;
   const e = em ? (Array.isArray(em) && em.length > 2 ? em[em.length-1] : em[0]) : '';
   return {type:'dictat', prompt:'Escolta i escriu la paraula', speak:w, visual: e ? `<div class="bigemoji">${e}</div>` : '', answer:w}; });
 skill('c-frase','cat','Ordenar frases',2,4,(r,c)=>({type:'ordena', prompt:'Ordena les paraules per fer la frase', speak:'Ordena les paraules per fer una frase.', items:pick(r, FRASES_C[c] && FRASES_C[c].length ? FRASES_C[c] : FRASES).split(' ')}));
-skill('c-genere','cat','Masculí i femení',2,3,(r)=>({type:'classifica', prompt:'Va amb «el» o amb «la»?', speak:'Posa cada paraula al seu lloc. Va amb el, o amb la?', buckets:['el','la'], items:sample(r,GENERE,6).map(([t,b])=>({t,b}))}));
-skill('c-plural','cat','Singular i plural',2,3,(r)=>{ const w = pick(r,PLURAL); return {prompt:`Com es diu en plural «${w[0]}»?`, speak:`Com es diu en plural ${w[0]}?`, tag:'plural', ...tria(r,w[1],w.slice(2))}; });
+skill('c-genere','cat','Masculí i femení',1,3,(r,c)=>({type:'classifica', prompt:'Va amb «el» o amb «la»?', speak:'Posa cada paraula al seu lloc. Va amb el, o amb la?', buckets:['el','la'], items:sample(r,c === 1 ? GENERE.filter(x => G1.includes(x[0])) : GENERE,6).map(([t,b])=>({t,b}))}));
+// A 1r, només paraules senzilles de la vida diària (la programació hi treballa el singular i el plural)
+const P1 = ['gos','ull','pa','poma','taula','vaca','tren','llibre','ocell','sabata','formiga','abella','conill','boca','figa','botó','camió','avió','lleó','cançó','home','dia','mapa','cosí','jardí','caixa','pluja'];
+const G1 = ['llibre','gos','cotxe','mirall','llit','rellotge','jardí','mapa','dia','pijama','dit','nas','riu','bolet','tren','plat','got','peu','bosc','carrer','sofà','forn','foc','llet','lluna','dutxa','nit','taula','flor','neu','clau','mà','moto','cançó','xocolata','panxa','cama','boca','gorra','cadira','finestra','classe'];
+skill('c-plural','cat','Singular i plural',1,3,(r,c)=>{ const w = pick(r, c === 1 ? PLURAL.filter(x => P1.includes(x[0])) : PLURAL); return {prompt:`Com es diu en plural «${w[0]}»?`, speak:`Com es diu en plural ${w[0]}?`, tag:'plural', ...tria(r,w[1],w.slice(2))}; });
 skill('c-antonims','cat','Contraris',2,6,(r)=>({type:'relaciona', prompt:'Relaciona cada paraula amb el seu contrari', speak:'Relaciona cada paraula amb el seu contrari.', pairs:samplePairs(r,ANTO,4)}));
 skill('c-sinonims','cat','Sinònims',2,6,(r)=>({type:'relaciona', prompt:'Relaciona les paraules que volen dir el mateix', speak:'Relaciona les paraules que volen dir el mateix.', pairs:samplePairs(r,SINO,4)}));
 skill('c-categories','cat','Nom, verb o adjectiu',3,6,(r)=>({type:'classifica', prompt:'Classifica les paraules', speak:'Classifica cada paraula: és un nom, un verb o un adjectiu?', buckets:['Nom','Verb','Adjectiu'], items:sample(r,CATEG,6).map(([t,b])=>({t,b}))}));
@@ -704,7 +707,7 @@ Object.assign(RULES, {
   'c-vneutra':{tag:'a / e àtones',opts:['a','e'],w:['c[a]vall','m[a]duixa','p[e]tit','s[e]tmana','[e]squirol','gr[a]nota','f[a]rina','t[e]atre','d[e]sert','c[a]rrer','p[e]rsona','m[a]rtell','[a]vió']},
   'c-ou':{tag:'o / u àtones',opts:['o','u'],w:['c[o]nill','b[u]fanda','f[o]rmatge','p[o]llastre','t[o]màquet','p[u]jar','m[u]ntanya','c[o]rrer','c[u]llera','s[o]rtir','c[o]berta','esp[o]nja']}
 });
-for (const [id, nom, min, max] of [['c-gj','G o J',2,4],['c-gugu','GU, GÜ, QU o QÜ',3,6],['c-xix','X, IX, TX o IG',2,4],['c-vneutra','A o E (vocal neutra)',2,6],['c-ou','O o U',2,6]]) {
+for (const [id, nom, min, max] of [['c-gj','G o J',2,5],['c-gugu','GU, GÜ, QU o QÜ',3,6],['c-xix','X, IX, TX o IG',2,4],['c-vneutra','A o E (vocal neutra)',2,6],['c-ou','O o U',2,6]]) {
   skill(id,'cat',nom,min,max,(r)=>{ const R = RULES[id], g = gapWord(pick(r,R.w));
     return {prompt:'Quina lletra hi falta?', speak:'Quina lletra hi falta a la paraula '+g.full+'?', visual:`<div class="word">${esc(g.before)}<span class="gap">?</span>${esc(g.after)}</div>`, tag:R.tag, full:g.full, ...tria(r,g.ans,R.opts)}; });
 }
@@ -715,7 +718,7 @@ skill('c-tonica','cat','La síl·laba tònica',2,3,(r)=>{ const w = pick(r,TONIC
   return {prompt:'Quina és la síl·laba tònica?', speak:`Quina síl·laba sona més forta a la paraula ${syl.join('')}?`, visual:`<div class="word">${esc(syl.join(''))}</div>`, tag:'síl·laba tònica', ...tria(r,ans,syl.filter(x=>x!==ans))}; });
 skill('c-agudes','cat','Agudes, planes i esdrúixoles',3,6,(r)=>({type:'classifica', prompt:'Classifica les paraules', speak:'Classifica les paraules: agudes, planes o esdrúixoles.', buckets:['Aguda','Plana','Esdrúixola'], items:sample(r,TONICA,6).map(w=>({t:w.slice(0,-1).join(''), b:w[w.length-1]}))}));
 const HACHE = [['hora','ora'],['home','ome'],['herba','erba'],['hivern','ivern'],['ou','hou'],['ull','hull'],['orella','horella'],['hospital','ospital'],['ahir','air'],['hamburguesa','amburguesa'],['ombra','hombra'],['horta','orta'],['os','hos'],['història','istòria']];
-skill('c-h','cat','La H',2,4,(r)=>{ const w = pick(r,HACHE); return {prompt:'Quina està ben escrita?', speak:'Quina paraula està ben escrita?', tag:'h', ...tria(r,w[0],w.slice(1))}; });
+skill('c-h','cat','La H',2,5,(r)=>{ const w = pick(r,HACHE); return {prompt:'Quina està ben escrita?', speak:'Quina paraula està ben escrita?', tag:'h', ...tria(r,w[0],w.slice(1))}; });
 skill('c-ssons','cat','S sonora o sorda',3,4,(r)=>({type:'classifica', prompt:'Com sona la essa?', speak:'Escolta com sona la essa. Sona com a casa, o com a sol?', buckets:['Com a «casa»','Com a «sol»'],
   items:sample(r,SSONS,6).map(([t,b])=>({t,b}))}));
 const FINALS = [['ver_','verda','d','t'],['llar_','llarga','g','c'],['sor_','sorda','d','t'],['gro_','groga','c','g'],['llo_','lloba','p','b'],['ami_','amiga','c','g'],['fre_','freda','d','t'],['bru_','bruta','t','d'],['ce_','cega','c','g'],['re_','rebre','p','b']];
@@ -757,7 +760,7 @@ skill('c-concordanca','cat','Concordança nom i adjectiu',2,3,(r)=>{ const w = p
 // CATALÀ · lèxic
 const FAM = [['mar',['mariner','marina','marítim'],'martell'],['pa',['panet','panera','paneret'],'pala'],['llet',['lleter','lletera','lletós'],'lletra'],['flor',['florista','floreta','florir'],'forat'],
   ['sabata',['sabater','sabateria','sabatilla'],'saba'],['pedra',['pedrera','pedreta','empedrat'],'pera'],['neu',['nevada','nevar','nevera'],'nou']];
-skill('c-families','cat','Famílies de paraules',2,4,(r)=>{ const f = pick(r,FAM); return {prompt:`Quina paraula NO és de la família de «${f[0]}»?`, speak:`Quina paraula no és de la família de ${f[0]}?`, ...tria(r,f[2],f[1])}; });
+skill('c-families','cat','Famílies de paraules',2,6,(r)=>{ const f = pick(r,FAM); return {prompt:`Quina paraula NO és de la família de «${f[0]}»?`, speak:`Quina paraula no és de la família de ${f[0]}?`, ...tria(r,f[2],f[1])}; });
 skill('c-compostes','cat','Paraules compostes',2,4,(r)=>({type:'relaciona', prompt:'Uneix les dues parts de cada paraula composta', speak:'Uneix les dues parts per fer paraules compostes.',
   pairs:samplePairs(r,COMP,4)}));
 const ALF = ['pilota','ocell','arbre','lluna','gat','mar','casa','dofí','tortuga','escola','formiga','nas','riu','vaixell','balena','hivern','jardí','iogurt'];
@@ -1023,7 +1026,13 @@ const blocOf = id => BLOC_OF[id] || (SKM(id).mat === 'cat' ? 'Lectura i escriptu
 
 // PROGRAMACIÓ de l'escola: només serveix a la mestra per orientar-se
 const PROG = {
-  1:{mat:{font:'Matemàtiques Raona 1r', u:[
+  1:{cat:{font:'Llengua catalana 1r', u:[
+      ['Comencem. Comença el curs','c-imatge c-sil c-comprensio c-oral'],['Continuem. Temps de tardor','c-sil c-imatge c-comprensio c-oral'],
+      ['Avancem. On ets, tió?','c-sil c-comprensio c-oral c-dictat'],['U1 Compte amb el llop!','c-genere c-plural c-comprensio c-dictat'],
+      ['U2 Tothom a taula!','c-dictat c-comprensio c-oral'],['U3 Com som?','c-dictat c-comprensio c-imatge'],
+      ['U4 Festes tot l\'any','c-ggu c-rrr c-dictat c-comprensio'],['U5 M\'endevines?','c-cqu c-comprensio c-oral c-dictat'],
+      ['U6 Les vacances','c-dictat c-sil c-comprensio c-oral']]},
+     mat:{font:'Matemàtiques Raona 1r', u:[
       ['Comencem. Parlem de fruita!','m-comptar m-ordena m-posicio m-calendari m-grafics m-problemes'],['Continuem. Mirem i pensem','m-comptar m-ordena m-suma m-series m-figures m-posicio'],
       ['Avancem. Comparem i comptem','m-suma m-descomp m-valorpos m-mesura1 m-cossos m-problemes'],['U1 Fem desenes','m-descomp m-valorpos m-dobles m-suma m-mesura1 m-posicio'],
       ['U2 Connectem','m-suma m-series m-calendari m-rellotge m-posicio'],['U3 Val el mateix?','m-suma m-resta m-monedes m-descomp m-figures'],
@@ -1050,6 +1059,30 @@ const PROG = {
       ['U5 Fem combinacions per disfressar-nos','m-x10 m-taules m-problemes m-massa m-rellotge m-digital'],['U6 Rodolem','m-monedes m-divresidu m-angles m-grafics'],
       ['U7 Construïm triangles','m-divresidu m-fraccions m-fraccio-col m-monedes m-triangles m-rellotge m-digital m-atzar'],
       ['U8 Mesurem capacitats','m-valorpos m-resta-portant m-perimetre m-capacitat m-poligons'],['U9 Endevinem cartes','m-fraccio-col m-divresidu m-area m-poligons m-atzar']]}},
+  4:{cat:{font:'Llengua catalana Xarxa 4t', u:[
+      ['U1 Jo t\'ho explico','c-agudes c-ll c-alfabetic c-comprensio c-dictat'],['U2 I tu, què hi veus?','c-accents c-agudes c-sinonims c-comprensio c-dictat'],
+      ['U3 Invents del dia a dia','c-vneutra c-ou c-temps c-categories c-dictat'],['U4 Històries fantàstiques','c-apostrof c-determinants c-comprensio c-dictat'],
+      ['U5 Parlant, ens entendrem','c-gugu c-frasesfetes c-oral c-dictat'],['U6 Fem teatre!','c-gj c-gugu c-dieresi c-apostrof c-pronoms c-dictat'],
+      ['U7 La poesia és música!','c-bv c-h c-compostes c-dictat'],['U8 Tot un món a la xarxa','c-sinonims c-frasesfetes c-comprensio c-dictat'],
+      ['U9 Al bosc, ni un foc','c-xix c-families c-compostes c-comprensio c-dictat']]},
+     mat:{font:'Matemàtiques Enginy 4t', u:[
+      ['U1 Nombres i més nombres','m-valorpos m-descomp m-ordena m-suma-portant m-resta-portant m-temps'],['U2 Mapes i plànols','m-taules m-taules-rel m-divisio m-divresidu m-problemes'],
+      ['U3 El perímetre','m-perimetre m-longitud m-taules m-grafics m-problemes'],['U4 Cossos que rodolen','m-fraccions m-fraccio-col m-longitud m-massa m-temps m-rellotge'],
+      ['U5 Arrodonim','m-divisio m-divresidu m-fraccions m-problemes'],['U6 Parts iguals de la unitat','m-fraccions m-fraccio-col m-triangles m-angles'],
+      ['U7 Quadrilàters','m-poligons m-angles m-divisio m-fraccions m-taules'],['U8 Transformacions geomètriques','m-valorpos m-ordena m-linies m-problemes'],
+      ['U9 Tot depèn del punt de vista','m-capacitat m-massa m-digital m-grafics m-problemes']]}},
+  5:{cat:{font:'Llengua catalana 5è (Barcanova)', u:[
+      ['U1 Records i vivències','c-agudes c-accents c-comprensio c-dictat'],['U2 T\'explico com funciona?','c-ll c-apostrof c-categories c-dictat'],
+      ['U3 Anem al teatre','c-diftong c-dieresi c-agudes c-sinonims c-frasesfetes c-oral'],['U4 Cultures llunyanes','c-accents c-sinonims c-antonims c-categories c-comprensio'],
+      ['U5 T\'explico com és?','c-vneutra c-ou c-comprensio c-dictat'],['U6 Visca la poesia!','c-bv c-h c-diacritic c-agudes c-categories c-dictat'],
+      ['U7 Temps era temps','c-sinonims c-temps c-comprensio c-oral'],['U8 El planeta Terra és notícia','c-gj c-comprensio c-oral c-dictat'],
+      ['U9 Què dius, ara!','c-temps c-frasesfetes c-tantquan c-comprensio']]},
+     mat:{font:'Matemàtiques Raona 5è', u:[
+      ['U1 Com mesurem les coses?','m-divisio m-valorpos m-longitud m-temps m-grafics m-problemes'],['U2 Hi ha matemàtiques al carrer?','m-divresidu m-fraccions m-angles m-atzar m-problemes'],
+      ['U3 Quins nombres coneixem?','m-decimals m-compdec m-fraccions m-fraccio-col m-x10 m-problemes'],['U4 Unitats convencionals o tradicionals?','m-longitud m-massa m-capacitat m-triangles m-sectors m-problemes'],
+      ['U5 Quines formes observem?','m-perimetre m-longitud m-linies m-decimals'],['U6 Superfície o àrea?','m-area m-perimetre m-decimals m-x10'],
+      ['U7 Quantes cares té un dau?','m-combinades m-atzar m-problemes'],['U8 És de moda?','m-mitjana m-divisors m-primers m-grafics'],
+      ['U9 La calculadora, resol tots els problemes?','m-combinades m-mitjana m-linies m-problemes']]}},
   6:{cat:{font:'Llengua catalana Comunica 6è', u:[
       ['SA1 Contalles d\'arreu','c-agudes c-diftong c-comprensio'],['SA2 Vols saber com es resol?','c-vneutra c-ou c-sinonims c-antonims'],
       ['SA3 Viu la poesia','c-accents c-diacritic c-pronoms'],['SA4 Parlem d\'anuncis','c-diftong c-categories'],
@@ -1059,7 +1092,7 @@ const PROG = {
       ['U1 Tornem a l\'escola','m-decimals m-compdec m-mitjana m-perimetre m-area m-angles'],['U2 Anem a comprar','m-percent m-x10 m-problemes m-capacitat m-triangles'],
       ['U3 Controlem les despeses de casa','m-decimals m-compdec m-ordena m-percent m-area m-grafics m-sectors m-linies m-mitjana'],['U4 Anem de colònies','m-divresidu m-divisors m-temps m-longitud'],
       ['U5 Participem en les olimpíades','m-decimals m-primers m-temps m-atzar'],['U6 Ens agrada construir','m-combinades'],
-      ['U7 Muntem una paradeta','m-decimals m-fraccions m-longitud m-massa m-capacitat m-perimetre m-area m-mitjana m-grafics'],['U8 Continuem creixent','m-potencies m-series'],
+      ['U7 Muntem una paradeta','m-decimals m-fraccions m-longitud m-massa m-capacitat m-perimetre m-area m-mitjana m-grafics'],['U8 Continuem creixent','m-potencies m-x10'],
       ['U9 Roda el món i torna al Born','m-x10 m-compdec m-divisors m-combinades m-potencies m-cercle']]}}
 };
 
