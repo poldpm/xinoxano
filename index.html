@@ -315,7 +315,7 @@ textarea{width:100%;min-height:170px;font-family:var(--f-num);font-size:.9rem;li
 .pit .series{flex-wrap:wrap!important;justify-content:flex-start!important}
 .pwork{border:1.5px dashed #999;border-radius:8px;height:130px;margin:8px 0 4px;position:relative}
 .pwork span{position:absolute;top:4px;left:8px;font-size:.85rem;color:#555}
-.prel{width:100%;min-width:0;border-collapse:collapse;margin-top:4px;table-layout:fixed}.prel td{padding:6px 4px;vertical-align:bottom;border:none!important;font-size:1rem}.prel td.n{font-weight:700;white-space:nowrap}.prel td.g .pgap{width:2.6em}
+.prel{width:100%;min-width:0;border-collapse:collapse;margin-top:4px;table-layout:fixed}.prel td{padding:6px 4px;vertical-align:top;border:none!important;font-size:1rem;line-height:1.35}.prel td.g{vertical-align:top;padding-top:4px}.prel td.n{font-weight:700;white-space:nowrap}.prel td.g .pgap{width:2.6em}
 .ptable,.ptable tr,.ptable td{break-inside:avoid;page-break-inside:avoid}
 .plist{margin:6px 0 8px 22px;padding:0;line-height:1.55}
 .plist li{padding-left:4px}
@@ -2384,7 +2384,7 @@ const dot = t => { t = String(t || '').trim(); return /[.?!:]$/.test(t) ? t : t 
 const isNum = v => /^[\d.,\s€]+$/.test(String(v).replace(/\*/g, ''));
 const LOWSK = new Set(['c-oracions','m-triangles','m-angles','m-poligons','m-cossos','m-figures','c-pronoms','c-categories','c-generes']);
 const relRight = (ex, k) => { const r = mulberry(hashStr(exKey(ex)) + k); let o; for (let t = 0; t < 30; t++) { o = shuffle(r, ex.pairs.map((p, i) => ({t: p[1], i}))); if (o.filter((x, j) => x.i === j).length <= 1) break; } return o; };
-const longCl = ex => ex.items.some(x => x.t.replace(/\*/g, '').length > 22);
+const longCl = ex => ex.items.some(x => x.t.replace(/\*/g, '').length > 22) || (PAPERC <= 2 && ex.items.some(x => { const t = x.t.replace(/\*/g, ''); return /\s/.test(t) || t.length > 9; }));
 // en paper, que la lletra bona no sigui sempre la mateixa dins d'un grup
 const pOpts = (ex, k, rot) => { const o = ex.options.map(String); if (!rot) return o; const d = k % o.length; return o.slice(d).concat(o.slice(0, d)); };
 const fmtSol = (ex, t) => { t = String(t); if (ex.numeric && /^\d{4,}(,\d+)?$/.test(t)) { const [i, d] = t.split(','); t = i.replace(/\B(?=(\d{3})+(?!\d))/g, '.') + (d ? ',' + d : ''); }
@@ -2409,7 +2409,7 @@ function paperBody(exs){
     g.i.forEach((i, k) => lab[i] = n + (many ? LT[k] : ''));
     const rot = many && items.every(x => x.type === 'tria' && x.options) && new Set(items.map(x => x.answer)).size === 1 && ex0.options.length > 1;
     const solT = (ex, k) => ex.type === 'relaciona' ? relRight(ex, k).map((x, j) => ({n: x.i + 1, l: 'ABCDEFGH'[j]})).sort((a, b) => a.n - b.n).map(x => x.n + '-' + x.l).join(', ')
-      : ex.type === 'classifica' && (petits || longCl(ex)) ? ex.buckets.map((b, bi) => b + ': ' + (ex.items.map((x, j) => x.b === bi ? j + 1 : 0).filter(Boolean).join(', ') || 'cap')).join(' · ')
+      : ex.type === 'classifica' && items.some(longCl) ? ex.buckets.map((b, bi) => b + ': ' + (ex.items.map((x, j) => x.b === bi ? j + 1 : 0).filter(Boolean).join(', ') || 'cap')).join(' · ')
       : ex.type === 'ordena' && !/síl·lab/.test(ex.prompt || '') && (ex.items.every(isNum) || /alfabètic/.test(ex.prompt || '')) ? ex.items.join(', ')
       : fmtSol(ex, answerText(ex)) + (ex.unit ? ' ' + ex.unit : '');
     const solLine = circ => `<div class="gr"><b>${n}.</b> ${items.map((ex, k) => { let t = solT(ex, k); if (circ && ex.type === 'tria' && ex.options) { const disp = (rot ? pOpts(ex, k, rot) : ex.options.map(String)), j = disp.indexOf(String(ex.options[ex.answer])); if (j >= 0) t = 'ABCDEF'[j] + ' (' + t + ')'; }
@@ -2486,7 +2486,7 @@ function paperBody(exs){
         return `<div class="pit" style="margin-top:8px">${L(k)}<table class="prel"><colgroup><col style="width:3.4em"><col style="width:1.8em"><col style="width:44%"><col style="width:1.8em"><col></colgroup>${ex.pairs.map((p, i) => `<tr><td class="g"><span class="pgap"></span></td><td class="n">${i + 1}.</td><td>${ex.bigLeft ? `<span style="font-size:1.5rem">${esc(p[0])}</span>` : esc(p[0])}</td><td class="n">${'ABCDEFGH'[i]}.</td><td>${esc(right[i].t)}</td></tr>`).join('')}</table></div>`; }).join('');
     }
     else if (ex0.type === 'classifica') {
-      const lng = petits || items.some(longCl), what = ex0.items.every(x => isNum(x.t)) ? 'nombre' : {'c-temps':'verb','c-determinants':'grup de paraules','m-atzar':'frase'}[ex0.skill] || 'paraula';
+      const lng = items.some(longCl), what = ex0.items.every(x => isNum(x.t)) ? 'nombre' : {'c-temps':'verb','c-determinants':'grup de paraules','m-atzar':'frase'}[ex0.skill] || 'paraula';
       head = (samePrompt ? esc(dot(ex0.prompt)) + ' ' : '') + (lng ? `Escriu el número de cada ${what} a la columna que li toca.` : `Escriu cada ${what} a la seva columna.`);
       body = items.map((ex, k) => { const r = mulberry(hashStr(exKey(ex)) + k), its = lng ? ex.items : shuffle(r, ex.items), mx = Math.max(...items.flatMap(e => e.buckets.map((_, bi) => e.items.filter(x => x.b === bi).length)));
         return `<div class="pit" style="margin-top:8px">${samePrompt ? L(k) : `<div class="pq">${L(k)}${esc(ex.prompt)}</div>`}${lng ? `<ol class="plist">${its.map(x => `<li>${hl(x.t)}</li>`).join('')}</ol>` : `<div class="pbankw pchips">${its.map(x => `<span>${hl(x.t)}</span>`).join('')}</div>`}<table class="ptable"><tr>${ex.buckets.map(b => `<th>${esc(b)}</th>`).join('')}</tr><tr>${ex.buckets.map(() => `<td style="height:${lng ? 56 : Math.max(80, mx * 34 + 16)}px"></td>`).join('')}</tr></table></div>`; }).join('');
