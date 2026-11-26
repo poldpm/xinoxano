@@ -334,6 +334,7 @@ textarea{width:100%;min-height:170px;font-family:var(--f-num);font-size:.9rem;li
 .pcirc{display:flex;flex-wrap:wrap;gap:6px 34px;margin:6px 0 0 14px;font-size:1.05rem}
 .pcirc.col{display:grid;grid-template-columns:1fr 1fr;gap:6px 26px}
 .pcirc.col1{grid-template-columns:1fr}
+.pgrid:not([style*="--c:1"]):not([style*="--c: 1"]) .pcirc.col{grid-template-columns:1fr}
 .pcirc .ol{display:inline-block;min-width:1.5em;font-weight:700;color:var(--brand2)}
 .pbankw{border:2px dashed #999;border-radius:10px;padding:6px 12px;margin:6px 0 4px;font-size:1.05rem}
 .pbankw > b{margin-right:6px}
@@ -2476,7 +2477,7 @@ function paperBody(exs){
       } else {
         head = samePrompt ? `${esc(dot(ex0.prompt))} Encercla la lletra de la resposta correcta.` : 'Encercla la lletra de la resposta correcta.';
         const oL = Math.max(...items.map(x => x.options.map(String).join('   ').length)), pL = samePrompt ? 0 : Math.max(...items.map(x => x.prompt.length)), bigV = items.some(x => /class="(chart|readtext)/.test(x.visual || ''));
-        const tcols = !many || bigV || items.some(needWork) ? 1 : oL <= 26 && pL <= 40 ? 3 : oL <= 44 && pL <= 70 ? 2 : 1;
+        const tcols = !many || bigV || items.some(needWork) ? 1 : oL <= 26 && pL <= 40 ? 3 : (oL <= 44 || items.every(x => x.options.every(o => String(o).length <= 22))) && pL <= 70 ? 2 : 1;
         body = `<div class="pgrid" style="--c:${tcols}">` + items.map((ex, k) => `<div class="pit" style="margin-top:8px">${samePrompt ? '' : `<div class="pq">${L(k)}${esc(ex.prompt)}</div>`}${samePrompt && many ? L(k) : ''}${vis(ex)}${items.some(needWork) ? '<div class="pwork"><span>Fes aquí el càlcul</span></div>' : ''}<div class="pcirc ${ex.options.some(o => String(o).length > 16) ? 'col' : ''} ${ex.options.some(o => String(o).length > 44) ? 'col1' : ''}">${pOpts(ex, k, rot, canon).map((o, j) => `<span><span class="ol">${'ABCDEF'[j]}.</span>${esc(o)}</span>`).join('')}</div></div>`).join('') + '</div>';
       }
     }
@@ -2492,8 +2493,8 @@ function paperBody(exs){
       // espai per fer el càlcul quan l'operació no es pot fer de cap
       const work = needWork;
       const ser = items.some(x => /class="series/.test(x.visual || '')), big = ser && items.some(x => /\d{3}/.test(String(x.visual || '').replace(/<[^>]+>/g, ' ')));
-      let cols = prob || items.some(x => /class="chart"/.test(x.visual || '')) || items.some(work) || ser || items.some(x => (String(x.visual || '').match(/<svg/g) || []).length >= 4) ? 1 : items.some(x => /class="shape/.test(x.visual || '') || (String(x.visual || '').match(/<svg/g) || []).length >= 2) ? 2 : small && ex0.visual ? (vl => vl <= 9 ? 3 : vl <= 13 ? 2 : 1)(Math.max(...items.map(x => String(x.visual || '').replace(/<[^>]+>/g, '').trim().length + (/=\s*\?/.test(x.visual || '') ? String(x.answer || '').length * .9 : 0)))) : 2;
-      if (cols === 2 && items.length === 3 && !items.some(x => /class="shape/.test(x.visual || ''))) cols = items.every(x => ((showQ ? x.prompt : '') + String(x.visual || '').replace(/<[^>]+>/g, '')).length <= (x.visual ? 22 : 40)) ? 3 : items.every(x => ((showQ ? x.prompt : '') + String(x.visual || '').replace(/<[^>]+>/g, '')).length <= 70) ? 2 : 1;
+      let cols = prob || items.some(x => /class="chart"/.test(x.visual || '')) || items.some(work) || (ser && items.some(x => (String(x.visual || '').match(/<span/g) || []).length > 5 || /\d{3}/.test(String(x.visual || '').replace(/<[^>]+>/g, ' ')))) || items.some(x => (String(x.visual || '').match(/<svg/g) || []).length >= 4) ? 1 : ser ? 2 : items.some(x => /class="shape/.test(x.visual || '') || (String(x.visual || '').match(/<svg/g) || []).length >= 2) ? 2 : small && ex0.visual ? (vl => vl <= 9 ? 3 : vl <= 13 ? 2 : 1)(Math.max(...items.map(x => String(x.visual || '').replace(/<[^>]+>/g, '').trim().length + (/=\s*\?/.test(x.visual || '') ? String(x.answer || '').length * .9 : 0)))) : 2;
+      if (cols === 2 && !ser && items.length === 3 && !items.some(x => /class="shape/.test(x.visual || ''))) cols = items.every(x => ((showQ ? x.prompt : '') + String(x.visual || '').replace(/<[^>]+>/g, '')).length + (/=\s*\?/.test(x.visual || '') ? String(x.answer || '').length * 1.6 : 0) <= (x.visual ? 22 : 40)) ? 3 : items.every(x => ((showQ ? x.prompt : '') + String(x.visual || '').replace(/<[^>]+>/g, '')).length <= 70) ? 2 : 1;
       body = `<div class="pgrid" style="--c:${cols}">${items.map((ex, k) => `<div class="pit">${showQ ? `<div class="pq">${L(k)}${esc(ex.prompt)}</div>` : L(k)}${ex.visual ? `<div>${pv(ex)}</div>` : ''}${items.some(work) ? '<div class="pwork"><span>Fes aquí el càlcul</span></div>' : ''}${line(ex)}</div>`).join('')}</div>`;
     }
     else if (ex0.type === 'dictat') {
