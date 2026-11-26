@@ -2431,7 +2431,7 @@ function paperBody(exs){
     g.i.forEach((i, k) => lab[i] = n + (many ? LT[k] : ''));
     const canon = items.every(x => x.type === 'tria' && x.options && x.options.map(String).sort().join('|') === ex0.options.map(String).sort().join('|')) ? ex0 : null;
     const rot = many && items.every(x => x.type === 'tria' && x.options) && new Set(items.map(x => (canon || x).options.map(String).indexOf(String(x.options[x.answer])))).size === 1 && ex0.options.length > 1;
-    const solT = (ex, k) => ex.type === 'relaciona' ? relRight(ex, k).map((x, j) => ({n: x.i + 1, l: 'ABCDEFGH'[j]})).sort((a, b) => a.n - b.n).map(x => x.n + '-' + x.l).join(', ')
+    const solT = (ex, k) => ex.type === 'relaciona' ? ex.pairs.map(p => p[0] + ' → ' + p[1]).join(' · ')
       : ex.type === 'classifica' && items.some(longCl) ? ex.buckets.map((b, bi) => b + ': ' + (ex.items.map((x, j) => x.b === bi ? j + 1 : 0).filter(Boolean).join(', ') || 'cap')).join(' · ')
       : ex.type === 'ordena' && petits && !ex.items.every(isNum) && !/síl·lab/.test(ex.prompt || '') ? (u => ordPool(ex, k).map(x => { const i = ex.items.findIndex((y, j) => y === x && !u.has(j)); u.add(i); return i + 1; }))(new Set()).join(' - ') + ' (' + ex.items.join(' ') + ')'
       : ex.type === 'ordena' && !/síl·lab/.test(ex.prompt || '') && (ex.items.every(isNum) || /alfabètic/.test(ex.prompt || '')) ? ex.items.join(', ')
@@ -2509,7 +2509,7 @@ function paperBody(exs){
       // si els textos són curts, dos apartats l'un al costat de l'altre
       const curt = items.every(ex => ex.pairs.every(p => String(p[0]).length <= 16 && String(p[1]).length <= 16));
       body = `<div class="pgrid" style="--c:${curt && many ? 2 : 1}">` + items.map((ex, k) => { const right = relRight(ex, k);
-        return `<div class="pit">${L(k)}<table class="prel"><colgroup><col style="width:1.7em"><col><col style="width:1.1em"><col style="width:${curt ? 22 : 20}%"><col style="width:1.1em"><col style="width:1.7em"><col></colgroup>${ex.pairs.map((p, i) => `<tr><td class="n">${i + 1}.</td><td class="tl">${ex.bigLeft ? `<span style="font-size:1.5rem">${esc(p[0])}</span>` : esc(p[0])}</td><td class="dt">●</td><td></td><td class="dt">●</td><td class="n">${'ABCDEFGH'[i]}.</td><td>${esc(right[i].t)}</td></tr>`).join('')}</table></div>`; }).join('') + '</div>';
+        return `<div class="pit">${L(k)}<table class="prel"><colgroup><col><col style="width:1.1em"><col style="width:${curt ? 24 : 22}%"><col style="width:1.1em"><col></colgroup>${ex.pairs.map((p, i) => `<tr><td class="tl">${ex.bigLeft ? `<span style="font-size:1.5rem">${esc(p[0])}</span>` : esc(p[0])}</td><td class="dt">●</td><td></td><td class="dt">●</td><td class="tr">${esc(right[i].t)}</td></tr>`).join('')}</table></div>`; }).join('') + '</div>';
     }
     else if (ex0.type === 'classifica') {
       const lng = items.some(longCl), what = ex0.items.every(x => isNum(x.t)) ? 'nombre' : {'c-temps':'verb','c-determinants':'grup de paraules','m-atzar':'frase'}[ex0.skill] || 'paraula';
