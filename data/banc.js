@@ -7019,7 +7019,6 @@ window.BANC = {
    "sa[c]",
    "ra[c]ó",
    "por[c]",
-   "pe[qu]eny",
    "for[qu]illa",
    "es[qu]iar",
    "bi[qu]ini",
