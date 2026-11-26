@@ -2372,7 +2372,7 @@ function vFitxes(){
   const perProg = mat => !pg || !pg[mat] ? '' : `<div class="stack" style="gap:4px"><h3 style="color:var(--${mat})">${mat === 'cat' ? 'Català' : 'Matemàtiques'}</h3>${pg[mat].u.map(([nom, ids]) => { const l = ids.split(' ').map(SKM).filter(k => k.gen); return l.length ? det(nom, l) : ''; }).join('')}</div>`;
   const chosen = Object.entries(F.items).map(([k, n]) => `<span class="chip">${esc(SKM(k).nom)} ×${Math.min(n, fCap(k, c))}</span>`).join('');
   PAPERC = c;
-  const sheets = !total ? '' : mode === 'cang' ? cangPick().map((it, v) => cangSheet(F.title || 'Problemes Cangur', CURS[c] + (F.copies > 1 ? ' · model ' + 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'[v % 26] + (v >= 26 ? Math.floor(v / 26) : '') : ''), it, F.sol)).join('') : fExercises().map((exs, v) => sheetHTML(F.title || 'Repàs del trimestre', CURS[c] + (F.copies > 1 ? ' · model ' + 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'[v % 26] + (v >= 26 ? Math.floor(v / 26) : '') : ''), '', exs, F.sol)).join('');
+  const sheets = !total ? '' : mode === 'cang' ? cangPick().map((it, v) => cangSheet(F.title || 'Repàs del trimestre', CURS[c] + (F.copies > 1 ? ' · model ' + 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'[v % 26] + (v >= 26 ? Math.floor(v / 26) : '') : ''), it, F.sol)).join('') : fExercises().map((exs, v) => sheetHTML(F.title || 'Repàs del trimestre', CURS[c] + (F.copies > 1 ? ' · model ' + 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'[v % 26] + (v >= 26 ? Math.floor(v / 26) : '') : ''), '', exs, F.sol)).join('');
   return `<div class="stack fitxes">
     <section class="noprint stack" style="gap:6px"><h1>Fitxes per imprimir</h1><p class="muted" style="max-width:62ch">Tria el curs i els continguts. Xino-Xano prepara una fitxa amb exercicis nous cada vegada i, si vols, un full per a l'adult amb els dictats i les solucions.</p></section>
     <section class="card stack noprint"><h2>1. Curs</h2><div class="row" role="group" aria-label="Curs">${[1,2,3,4,5,6].map(x => `<button class="btn ${x === c ? '' : 'ghost'}" data-a="fcurs" data-v="${x}" aria-pressed="${x === c}">${CURS[x]}</button>`).join('')}</div></section>
@@ -2383,7 +2383,7 @@ function vFitxes(){
       <div class="grid g2" style="align-items:start">${mode === 'prog' ? perProg('cat') + perProg('mat') : perCont('cat') + perCont('mat')}</div>`}</section>
     <section class="card stack noprint"><h2>3. Opcions</h2>
       ${mode !== 'cang' ? `<div class="stack" style="gap:6px"><b>Has triat</b>${chosen ? `<div class="row" style="gap:6px">${chosen}</div>` : '<span class="small muted">Encara res.</span>'}</div>` : ''}
-      <label class="f" for="fTitle">Títol de la fitxa<input type="text" id="fTitle" maxlength="60" value="${esc(F.title)}" placeholder="${mode === 'cang' ? 'Problemes Cangur' : 'Repàs del trimestre'}" data-a="ftitle"></label>
+      <label class="f" for="fTitle">Títol de la fitxa<input type="text" id="fTitle" maxlength="60" value="${esc(F.title)}" placeholder="${mode === 'cang' ? 'Repàs del trimestre' : 'Repàs del trimestre'}" data-a="ftitle"></label>
       <div class="skrow"><span>Models diferents<br><span class="small muted">Cada model té exercicis diferents. Útil perquè no es copiïn.</span></span><span class="stepper"><button data-a="fcopies" data-d="-1" aria-label="Un model menys">−</button><b class="num">${F.copies}</b><button data-a="fcopies" data-d="1" aria-label="Un model més">+</button></span></div>
       <div class="checks"><label><input type="checkbox" data-a="fsol" ${F.sol ? 'checked' : ''}> Afegeix el full per a l'adult amb les solucions</label></div>
       <div class="row"><button class="btn big" onclick="window.print()" ${total ? '' : 'disabled'}>Imprimeix o desa en PDF</button><button class="btn big ghost" data-a="fedit" ${total ? '' : 'disabled'}>Versió editable</button><button class="btn ghost" data-a="fnew" ${total ? '' : 'disabled'}>${mode === 'cang' ? 'Canvia els problemes' : 'Canvia els exercicis'}</button></div>
@@ -2923,7 +2923,7 @@ Respon només amb un array JSON amb aquest format: ${fmt}`;
   fsol:(d, el)=>{ F.sol = el.checked; fSave(); render(); },
   fedit:async(d, el)=>{ if (el) el.disabled = true; const w = window.open('https://www.canva.com/', '_blank', 'noopener');
     try { toast('Preparant la versió editable…'); if (!window.XXEditable) await new Promise((ok, ko) => { const sc = document.createElement('script'); sc.src = 'editable.js'; sc.onload = ok; sc.onerror = ko; document.head.appendChild(sc); });
-      const nom = ((F.title || (F.mode === 'cang' && F.curs >= 5 ? 'Problemes Cangur' : 'Repàs del trimestre')) + ' ' + CURS[F.curs]).trim();
+      const nom = ((F.title || (F.mode === 'cang' && F.curs >= 5 ? 'Repàs del trimestre' : 'Repàs del trimestre')) + ' ' + CURS[F.curs]).trim();
       await window.XXEditable([...document.querySelectorAll('.fitxes .psheet')], nom);
       const dl = document.getElementById('dEdit'); document.getElementById('dEditNom').textContent = nom.replace(/[\\/:*?"<>|]+/g, '-') + '.pptx'; dl.showModal(); }
     catch (e) { console.error(e); toast('No s\'ha pogut preparar la versió editable.'); }
@@ -3019,7 +3019,7 @@ document.addEventListener('change', e => {
 document.addEventListener('input', e => {
   const el = e.target;
   if (el.dataset.f && R.draft) R.draft[el.dataset.f] = el.value;
-  if (el.id === 'fTitle') { F.title = el.value; fSave(); document.querySelectorAll('.psheet h2').forEach(h => h.textContent = el.value || (F.mode === 'cang' && F.curs >= 5 ? 'Problemes Cangur' : 'Repàs del trimestre')); }
+  if (el.id === 'fTitle') { F.title = el.value; fSave(); document.querySelectorAll('.psheet h2').forEach(h => h.textContent = el.value || (F.mode === 'cang' && F.curs >= 5 ? 'Repàs del trimestre' : 'Repàs del trimestre')); }
   if (el.dataset.com) { (S.comments = S.comments || {})[el.dataset.com] = el.value; save(); }
   if (el.dataset.wk) { const s = stu(R.sid); s.weekly = s.weekly || {}; s.weekly.email = el.value.trim(); save(); }
   if (el.id === 'gText') { R.gen.text = el.value; R.gen.out = parseGen(R.gen.mode, el.value, R.gen.mat); $('#gCount').textContent = R.gen.out.length; $('#gList').innerHTML = genList(R.gen.out);
