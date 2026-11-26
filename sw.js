@@ -1,5 +1,5 @@
 /* Xino-Xano: guarda l'app al dispositiu perquè obri ràpid i funcioni amb mala connexió. */
-const CACHE = 'xinoxano-v9';
+const CACHE = 'xinoxano-v10';
 const SHELL = ['./', 'index.html', 'data/banc.js', 'data/cangur.js', 'personatge.js', 'manifest.webmanifest', 'assets/icona.svg', 'assets/icona-petita.svg',
   'assets/icona-192.png', 'assets/icona-512.png', 'assets/logo-h.png', 'assets/logo-v.png'];
 self.addEventListener('install', e => { e.waitUntil(caches.open(CACHE).then(c => c.addAll(SHELL)).then(() => self.skipWaiting())); });
